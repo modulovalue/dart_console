@@ -4,7 +4,7 @@ import 'package:dart_console/console/impl/console.dart';
 import 'package:dart_console/console/interface/control_characters.dart';
 import 'package:dart_console/terminal/impl/auto/terminal_lib.dart';
 
-final console = SneathConsoleImpl(autoDetectSneathTerminalLib());
+final console = SneathConsoleImpl(autodetectSneathTerminal());
 
 void main() {
   console.writeLine('This sample demonstrates keyboard input. Press any key including control keys');

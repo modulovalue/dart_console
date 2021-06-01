@@ -2,8 +2,8 @@ import 'package:dart_console/console/impl/console.dart';
 import 'package:dart_console/console/interface/text_alignments.dart';
 import 'package:dart_console/terminal/impl/auto/terminal_lib.dart';
 
-int main() {
-  final console = SneathConsoleImpl(autoDetectSneathTerminalLib());
+void main() {
+  final console = SneathConsoleImpl(autodetectSneathTerminal());
   console.clearScreen();
   console.resetCursorPosition();
   console.writeLine(
@@ -11,5 +11,4 @@ int main() {
     TextAlignment.center,
   );
   console.writeLine();
-  return 0;
 }

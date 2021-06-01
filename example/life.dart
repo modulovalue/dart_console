@@ -8,7 +8,7 @@ import 'package:dart_console/console/interface/control_characters.dart';
 import 'package:dart_console/console/interface/key.dart';
 import 'package:dart_console/terminal/impl/auto/terminal_lib.dart';
 
-final console = SneathConsoleImpl(autoDetectSneathTerminalLib());
+final console = SneathConsoleImpl(autodetectSneathTerminal());
 final random = Random();
 final rows = console.windowHeight;
 final cols = console.windowWidth;
@@ -79,7 +79,7 @@ void update() {
 
 void input() {
   final key = console.readKey();
-  if (key is ControlKey) {
+  if (key is KeyControl) {
     if (key.controlChar == ControlCharacter.escape) {
       done = true;
     }

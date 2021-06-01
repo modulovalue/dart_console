@@ -12,19 +12,19 @@ import '../../interface/terminal_lib.dart';
 /// that are not available through ANSI mode control sequences, and is not
 /// designed to be called directly. Package consumers should normally use the
 /// `Console` class to call these methods.
-class SneathTerminalLibUnixImpl implements SneathTerminalLib {
+class SneathTerminalUnixImpl implements SneathTerminal {
   final DynamicLibrary stdlib;
   final Pointer<TermIOS> origTermIOSPointer;
   final IOCTL_Dart ioctl;
   final TERMIOS_tcgetattrDart tcgetattr;
   final TERMIOS_tcsetattrDart tcsetattr;
 
-  factory SneathTerminalLibUnixImpl() {
+  factory SneathTerminalUnixImpl() {
     final _stdlib = Platform.isMacOS ? DynamicLibrary.open('/usr/lib/libSystem.dylib') : DynamicLibrary.open('libc.so.6');
     final _tcgetattr = _stdlib.lookupFunction<TERMIOS_tcgetattrNative, TERMIOS_tcgetattrDart>('tcgetattr');
     final _origTermIOSPointer = calloc<TermIOS>();
     _tcgetattr(UnistdConstants.STDIN_FILENO, _origTermIOSPointer);
-    return SneathTerminalLibUnixImpl._(
+    return SneathTerminalUnixImpl._(
       stdlib: _stdlib,
       origTermIOSPointer: _origTermIOSPointer,
       ioctl: _stdlib.lookupFunction<IOCTL_Native, IOCTL_Dart>('ioctl'),
@@ -33,7 +33,7 @@ class SneathTerminalLibUnixImpl implements SneathTerminalLib {
     );
   }
 
-  const SneathTerminalLibUnixImpl._({
+  const SneathTerminalUnixImpl._({
     required this.stdlib,
     required this.origTermIOSPointer,
     required this.ioctl,

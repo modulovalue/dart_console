@@ -4,7 +4,7 @@
 /// that are not available through ANSI mode control sequences, and is not
 /// designed to be called directly. Package consumers should normally use the
 /// `Console` class to call these methods.
-abstract class SneathTerminalLib {
+abstract class SneathTerminal {
   /// Returns the height of the terminal window.
   int getWindowHeight();
 

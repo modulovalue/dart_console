@@ -11,6 +11,7 @@ import '../interface/text_alignments.dart';
 import 'coordinate.dart';
 import 'key.dart';
 
+/// TODO have a mixin and separate impls. for each constructor.
 class SneathConsoleImpl implements SneathConsole {
   // We cache these values so we don't have to keep retrieving them. The
   // downside is that the class isn't dynamically responsive to a resized
@@ -18,7 +19,7 @@ class SneathConsoleImpl implements SneathConsole {
   int _windowWidth = 0;
   int _windowHeight = 0;
   bool _isRawMode = false;
-  final SneathTerminalLib _termlib;
+  final SneathTerminal _termlib;
   final _ScrollbackBuffer? _scrollbackBuffer;
 
   SneathConsoleImpl(this._termlib) : _scrollbackBuffer = null;
@@ -164,7 +165,7 @@ class SneathConsoleImpl implements SneathConsole {
   @override
   set cursorPosition(Coordinate? cursor) {
     if (cursor != null) {
-       _termlib.setCursorPosition(cursor.col, cursor.row);
+      _termlib.setCursorPosition(cursor.col, cursor.row);
     }
   }
 
@@ -193,7 +194,12 @@ class SneathConsoleImpl implements SneathConsole {
   }
 
   @override
-  void setTextStyle({bool bold = false, bool underscore = false, bool blink = false, bool inverted = false}) {
+  void setTextStyle({
+    bool bold = false,
+    bool underscore = false,
+    bool blink = false,
+    bool inverted = false,
+  }) {
     stdout.write(AnsiLib.ansiSetTextStyles(
       bold: bold,
       underscore: underscore,

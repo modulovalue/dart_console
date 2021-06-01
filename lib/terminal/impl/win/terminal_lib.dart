@@ -11,11 +11,11 @@ import '../../interface/terminal_lib.dart';
 /// that are not available through ANSI mode control sequences, and is not
 /// designed to be called directly. Package consumers should normally use the
 /// `Console` class to call these methods.
-class SneathTerminalLibWindowsImpl implements SneathTerminalLib {
+class SneathTerminalWindowsImpl implements SneathTerminal {
   late final int inputHandle;
   final int outputHandle;
 
-  SneathTerminalLibWindowsImpl()
+  SneathTerminalWindowsImpl()
       : outputHandle = GetStdHandle(STD_OUTPUT_HANDLE),
         inputHandle = GetStdHandle(STD_INPUT_HANDLE);
 

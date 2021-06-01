@@ -10,7 +10,7 @@ import 'package:dart_console/terminal/impl/auto/terminal_lib.dart';
 const kiloVersion = '0.0.3';
 const kiloTabStopLength = 4;
 
-final console = SneathConsoleImpl(autoDetectSneathTerminalLib());
+final console = SneathConsoleImpl(autodetectSneathTerminal());
 
 String editedFilename = '';
 bool isFileDirty = false;

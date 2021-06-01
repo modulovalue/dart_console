@@ -11,7 +11,7 @@ import 'package:dart_console/terminal/impl/auto/terminal_lib.dart';
 // Demonstrates a simple command-line interface that does not require line
 // editing services from the shell.
 void main() {
-  final console = SneathConsoleImpl(autoDetectSneathTerminalLib());
+  final console = SneathConsoleImpl(autodetectSneathTerminal());
   const prompt = '>>> ';
   console.write('The ');
   console.setForegroundColor(NamedAnsiColor.brightYellow);

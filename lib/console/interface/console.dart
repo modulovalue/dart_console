@@ -149,6 +149,7 @@ abstract class SneathConsole {
   /// Sets the text style.
   ///
   /// Note that not all styles may be supported by all terminals.
+  /// TODO setting bold to false resets colors.
   void setTextStyle({
     bool bold,
     bool underscore,
