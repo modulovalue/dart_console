@@ -1,12 +1,11 @@
 import 'dart:ffi';
-import 'package:ffi/ffi.dart';
 
+import 'package:ffi/ffi.dart';
 import 'package:win32/win32.dart';
 
 void main() {
   final outputHandle = GetStdHandle(STD_OUTPUT_HANDLE);
   print('Output handle (DWORD): $outputHandle');
-
   final pBufferInfo = calloc<CONSOLE_SCREEN_BUFFER_INFO>();
   final bufferInfo = pBufferInfo.ref;
   GetConsoleScreenBufferInfo(outputHandle, pBufferInfo);
@@ -21,12 +20,10 @@ void main() {
   final cursorPosition = calloc<COORD>()
     ..ref.X = 15
     ..ref.Y = 3;
-
   SetConsoleCursorPosition(outputHandle, cursorPosition.ref);
   GetConsoleScreenBufferInfo(outputHandle, pBufferInfo);
   print('Cursor position X/Y: (${bufferInfo.dwCursorPosition.X}, '
       '${bufferInfo.dwCursorPosition.Y})');
-
   calloc.free(pBufferInfo);
   calloc.free(cursorPosition);
 }

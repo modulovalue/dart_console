@@ -2,23 +2,21 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:dart_console/dart_console.dart';
+import 'package:dart_console/ansi/ansi.dart';
+import 'package:dart_console/console/impl/console.dart';
+import 'package:dart_console/console/interface/control_characters.dart';
+import 'package:dart_console/console/interface/key.dart';
+import 'package:dart_console/terminal/impl/auto/terminal_lib.dart';
 
-final console = Console();
+final console = SneathConsoleImpl(autoDetectSneathTerminalLib());
 final random = Random();
-
-final int rows = console.windowHeight;
-final int cols = console.windowWidth;
-final int size = rows * cols;
-
+final rows = console.windowHeight;
+final cols = console.windowWidth;
+final size = rows * cols;
 final temp = List<bool>.filled(size, false, growable: false);
-final data =
-    List<bool>.generate(size, (i) => random.nextBool(), growable: false);
-
+final data = List<bool>.generate(size, (i) => random.nextBool(), growable: false);
 final buffer = StringBuffer();
-
 bool done = false;
-
 final neighbors = [
   [-1, -1],
   [0, -1],
@@ -31,12 +29,10 @@ final neighbors = [
 ];
 
 void draw() {
-  console.setBackgroundColor(ConsoleColor.black);
-  console.setForegroundColor(ConsoleColor.blue);
+  console.setBackgroundColor(NamedAnsiColor.black);
+  console.setForegroundColor(NamedAnsiColor.blue);
   console.clearScreen();
-
   buffer.clear();
-
   for (var row = 0; row < rows; row++) {
     for (var col = 0; col < cols; col++) {
       final index = row * rows + col;
@@ -44,7 +40,6 @@ void draw() {
     }
     buffer.write(console.newLine);
   }
-
   console.write(buffer.toString());
 }
 
@@ -84,12 +79,9 @@ void update() {
 
 void input() {
   final key = console.readKey();
-  if (key.isControl) {
-    switch (key.controlChar) {
-      case ControlCharacter.escape:
-        done = true;
-        break;
-      default:
+  if (key is ControlKey) {
+    if (key.controlChar == ControlCharacter.escape) {
+      done = true;
     }
   }
 }
@@ -116,13 +108,13 @@ void main(List<String> arguments) {
   try {
     console.rawMode = false;
     console.hideCursor();
-
     Timer.periodic(const Duration(milliseconds: 200), (t) {
       draw();
       update();
       //input(); // TODO: need async input
       if (done) quit();
     });
+    // ignore: avoid_catches_without_on_clauses
   } catch (exception) {
     crash(exception.toString());
     rethrow;

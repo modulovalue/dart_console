@@ -1,11 +1,8 @@
-// key.dart
-//
-// Representation of keyboard input and control characters.
-
 /// Non-printable characters that can be entered from the keyboard.
+/// TODO this should be an adt.
+/// TODO make ControlKey depend on the interface of that adt.
 enum ControlCharacter {
   none,
-
   ctrlA,
   ctrlB,
   ctrlC, // Break
@@ -32,7 +29,6 @@ enum ControlCharacter {
   ctrlX,
   ctrlY,
   ctrlZ, // Suspend
-
   arrowLeft,
   arrowRight,
   arrowUp,
@@ -41,37 +37,15 @@ enum ControlCharacter {
   pageDown,
   wordLeft,
   wordRight,
-
   home,
   end,
   escape,
   delete,
   backspace,
   wordBackspace,
-
   F1,
   F2,
   F3,
   F4,
-
   unknown
-}
-
-/// A representation of a keystroke.
-class Key {
-  bool isControl = false;
-  String char = '';
-  ControlCharacter controlChar = ControlCharacter.unknown;
-
-  Key.printable(this.char) : assert(char.length == 1) {
-    controlChar = ControlCharacter.none;
-  }
-
-  Key.control(this.controlChar) {
-    char = '';
-    isControl = true;
-  }
-
-  @override
-  String toString() => isControl ? controlChar.toString() : char.toString();
 }

@@ -1,16 +1,16 @@
 import 'dart:io';
 import 'dart:math' show min;
 
-import 'package:dart_console/dart_console.dart';
+import 'package:dart_console/console/impl/console.dart';
+import 'package:dart_console/console/impl/coordinate.dart';
+import 'package:dart_console/console/interface/control_characters.dart';
+import 'package:dart_console/console/interface/key.dart';
+import 'package:dart_console/terminal/impl/auto/terminal_lib.dart';
 
 const kiloVersion = '0.0.3';
 const kiloTabStopLength = 4;
 
-//
-// GLOBAL VARIABLES
-//
-
-final console = Console();
+final console = SneathConsoleImpl(autoDetectSneathTerminalLib());
 
 String editedFilename = '';
 bool isFileDirty = false;
@@ -46,6 +46,7 @@ int findLastMatchRow = -1;
 
 // Current search direction
 enum FindDirection { forwards, backwards }
+
 FindDirection findDirection = FindDirection.forwards;
 
 String messageText = '';
@@ -63,8 +64,7 @@ void crash(String message) {
   exit(1);
 }
 
-String truncateString(String text, int length) =>
-    length < text.length ? text.substring(0, length) : text;
+String truncateString(String text, int length) => length < text.length ? text.substring(0, length) : text;
 
 //
 // EDITOR OPERATIONS
@@ -74,9 +74,7 @@ void editorInsertChar(String char) {
     fileRows.add(char);
     renderRows.add(char);
   } else {
-    fileRows[cursorRow] = fileRows[cursorRow].substring(0, cursorCol) +
-        char +
-        fileRows[cursorRow].substring(cursorCol);
+    fileRows[cursorRow] = fileRows[cursorRow].substring(0, cursorCol) + char + fileRows[cursorRow].substring(cursorCol);
   }
   editorUpdateRenderRow(cursorRow);
   cursorCol++;
@@ -86,13 +84,10 @@ void editorInsertChar(String char) {
 void editorBackspaceChar() {
   // If we're past the end of the file, then there's nothing to delete
   if (cursorRow == fileRows.length) return;
-
   // Nothing to do if we're at the first character of the file
   if (cursorCol == 0 && cursorRow == 0) return;
-
   if (cursorCol > 0) {
-    fileRows[cursorRow] = fileRows[cursorRow].substring(0, cursorCol - 1) +
-        fileRows[cursorRow].substring(cursorCol);
+    fileRows[cursorRow] = fileRows[cursorRow].substring(0, cursorCol - 1) + fileRows[cursorRow].substring(cursorCol);
     editorUpdateRenderRow(cursorRow);
     cursorCol--;
   } else {
@@ -115,7 +110,6 @@ void editorInsertNewline() {
   } else {
     fileRows.insert(cursorRow + 1, fileRows[cursorRow].substring(cursorCol));
     fileRows[cursorRow] = fileRows[cursorRow].substring(0, cursorCol);
-
     renderRows.insert(cursorRow + 1, '');
     editorUpdateRenderRow(cursorRow);
     editorUpdateRenderRow(cursorRow + 1);
@@ -124,25 +118,29 @@ void editorInsertNewline() {
   cursorCol = 0;
 }
 
+void _handleOther([Object? _]) {
+  findLastMatchRow = -1;
+  findDirection = FindDirection.forwards;
+}
+
 void editorFindCallback(String query, Key key) {
-  if (key.controlChar == ControlCharacter.enter ||
-      key.controlChar == ControlCharacter.escape) {
-    findLastMatchRow = -1;
-    findDirection = FindDirection.forwards;
-    return;
-  } else if (key.controlChar == ControlCharacter.arrowRight ||
-      key.controlChar == ControlCharacter.arrowDown) {
-    findDirection = FindDirection.forwards;
-  } else if (key.controlChar == ControlCharacter.arrowLeft ||
-      key.controlChar == ControlCharacter.arrowUp) {
-    findDirection = FindDirection.backwards;
-  } else {
-    findLastMatchRow = -1;
-    findDirection = FindDirection.forwards;
-  }
-
+  key.match(
+    printable: _handleOther,
+    control: (key) {
+      if (key.controlChar == ControlCharacter.enter || key.controlChar == ControlCharacter.escape) {
+        findLastMatchRow = -1;
+        findDirection = FindDirection.forwards;
+        return;
+      } else if (key.controlChar == ControlCharacter.arrowRight || key.controlChar == ControlCharacter.arrowDown) {
+        findDirection = FindDirection.forwards;
+      } else if (key.controlChar == ControlCharacter.arrowLeft || key.controlChar == ControlCharacter.arrowUp) {
+        findDirection = FindDirection.backwards;
+      } else {
+        _handleOther();
+      }
+    },
+  );
   if (findLastMatchRow == -1) findDirection = FindDirection.forwards;
-
   var currentRow = findLastMatchRow;
   if (query.isNotEmpty) {
     // we loop through all the rows, rotating back to the beginning/end as
@@ -153,21 +151,17 @@ void editorFindCallback(String query, Key key) {
       } else {
         currentRow--;
       }
-
       if (currentRow == -1) {
         currentRow = fileRows.length - 1;
       } else if (currentRow == fileRows.length) {
         currentRow = 0;
       }
-
       if (renderRows[currentRow].contains(query)) {
         findLastMatchRow = currentRow;
         cursorRow = currentRow;
-        cursorCol =
-            getFileCol(currentRow, renderRows[currentRow].indexOf(query));
+        cursorCol = getFileCol(currentRow, renderRows[currentRow].indexOf(query));
         screenFileRowOffset = fileRows.length;
-        editorSetStatusMessage(
-            'Search (ESC to cancel, use arrows for prev/next): $query');
+        editorSetStatusMessage('Search (ESC to cancel, use arrows for prev/next): $query');
         editorRefreshScreen();
         break;
       }
@@ -180,10 +174,7 @@ void editorFind() {
   final savedCursorRow = cursorRow;
   final savedScreenFileRowOffset = screenFileRowOffset;
   final savedScreenRowColOffset = screenRowColOffset;
-
-  final query = editorPrompt(
-      'Search (ESC to cancel, use arrows for prev/next): ', editorFindCallback);
-
+  final query = editorPrompt('Search (ESC to cancel, use arrows for prev/next): ', editorFindCallback);
   if (query == null) {
     // Escape pressed
     cursorCol = savedCursorCol;
@@ -204,14 +195,12 @@ void editorOpen(String filename) {
     editorSetStatusMessage('Error opening file: $e');
     return;
   }
-
   for (var rowIndex = 0; rowIndex < fileRows.length; rowIndex++) {
     renderRows.add('');
     editorUpdateRenderRow(rowIndex);
   }
-
+  // ignore: prefer_asserts_with_message
   assert(fileRows.length == renderRows.length);
-
   isFileDirty = false;
 }
 
@@ -225,15 +214,12 @@ void editorSave() {
       editedFilename = saveFilename;
     }
   }
-
   // TODO: This is hopelessly naive, as with kilo.c. We should write to a
   //    temporary file and rename to ensure that we have written successfully.
   final file = File(editedFilename);
   final fileContents = '${fileRows.join('\n')}\n';
   file.writeAsStringSync(fileContents);
-
   isFileDirty = false;
-
   editorSetStatusMessage('${fileContents.length} bytes written to disk.');
 }
 
@@ -242,11 +228,18 @@ void editorQuit() {
     editorSetStatusMessage('File is unsaved. Quit anyway (y or n)?');
     editorRefreshScreen();
     final response = console.readKey();
-    if (response.char != 'y' && response.char != 'Y') {
-      {
-        editorSetStatusMessage('');
-        return;
-      }
+    if (response.match(
+      printable: (key) {
+        if (key.char != 'y' && key.char != 'Y') {
+          editorSetStatusMessage('');
+          return true;
+        } else {
+          return false;
+        }
+      },
+      control: (key) => false,
+    )) {
+      return;
     }
   }
   console.clearScreen();
@@ -265,9 +258,7 @@ void editorQuit() {
 // column 16 even though it is only the third character in the file.
 int getRenderedCol(int fileRow, int fileCol) {
   var col = 0;
-
   if (fileRow >= fileRows.length) return 0;
-
   final rowText = fileRows[fileRow];
   for (var i = 0; i < fileCol; i++) {
     if (rowText[i] == '\t') {
@@ -286,22 +277,19 @@ int getFileCol(int row, int renderCol) {
   final rowText = fileRows[row];
   for (fileCol = 0; fileCol < rowText.length; fileCol++) {
     if (rowText[fileCol] == '\t') {
-      currentRenderCol +=
-          (kiloTabStopLength - 1) - (currentRenderCol % kiloTabStopLength);
+      currentRenderCol += (kiloTabStopLength - 1) - (currentRenderCol % kiloTabStopLength);
     }
     currentRenderCol++;
-
     if (currentRenderCol > renderCol) return fileCol;
   }
   return fileCol;
 }
 
 void editorUpdateRenderRow(int rowIndex) {
+  // ignore: prefer_asserts_with_message
   assert(renderRows.length == fileRows.length);
-
   var renderBuffer = '';
   final fileRow = fileRows[rowIndex];
-
   for (var fileCol = 0; fileCol < fileRow.length; fileCol++) {
     if (fileRow[fileCol] == '\t') {
       // Add at least one space for the tab stop, plus as many more as needed to
@@ -320,23 +308,18 @@ void editorUpdateRenderRow(int rowIndex) {
 
 void editorScroll() {
   cursorRenderCol = 0;
-
   if (cursorRow < fileRows.length) {
     cursorRenderCol = getRenderedCol(cursorRow, cursorCol);
   }
-
   if (cursorRow < screenFileRowOffset) {
     screenFileRowOffset = cursorRow;
   }
-
   if (cursorRow >= screenFileRowOffset + editorWindowHeight) {
     screenFileRowOffset = cursorRow - editorWindowHeight + 1;
   }
-
   if (cursorRenderCol < screenRowColOffset) {
     screenRowColOffset = cursorRenderCol;
   }
-
   if (cursorRenderCol >= screenRowColOffset + editorWindowWidth) {
     screenRowColOffset = cursorRenderCol - editorWindowWidth + 1;
   }
@@ -344,18 +327,15 @@ void editorScroll() {
 
 void editorDrawRows() {
   final screenBuffer = StringBuffer();
-
   for (var screenRow = 0; screenRow < editorWindowHeight; screenRow++) {
     // fileRow is the row of the file we want to print to screenRow
     final fileRow = screenRow + screenFileRowOffset;
-
     // If we're beyond the text buffer, print tilde in column 0
     if (fileRow >= fileRows.length) {
       // Show a welcome message
       if (fileRows.isEmpty && (screenRow == (editorWindowHeight / 3).round())) {
         // Print the welcome message centered a third of the way down the screen
-        final welcomeMessage = truncateString(
-            'Kilo editor -- version $kiloVersion', editorWindowWidth);
+        final welcomeMessage = truncateString('Kilo editor -- version $kiloVersion', editorWindowWidth);
         var padding = ((editorWindowWidth - welcomeMessage.length) / 2).round();
         if (padding > 0) {
           screenBuffer.write('~');
@@ -369,17 +349,13 @@ void editorDrawRows() {
         screenBuffer.write('~');
       }
     }
-
     // Otherwise print the onscreen portion of the current file row,
     // trimmed if necessary
     else {
       if (renderRows[fileRow].length - screenRowColOffset > 0) {
-        screenBuffer.write(truncateString(
-            renderRows[fileRow].substring(screenRowColOffset),
-            editorWindowWidth));
+        screenBuffer.write(truncateString(renderRows[fileRow].substring(screenRowColOffset), editorWindowWidth));
       }
     }
-
     screenBuffer.write(console.newLine);
   }
   console.write(screenBuffer.toString());
@@ -387,43 +363,33 @@ void editorDrawRows() {
 
 void editorDrawStatusBar() {
   console.setTextStyle(inverted: true);
-
   // TODO: Displayed filename should not include path.
-  var leftString =
-      '${truncateString(editedFilename.isEmpty ? "[No Name]" : editedFilename, (editorWindowWidth / 2).ceil())}'
+  var leftString = '${truncateString(editedFilename.isEmpty ? "[No Name]" : editedFilename, (editorWindowWidth / 2).ceil())}'
       ' - ${fileRows.length} lines';
   if (isFileDirty) leftString += ' (modified)';
   final rightString = '${cursorRow + 1}/${fileRows.length}';
   final padding = editorWindowWidth - leftString.length - rightString.length;
-
   console.write('$leftString'
       '${" " * padding}'
       '$rightString');
-
   console.resetColorAttributes();
   console.writeLine();
 }
 
 void editorDrawMessageBar() {
-  if (DateTime.now().difference(messageTimestamp) <
-      const Duration(seconds: 5)) {
-    console.write(truncateString(messageText, editorWindowWidth)
-        .padRight(editorWindowWidth));
+  if (DateTime.now().difference(messageTimestamp) < const Duration(seconds: 5)) {
+    console.write(truncateString(messageText, editorWindowWidth).padRight(editorWindowWidth));
   }
 }
 
 void editorRefreshScreen() {
   editorScroll();
-
   console.hideCursor();
   console.clearScreen();
-
   editorDrawRows();
   editorDrawStatusBar();
   editorDrawMessageBar();
-
-  console.cursorPosition = Coordinate(
-      cursorRow - screenFileRowOffset, cursorRenderCol - screenRowColOffset);
+  console.cursorPosition = CoordinateImpl(cursorRow - screenFileRowOffset, cursorRenderCol - screenRowColOffset);
   console.showCursor();
 }
 
@@ -432,19 +398,17 @@ void editorSetStatusMessage(String message) {
   messageTimestamp = DateTime.now();
 }
 
-String? editorPrompt(String message,
-    [Function(String text, Key lastPressed)? callback]) {
+String? editorPrompt(
+  String message, [
+  void Function(String text, Key lastPressed)? callback,
+]) {
   final originalCursorRow = cursorRow;
-
   editorSetStatusMessage(message);
   editorRefreshScreen();
-
-  console.cursorPosition = Coordinate(console.windowHeight - 1, message.length);
-
+  console.cursorPosition = CoordinateImpl(console.windowHeight - 1, message.length);
   final response = console.readLine(cancelOnEscape: true, callback: callback);
   cursorRow = originalCursorRow;
   editorSetStatusMessage('');
-
   return response;
 }
 
@@ -497,7 +461,46 @@ void editorMoveCursor(ControlCharacter key) {
         cursorCol = fileRows[cursorRow].length;
       }
       break;
-    default:
+    case ControlCharacter.none:
+    case ControlCharacter.ctrlA:
+    case ControlCharacter.ctrlB:
+    case ControlCharacter.ctrlC:
+    case ControlCharacter.ctrlD:
+    case ControlCharacter.ctrlE:
+    case ControlCharacter.ctrlF:
+    case ControlCharacter.ctrlG:
+    case ControlCharacter.ctrlH:
+    case ControlCharacter.tab:
+    case ControlCharacter.ctrlJ:
+    case ControlCharacter.ctrlK:
+    case ControlCharacter.ctrlL:
+    case ControlCharacter.enter:
+    case ControlCharacter.ctrlN:
+    case ControlCharacter.ctrlO:
+    case ControlCharacter.ctrlP:
+    case ControlCharacter.ctrlQ:
+    case ControlCharacter.ctrlR:
+    case ControlCharacter.ctrlS:
+    case ControlCharacter.ctrlT:
+    case ControlCharacter.ctrlU:
+    case ControlCharacter.ctrlV:
+    case ControlCharacter.ctrlW:
+    case ControlCharacter.ctrlX:
+    case ControlCharacter.ctrlY:
+    case ControlCharacter.ctrlZ:
+    case ControlCharacter.wordLeft:
+    case ControlCharacter.wordRight:
+    case ControlCharacter.escape:
+    case ControlCharacter.delete:
+    case ControlCharacter.backspace:
+    case ControlCharacter.wordBackspace:
+    case ControlCharacter.F1:
+    case ControlCharacter.F2:
+    case ControlCharacter.F3:
+    case ControlCharacter.F4:
+    case ControlCharacter.unknown:
+      // Do nothing.
+      break;
   }
 
   if (cursorRow < fileRows.length) {
@@ -507,50 +510,82 @@ void editorMoveCursor(ControlCharacter key) {
 
 void editorProcessKeypress() {
   final key = console.readKey();
-
-  if (key.isControl) {
-    switch (key.controlChar) {
-      case ControlCharacter.ctrlQ:
-        editorQuit();
-        break;
-      case ControlCharacter.ctrlS:
-        editorSave();
-        break;
-      case ControlCharacter.ctrlF:
-        editorFind();
-        break;
-      case ControlCharacter.backspace:
-      case ControlCharacter.ctrlH:
-        editorBackspaceChar();
-        break;
-      case ControlCharacter.delete:
-        editorMoveCursor(ControlCharacter.arrowRight);
-        editorBackspaceChar();
-        break;
-      case ControlCharacter.enter:
-        editorInsertNewline();
-        break;
-      case ControlCharacter.arrowLeft:
-      case ControlCharacter.arrowUp:
-      case ControlCharacter.arrowRight:
-      case ControlCharacter.arrowDown:
-      case ControlCharacter.pageUp:
-      case ControlCharacter.pageDown:
-      case ControlCharacter.home:
-      case ControlCharacter.end:
-        editorMoveCursor(key.controlChar);
-        break;
-      case ControlCharacter.ctrlA:
-        editorMoveCursor(ControlCharacter.home);
-        break;
-      case ControlCharacter.ctrlE:
-        editorMoveCursor(ControlCharacter.end);
-        break;
-      default:
-    }
-  } else {
-    editorInsertChar(key.char);
-  }
+  key.match(
+    printable: (key) {
+      editorInsertChar(key.char);
+    },
+    control: (key) {
+      switch (key.controlChar) {
+        case ControlCharacter.ctrlQ:
+          editorQuit();
+          break;
+        case ControlCharacter.ctrlS:
+          editorSave();
+          break;
+        case ControlCharacter.ctrlF:
+          editorFind();
+          break;
+        case ControlCharacter.backspace:
+        case ControlCharacter.ctrlH:
+          editorBackspaceChar();
+          break;
+        case ControlCharacter.delete:
+          editorMoveCursor(ControlCharacter.arrowRight);
+          editorBackspaceChar();
+          break;
+        case ControlCharacter.enter:
+          editorInsertNewline();
+          break;
+        case ControlCharacter.arrowLeft:
+        case ControlCharacter.arrowUp:
+        case ControlCharacter.arrowRight:
+        case ControlCharacter.arrowDown:
+        case ControlCharacter.pageUp:
+        case ControlCharacter.pageDown:
+        case ControlCharacter.home:
+        case ControlCharacter.end:
+          editorMoveCursor(key.controlChar);
+          break;
+        case ControlCharacter.ctrlA:
+          editorMoveCursor(ControlCharacter.home);
+          break;
+        case ControlCharacter.ctrlE:
+          editorMoveCursor(ControlCharacter.end);
+          break;
+        case ControlCharacter.none:
+        case ControlCharacter.ctrlB:
+        case ControlCharacter.ctrlC:
+        case ControlCharacter.ctrlD:
+        case ControlCharacter.ctrlG:
+        case ControlCharacter.tab:
+        case ControlCharacter.ctrlJ:
+        case ControlCharacter.ctrlK:
+        case ControlCharacter.ctrlL:
+        case ControlCharacter.ctrlN:
+        case ControlCharacter.ctrlO:
+        case ControlCharacter.ctrlP:
+        case ControlCharacter.ctrlR:
+        case ControlCharacter.ctrlT:
+        case ControlCharacter.ctrlU:
+        case ControlCharacter.ctrlV:
+        case ControlCharacter.ctrlW:
+        case ControlCharacter.ctrlX:
+        case ControlCharacter.ctrlY:
+        case ControlCharacter.ctrlZ:
+        case ControlCharacter.wordLeft:
+        case ControlCharacter.wordRight:
+        case ControlCharacter.escape:
+        case ControlCharacter.wordBackspace:
+        case ControlCharacter.F1:
+        case ControlCharacter.F2:
+        case ControlCharacter.F3:
+        case ControlCharacter.F4:
+        case ControlCharacter.unknown:
+          // Do nothing.
+          break;
+      }
+    },
+  );
 }
 
 //
@@ -565,14 +600,12 @@ void main(List<String> arguments) {
       editedFilename = arguments[0];
       editorOpen(editedFilename);
     }
-
-    editorSetStatusMessage(
-        'HELP: Ctrl-S = save | Ctrl-Q = quit | Ctrl-F = find');
-
-    while (true) {
+    editorSetStatusMessage('HELP: Ctrl-S = save | Ctrl-Q = quit | Ctrl-F = find');
+    for (;;) {
       editorRefreshScreen();
       editorProcessKeypress();
     }
+    // ignore: avoid_catches_without_on_clauses
   } catch (exception) {
     // Make sure raw mode gets disabled if we hit some unrelated problem
     console.rawMode = false;

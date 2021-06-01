@@ -3,6 +3,18 @@ import 'dart:io';
 
 import 'package:ffi/ffi.dart';
 
+void main() {
+  final libc = Platform.isMacOS ? DynamicLibrary.open('/usr/lib/libSystem.dylib') : DynamicLibrary.open('libc-2.28.so');
+  final ioctl = libc.lookupFunction<ioctlVoidNative, ioctlVoidDart>('ioctl');
+  final winSizePointer = calloc<WinSize>();
+  final result = ioctl(STDOUT_FILENO, TIOCGWINSZ, winSizePointer.cast());
+  print('result is $result');
+  final winSize = winSizePointer.ref;
+  print('Per ioctl, this console window has ${winSize.ws_col} cols and '
+      '${winSize.ws_row} rows.');
+  calloc.free(winSizePointer);
+}
+
 // int ioctl(int, unsigned long, ...);
 typedef ioctlVoidNative = Int32 Function(Int32, Int64, Pointer<Void>);
 typedef ioctlVoidDart = int Function(int, int, Pointer<Void>);
@@ -30,22 +42,4 @@ class WinSize extends Struct {
 
   @Int16()
   int ws_ypixel;
-}
-
-void main() {
-  final libc = Platform.isMacOS
-      ? DynamicLibrary.open('/usr/lib/libSystem.dylib')
-      : DynamicLibrary.open('libc-2.28.so');
-
-  final ioctl = libc.lookupFunction<ioctlVoidNative, ioctlVoidDart>('ioctl');
-
-  final winSizePointer = calloc<WinSize>();
-  final result = ioctl(STDOUT_FILENO, TIOCGWINSZ, winSizePointer.cast());
-  print('result is $result');
-
-  final winSize = winSizePointer.ref;
-  print('Per ioctl, this console window has ${winSize.ws_col} cols and '
-      '${winSize.ws_row} rows.');
-
-  calloc.free(winSizePointer);
 }
