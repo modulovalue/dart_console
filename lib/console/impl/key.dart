@@ -1,4 +1,4 @@
-import '../interface/control_characters.dart';
+import '../interface/control_character.dart';
 import '../interface/key.dart';
 
 class KeyControlImpl with KeyControlMixin {

@@ -1,6 +1,6 @@
-import '../ansi/ansi.dart';
+import '../ansi/impl/color.dart';
+import '../console/impl/text_alignment.dart';
 import '../console/interface/console.dart';
-import '../console/interface/text_alignments.dart';
 
 class ProgressScaffold {
   final String? title;
@@ -14,13 +14,13 @@ class ProgressScaffold {
   });
 
   void run(ProgressScaffoldState state, SneathConsole console) {
-    console.setBackgroundColor(NamedAnsiColor.blue);
-    console.setForegroundColor(NamedAnsiColor.white);
-    console.setTextStyle(bold: true);
+    console.setBackgroundColor(NamedAnsiColors.blue);
+    console.setForegroundColor(NamedAnsiColors.brightWhite);
     console.clearScreen();
-    console.writeLine(title, TextAlignment.center);
-    console.writeLine('=== ' + DateTime.now().difference(state.startedAt).toString().split(".").first + ' ===', TextAlignment.center);
-    console.writeLine(subtitle, TextAlignment.center);
+    if (title != null) console.writeLine(title, ConsoleTextAlignments.center);
+    console.writeLine(
+        '=== ' + DateTime.now().difference(state.startedAt).toString().split(".").first + ' ===', ConsoleTextAlignments.center);
+    if (subtitle != null) console.writeLine(subtitle, ConsoleTextAlignments.center);
   }
 }
 

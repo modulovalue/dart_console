@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:dart_console/ansi/ansi.dart';
+import 'package:dart_console/ansi/impl/color.dart';
 import 'package:dart_console/console/impl/console.dart';
-import 'package:dart_console/console/interface/control_characters.dart';
+import 'package:dart_console/console/interface/control_character.dart';
 import 'package:dart_console/console/interface/key.dart';
 import 'package:dart_console/terminal/impl/auto/terminal_lib.dart';
 
@@ -29,8 +29,8 @@ final neighbors = [
 ];
 
 void draw() {
-  console.setBackgroundColor(NamedAnsiColor.black);
-  console.setForegroundColor(NamedAnsiColor.blue);
+  console.setBackgroundColor(NamedAnsiColors.black);
+  console.setForegroundColor(NamedAnsiColors.blue);
   console.clearScreen();
   buffer.clear();
   for (var row = 0; row < rows; row++) {

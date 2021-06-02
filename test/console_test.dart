@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 import '../example/readme.dart' as readme_example;
 
 void main() {
-  test('Coordinate positioning', () {
+  test("Coordinate positioning", () {
     final console = SneathConsoleImpl(autodetectSneathTerminal());
     const coordinate = CoordinateImpl(5, 8);
     console.cursorPosition = coordinate;
@@ -14,7 +14,7 @@ void main() {
     expect(coordinate.row, equals(returnedCoordinate.row));
     expect(coordinate.col, equals(returnedCoordinate.col));
   });
-  test('should throw while running the readme example', () {
+  test("shouldn't throw while running the readme example", () {
     readme_example.main();
   });
 }

@@ -1,17 +1,18 @@
 import 'dart:io';
 import 'dart:math';
 
-import '../../ansi/ansi.dart';
+import '../../ansi/impl/ansi.dart';
+import '../../ansi/interface/color.dart';
 import '../../terminal/interface/terminal_lib.dart';
 import '../interface/console.dart';
-import '../interface/control_characters.dart';
+import '../interface/control_character.dart';
 import '../interface/coordinate.dart';
 import '../interface/key.dart';
-import '../interface/text_alignments.dart';
+import '../interface/text_alignment.dart';
 import 'coordinate.dart';
 import 'key.dart';
+import 'text_alignment.dart';
 
-/// TODO have a mixin and separate impls. for each constructor.
 class SneathConsoleImpl implements SneathConsole {
   // We cache these values so we don't have to keep retrieving them. The
   // downside is that the class isn't dynamically responsive to a resized
@@ -19,16 +20,16 @@ class SneathConsoleImpl implements SneathConsole {
   int _windowWidth = 0;
   int _windowHeight = 0;
   bool _isRawMode = false;
-  final SneathTerminal _termlib;
+  final SneathTerminal _terminal;
   final _ScrollbackBuffer? _scrollbackBuffer;
 
-  SneathConsoleImpl(this._termlib) : _scrollbackBuffer = null;
+  SneathConsoleImpl(this._terminal) : _scrollbackBuffer = null;
 
   /// Create a named constructor specifically for scrolling consoles
   /// Use `Console.scrolling(recordBlanks: false)` to omit blank lines
   /// from console history
   SneathConsoleImpl.scrolling(
-    this._termlib, {
+    this._terminal, {
     bool recordBlanks = true,
   }) : _scrollbackBuffer = _ScrollbackBufferImpl(recordBlanks: recordBlanks);
 
@@ -36,9 +37,9 @@ class SneathConsoleImpl implements SneathConsole {
   set rawMode(bool value) {
     _isRawMode = value;
     if (value) {
-      _termlib.enableRawMode();
+      _terminal.enableRawMode();
     } else {
-      _termlib.disableRawMode();
+      _terminal.disableRawMode();
     }
   }
 
@@ -46,7 +47,7 @@ class SneathConsoleImpl implements SneathConsole {
   bool get rawMode => _isRawMode;
 
   @override
-  void clearScreen() => _termlib.clearScreen();
+  void clearScreen() => _terminal.clearScreen();
 
   @override
   void eraseLine() => stdout.write(AnsiConstants.ansiEraseInLineAll);
@@ -58,7 +59,7 @@ class SneathConsoleImpl implements SneathConsole {
   int get windowWidth {
     if (_windowWidth == 0) {
       // try using ioctl() to give us the screen size
-      final width = _termlib.getWindowWidth();
+      final width = _terminal.getWindowWidth();
       if (width != -1) {
         _windowWidth = width;
       } else {
@@ -68,12 +69,11 @@ class SneathConsoleImpl implements SneathConsole {
         stdout.write(AnsiConstants.ansiMoveCursorToScreenEdge);
         final newCursor = cursorPosition;
         cursorPosition = originalCursor;
-
         if (newCursor != null) {
           _windowWidth = newCursor.col;
         } else {
           // we've run out of options; terminal is unsupported
-          throw Exception("Couldn't retrieve window width");
+          throw const SneathConsoleExceptionImpl("Couldn't retrieve window width");
         }
       }
     }
@@ -84,7 +84,7 @@ class SneathConsoleImpl implements SneathConsole {
   int get windowHeight {
     if (_windowHeight == 0) {
       // try using ioctl() to give us the screen size
-      final height = _termlib.getWindowHeight();
+      final height = _terminal.getWindowHeight();
       if (height != -1) {
         _windowHeight = height;
       } else {
@@ -98,7 +98,7 @@ class SneathConsoleImpl implements SneathConsole {
           _windowHeight = newCursor.row;
         } else {
           // we've run out of options; terminal is unsupported
-          throw Exception("Couldn't retrieve window height");
+          throw const SneathConsoleExceptionImpl("Couldn't retrieve window height");
         }
       }
     }
@@ -138,7 +138,9 @@ class SneathConsoleImpl implements SneathConsole {
     while (i < 16) {
       // ignore: use_string_buffers
       result += String.fromCharCode(stdin.readByteSync());
-      if (result.endsWith('R')) break;
+      if (result.endsWith('R')) {
+        break;
+      }
       i++;
     }
     rawMode = false;
@@ -152,8 +154,10 @@ class SneathConsoleImpl implements SneathConsole {
         print(' coords.length: ${coords.length}');
         return null;
       } else {
-        if ((int.tryParse(coords[0]) != null) && (int.tryParse(coords[1]) != null)) {
-          return CoordinateImpl(int.parse(coords[0]) - 1, int.parse(coords[1]) - 1);
+        final parsedX = int.tryParse(coords[0]);
+        final parsedY = int.tryParse(coords[1]);
+        if ((parsedX != null) && (parsedY != null)) {
+          return CoordinateImpl(parsedX - 1, parsedY - 1);
         } else {
           print(' coords[0]: ${coords[0]}   coords[1]: ${coords[1]}');
           return null;
@@ -165,18 +169,18 @@ class SneathConsoleImpl implements SneathConsole {
   @override
   set cursorPosition(Coordinate? cursor) {
     if (cursor != null) {
-      _termlib.setCursorPosition(cursor.col, cursor.row);
+      _terminal.setCursorPosition(cursor.col, cursor.row);
     }
   }
 
   @override
   void setForegroundColor(NamedAnsiColor foreground) {
-    stdout.write(AnsiLib.ansiSetColor(AnsiConstants.ansiForegroundColors[foreground]!));
+    stdout.write(AnsiLib.ansiSetColor(foreground.foregroundColorCode));
   }
 
   @override
   void setBackgroundColor(NamedAnsiColor background) {
-    stdout.write(AnsiLib.ansiSetColor(AnsiConstants.ansiBackgroundColors[background]!));
+    stdout.write(AnsiLib.ansiSetColor(background.backgroundColorCode));
   }
 
   @override
@@ -188,9 +192,7 @@ class SneathConsoleImpl implements SneathConsole {
   @override
   void setBackgroundExtendedColor(int colorValue) {
     assert(colorValue >= 0 && colorValue <= 0xFF, 'Color must be a value between 0 and 255.');
-    stdout.write(AnsiLib.ansiSetExtendedBackgroundColor(
-      colorValue,
-    ));
+    stdout.write(AnsiLib.ansiSetExtendedBackgroundColor(colorValue));
   }
 
   @override
@@ -199,14 +201,13 @@ class SneathConsoleImpl implements SneathConsole {
     bool underscore = false,
     bool blink = false,
     bool inverted = false,
-  }) {
-    stdout.write(AnsiLib.ansiSetTextStyles(
-      bold: bold,
-      underscore: underscore,
-      blink: blink,
-      inverted: inverted,
-    ));
-  }
+  }) =>
+      stdout.write(AnsiLib.ansiSetTextStyles(
+        bold: bold,
+        underscore: underscore,
+        blink: blink,
+        inverted: inverted,
+      ));
 
   @override
   void resetColorAttributes() => stdout.write(AnsiConstants.ansiResetColor);
@@ -225,26 +226,14 @@ class SneathConsoleImpl implements SneathConsole {
     stderr.write('\n');
   }
 
+  /// TODO think about adding write Centered/Left/Right Line extensions?
   @override
   void writeLine([
     String? text,
-    TextAlignment alignment = TextAlignment.left,
+    ConsoleTextAlignment alignment = ConsoleTextAlignments.left,
   ]) {
-    var alignedText = text;
     if (text != null) {
-      switch (alignment) {
-        case TextAlignment.center:
-          final padding = ((windowWidth - text.length) / 2).round();
-          alignedText = text.padLeft(text.length + padding).padRight(windowWidth);
-          break;
-        case TextAlignment.right:
-          alignedText = text.padLeft(windowWidth);
-          break;
-        case TextAlignment.left:
-          // Do text is already aligned
-          break;
-      }
-      stdout.write(alignedText);
+      stdout.write(alignment.align(text, windowWidth));
     }
     stdout.write(newLine);
   }
@@ -284,6 +273,8 @@ class SneathConsoleImpl implements SneathConsole {
           } else {
             escapeSequence.add(String.fromCharCode(charCode));
             switch (escapeSequence[1]) {
+
+              /// TODO put constants into control character once it is an adt.
               case 'A':
                 key.controlChar = ControlCharacter.arrowUp;
                 break;
@@ -544,18 +535,25 @@ class SneathConsoleImpl implements SneathConsole {
       if (callback != null) callback(buffer, key);
     }
   }
+
+  @override
+  void writeLineCentered(String? text) => writeLine(text, ConsoleTextAlignments.center);
+
+  @override
+  void writeLines(Iterable<String> lines, ConsoleTextAlignment alignment) {
+    for (final line in lines) {
+      writeLine(line, alignment);
+    }
+  }
+
+  @override
+  void writeLinesCentered(Iterable<String> lines) => lines.forEach(writeLineCentered);
 }
 
 /// The ScrollbackBuffer class is a utility for handling multi-line user
 /// input in readline(). It doesn't support history editing a la bash,
 /// but it should handle the most common use cases.
 abstract class _ScrollbackBuffer {
-  int? get lineIndex;
-
-  String? get currentLineBuffer;
-
-  bool get recordBlanks;
-
   /// Add a new line to the scrollback buffer. This would normally happen
   /// when the user finishes typing/editing the line and taps the 'enter'
   /// key.
@@ -574,53 +572,76 @@ abstract class _ScrollbackBuffer {
   String? down();
 }
 
+class SneathConsoleExceptionImpl implements Exception {
+  final String message;
+
+  const SneathConsoleExceptionImpl(this.message);
+
+  @override
+  String toString() => 'SneathConsoleExceptionImpl{message: $message}';
+}
+
 class _ScrollbackBufferImpl implements _ScrollbackBuffer {
-  final lineList = <String>[];
-  @override
+  final List<String> lineList = [];
+  final bool recordBlanks;
   int? lineIndex;
-  @override
   String? currentLineBuffer;
-  @override
-  bool recordBlanks;
 
   _ScrollbackBufferImpl({required this.recordBlanks});
 
   @override
   void add(String buffer) {
-    // don't add blank line to scrollback history if !recordBlanks
-    if (buffer == '' && !recordBlanks) {
-      return;
+    if (recordBlanks) {
+      _add(buffer);
     } else {
-      lineList.add(buffer);
-      lineIndex = lineList.length;
-      currentLineBuffer = null;
+      if (buffer.isEmpty) {
+        // Don't add blank line to scrollback history if !recordBlanks.
+      } else {
+        _add(buffer);
+      }
     }
+  }
+
+  void _add(String buffer) {
+    lineList.add(buffer);
+    lineIndex = lineList.length;
+    currentLineBuffer = null;
   }
 
   @override
   String up(String buffer) {
+    final _lineIndex = lineIndex;
     // Handle the case of the user tapping 'up' before there is a
     // scrollback buffer to scroll through.
-    if (lineIndex == null) {
+    if (_lineIndex == null) {
       return buffer;
     } else {
       // Only store the current line buffer once while scrolling up
       currentLineBuffer ??= buffer;
-      lineIndex = lineIndex! - 1;
-      lineIndex = lineIndex! < 0 ? 0 : lineIndex;
-      return lineList[lineIndex!];
+      // Decrease the line index by one and lower-clamp it to the first line list item.
+      if (_lineIndex == 0) {
+        lineIndex = 0;
+      } else {
+        lineIndex = _lineIndex - 1;
+      }
+      return lineList[_lineIndex];
     }
   }
 
   @override
   String? down() {
+    final _lineIndex = lineIndex;
     // Handle the case of the user tapping 'down' before there is a
     // scrollback buffer to scroll through.
-    if (lineIndex == null) {
+    if (_lineIndex == null) {
       return null;
     } else {
-      lineIndex = lineIndex! + 1;
-      lineIndex = lineIndex! > lineList.length ? lineList.length : lineIndex;
+      // Increase the line index by one and upper-clamp it to the last lineList item.
+      if (_lineIndex == lineList.length) {
+        lineIndex = lineList.length;
+      } else {
+        lineIndex = _lineIndex + 1;
+      }
       if (lineIndex == lineList.length) {
         // Once the user scrolls to the bottom, reset the current line
         // buffer so that up() can store it again: The user might have
@@ -629,7 +650,7 @@ class _ScrollbackBufferImpl implements _ScrollbackBuffer {
         currentLineBuffer = null;
         return temp;
       } else {
-        return lineList[lineIndex!];
+        return lineList[_lineIndex];
       }
     }
   }

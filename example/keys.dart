@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:dart_console/console/impl/console.dart';
-import 'package:dart_console/console/interface/control_characters.dart';
+import 'package:dart_console/console/interface/control_character.dart';
 import 'package:dart_console/terminal/impl/auto/terminal_lib.dart';
 
 final console = SneathConsoleImpl(autodetectSneathTerminal());

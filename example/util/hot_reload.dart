@@ -1,8 +1,8 @@
-import 'package:dart_console/util/update_every.dart';
+import 'package:dart_console/util/call_periodically.dart';
 import 'package:hotreloader/hotreloader.dart';
 
 void runApp(void Function() updateWindow) => //
-    updateEvery(
+    callPeriodicallyWithHotReload(
       routine: updateWindow,
       wrapper: HotReload,
     );

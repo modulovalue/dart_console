@@ -1,4 +1,4 @@
-import 'control_characters.dart';
+import 'control_character.dart';
 
 /// A representation of a key character.
 abstract class Key {

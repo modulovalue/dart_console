@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:ffi/ffi.dart';
 
-import '../../../ansi/ansi.dart';
+import '../../../ansi/impl/ansi.dart';
 import '../../interface/terminal_lib.dart';
 
 /// glibc-dependent library for interrogating and manipulating the console.

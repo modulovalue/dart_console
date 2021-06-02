@@ -1,8 +1,8 @@
-import '../../ansi/ansi.dart';
-import 'control_characters.dart';
+import '../../ansi/interface/color.dart';
+import 'control_character.dart';
 import 'coordinate.dart';
 import 'key.dart';
-import 'text_alignments.dart';
+import 'text_alignment.dart';
 
 /// A representation of the current console window.
 ///
@@ -11,6 +11,9 @@ import 'text_alignments.dart';
 ///
 /// A comprehensive set of demos of using the Console class can be found in the
 /// `examples/` subdirectory.
+/// TODO detect mouse and hover events.
+/// TODO See https://stackoverflow.com/questions/51909557/mouse-events-in-terminal-emulator
+/// TODO See https://stackoverflow.com/questions/59864485/capturing-mouse-in-virtual-terminal-with-ansi-escape
 abstract class SneathConsole {
   /// Enables or disables raw mode.
   ///
@@ -149,7 +152,6 @@ abstract class SneathConsole {
   /// Sets the text style.
   ///
   /// Note that not all styles may be supported by all terminals.
-  /// TODO setting bold to false resets colors.
   void setTextStyle({
     bool bold,
     bool underscore,
@@ -172,7 +174,7 @@ abstract class SneathConsole {
   void writeErrorLine(String text);
 
   /// Writes a line to the console, optionally with alignment provided by the
-  /// [TextAlignment] enumeration.
+  /// [ConsoleTextAlignment] enumeration.
   ///
   /// If no parameters are supplied, the command simply writes a new line
   /// to the console. By default, text is left aligned.
@@ -181,8 +183,17 @@ abstract class SneathConsole {
   /// the remaining characters with a space character.
   void writeLine([
     String? text,
-    TextAlignment alignment,
+    ConsoleTextAlignment alignment,
   ]);
+
+  void writeLineCentered(String? text);
+
+  void writeLines(
+    Iterable<String> lines,
+    ConsoleTextAlignment alignment,
+  );
+
+  void writeLinesCentered(Iterable<String> lines);
 
   /// Reads a single key from the input, including a variety of control
   /// characters.

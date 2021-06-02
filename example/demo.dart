@@ -2,35 +2,35 @@ import 'dart:collection';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:dart_console/ansi/ansi.dart';
+import 'package:dart_console/ansi/impl/color.dart';
 import 'package:dart_console/console/impl/console.dart';
 import 'package:dart_console/console/impl/coordinate.dart';
 import 'package:dart_console/console/impl/key.dart';
+import 'package:dart_console/console/impl/text_alignment.dart';
 import 'package:dart_console/console/interface/console.dart';
-import 'package:dart_console/console/interface/control_characters.dart';
+import 'package:dart_console/console/interface/control_character.dart';
 import 'package:dart_console/console/interface/coordinate.dart';
-import 'package:dart_console/console/interface/text_alignments.dart';
 import 'package:dart_console/terminal/impl/auto/terminal_lib.dart';
 
 abstract class Demo {
   static List<void Function(SneathConsole console)> allDemos() => [
-    whimsicalLoadingScreen,
-    colorSetAndAlignmentDemonstration,
-    extendedForegroundColorsDemonstration,
-    extendedBackgroundColorsDemonstration,
-    twinklingStartsDemo,
-  ];
+        whimsicalLoadingScreen,
+        colorSetAndAlignmentDemonstration,
+        extendedForegroundColorsDemonstration,
+        extendedBackgroundColorsDemonstration,
+        twinklingStartsDemo,
+      ];
 
   static void whimsicalLoadingScreen(SneathConsole console) {
-    console.setBackgroundColor(NamedAnsiColor.blue);
-    console.setForegroundColor(NamedAnsiColor.white);
+    console.setBackgroundColor(NamedAnsiColors.blue);
+    console.setForegroundColor(NamedAnsiColors.white);
     console.clearScreen();
     final row = (console.windowHeight / 2).round() - 1;
     final progressBarWidth = max(console.windowWidth - 10, 10);
     console.cursorPosition = CoordinateImpl(row - 2, 0);
-    console.writeLine('L O A D I N G', TextAlignment.center);
+    console.writeLine('L O A D I N G', ConsoleTextAlignments.center);
     console.cursorPosition = CoordinateImpl(row + 2, 0);
-    console.writeLine('Please wait while we make you some avocado toast...', TextAlignment.center);
+    console.writeLine('Please wait while we make you some avocado toast...', ConsoleTextAlignments.center);
     console.hideCursor();
     for (var i = 0; i <= 50; i++) {
       console.cursorPosition = CoordinateImpl(row, 4);
@@ -44,28 +44,28 @@ abstract class Demo {
   }
 
   static void colorSetAndAlignmentDemonstration(SneathConsole console) {
-    console.setBackgroundColor(NamedAnsiColor.blue);
-    console.setForegroundColor(NamedAnsiColor.white);
-    console.writeLine('Simple Demo', TextAlignment.center);
+    console.setBackgroundColor(NamedAnsiColors.blue);
+    console.setForegroundColor(NamedAnsiColors.white);
+    console.writeLine('Simple Demo', ConsoleTextAlignments.center);
     console.resetColorAttributes();
     console.writeLine();
     console.writeLine('This console window has ${console.windowWidth} cols and '
         '${console.windowHeight} rows.');
     console.writeLine();
-    console.writeLine('This text is left aligned.', TextAlignment.left);
-    console.writeLine('This text is center aligned.', TextAlignment.center);
-    console.writeLine('This text is right aligned.', TextAlignment.right);
-    for (final color in NamedAnsiColor.values) {
+    console.writeLine('This text is left aligned.', ConsoleTextAlignments.left);
+    console.writeLine('This text is center aligned.', ConsoleTextAlignments.center);
+    console.writeLine('This text is right aligned.', ConsoleTextAlignments.right);
+    for (final color in NamedAnsiColors.all) {
       console.setForegroundColor(color);
-      console.writeLine(color.toString().split('.').last);
+      console.writeLine(color.name);
     }
     console.resetColorAttributes();
   }
 
   static void extendedForegroundColorsDemonstration(SneathConsole console) {
-    console.setBackgroundColor(NamedAnsiColor.red);
-    console.setForegroundColor(NamedAnsiColor.white);
-    console.writeLine('ANSI Extended 256-Color Foreground Test', TextAlignment.center);
+    console.setBackgroundColor(NamedAnsiColors.red);
+    console.setForegroundColor(NamedAnsiColors.white);
+    console.writeLine('ANSI Extended 256-Color Foreground Test', ConsoleTextAlignments.center);
     console.resetColorAttributes();
     console.writeLine();
     for (var i = 0; i < 16; i++) {
@@ -80,9 +80,9 @@ abstract class Demo {
   }
 
   static void extendedBackgroundColorsDemonstration(SneathConsole console) {
-    console.setBackgroundColor(NamedAnsiColor.green);
-    console.setForegroundColor(NamedAnsiColor.white);
-    console.writeLine('ANSI Extended 256-Color Background Test', TextAlignment.center);
+    console.setBackgroundColor(NamedAnsiColors.green);
+    console.setForegroundColor(NamedAnsiColors.white);
+    console.writeLine('ANSI Extended 256-Color Background Test', ConsoleTextAlignments.center);
     console.resetColorAttributes();
     console.writeLine();
     for (var i = 0; i < 16; i++) {
@@ -115,12 +115,12 @@ abstract class Demo {
       stars.removeFirst();
     }
 
-    console.setBackgroundColor(NamedAnsiColor.yellow);
-    console.setForegroundColor(NamedAnsiColor.brightBlack);
-    console.writeLine('Stars', TextAlignment.center);
+    console.setBackgroundColor(NamedAnsiColors.yellow);
+    console.setForegroundColor(NamedAnsiColors.brightBlack);
+    console.writeLine('Stars', ConsoleTextAlignments.center);
     console.resetColorAttributes();
     console.hideCursor();
-    console.setForegroundColor(NamedAnsiColor.brightYellow);
+    console.setForegroundColor(NamedAnsiColors.brightYellow);
     for (var i = 0; i < numStars; i++) {
       if (i < numStars - maxStarsOnScreen) {
         addStar();

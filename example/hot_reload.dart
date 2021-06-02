@@ -1,5 +1,5 @@
 import 'package:dart_console/console/impl/console.dart';
-import 'package:dart_console/console/interface/text_alignments.dart';
+import 'package:dart_console/console/impl/text_alignment.dart';
 import 'package:dart_console/scaffolds/progress.dart';
 import 'package:dart_console/terminal/impl/auto/terminal_lib.dart';
 
@@ -15,7 +15,7 @@ class MyApp {
     const ProgressScaffold(
       title: "An optional title",
     ).run(progressScaffoldState, console);
-    console.writeLine("... Searching ...", TextAlignment.center);
+    console.writeLine("... Searching ...", ConsoleTextAlignments.center);
     console.resetColorAttributes();
   }
 }
