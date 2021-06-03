@@ -10,7 +10,7 @@ void main() {
   console.writeLine('Simple Demo', ConsoleTextAlignments.center);
   console.resetColorAttributes();
   console.writeLine();
-  console.writeLine('This console window has ${console.windowWidth} cols and ${console.windowHeight} rows.');
+  console.writeLine('This console window has ${console.dimensions.width} cols and ${console.dimensions.height} rows.');
   console.writeLine();
   console.writeLine('This text is left aligned.', ConsoleTextAlignments.left);
   console.writeLine('This text is center aligned.', ConsoleTextAlignments.center);

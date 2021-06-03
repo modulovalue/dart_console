@@ -1,6 +1,7 @@
 import '../../ansi/interface/color.dart';
 import 'control_character.dart';
-import 'coordinate.dart';
+import 'cursor_position.dart';
+import 'dimensions.dart';
 import 'key.dart';
 import 'text_alignment.dart';
 
@@ -14,6 +15,7 @@ import 'text_alignment.dart';
 /// TODO detect mouse and hover events.
 /// TODO See https://stackoverflow.com/questions/51909557/mouse-events-in-terminal-emulator
 /// TODO See https://stackoverflow.com/questions/59864485/capturing-mouse-in-virtual-terminal-with-ansi-escape
+/// TODO input, output and info needs to be separated.
 abstract class SneathConsole {
   /// Enables or disables raw mode.
   ///
@@ -37,7 +39,6 @@ abstract class SneathConsole {
   /// a carriage return (`\r`). You can use the [newLine] property or the
   /// [writeLine] function instead of explicitly using `\n` to ensure the
   /// correct results.
-  ///
   set rawMode(bool value);
 
   /// Returns whether the terminal is in raw mode.
@@ -48,6 +49,12 @@ abstract class SneathConsole {
   /// buffering of input until a full line is entered.
   bool get rawMode;
 
+  /// Contains information about the width and height of the window.
+  SneathConsoleDimensions get dimensions;
+
+  /// Provides ways to retrieve and update the cursor position.
+  SneathCursorPositionDelegate get cursorPosition;
+
   /// Clears the entire screen
   void clearScreen();
 
@@ -56,28 +63,6 @@ abstract class SneathConsole {
 
   /// Erases the current line from the cursor to the end of the line.
   void eraseCursorToEnd();
-
-  /// Returns the width of the current console window in characters.
-  ///
-  /// This command attempts to use the ioctl() system call to retrieve the
-  /// window width, and if that fails uses ANSI escape codes to identify its
-  /// location by walking off the edge of the screen and seeing what the
-  /// terminal clipped the cursor to.
-  ///
-  /// If unable to retrieve a valid width from either method, the method
-  /// throws an [Exception].
-  int get windowWidth;
-
-  /// Returns the height of the current console window in characters.
-  ///
-  /// This command attempts to use the ioctl() system call to retrieve the
-  /// window height, and if that fails uses ANSI escape codes to identify its
-  /// location by walking off the edge of the screen and seeing what the
-  /// terminal clipped the cursor to.
-  ///
-  /// If unable to retrieve a valid height from either method, the method
-  /// throws an [Exception].
-  int get windowHeight;
 
   /// Hides the cursor.
   ///
@@ -103,23 +88,6 @@ abstract class SneathConsole {
 
   /// Moves the cursor to the top left corner of the screen.
   void resetCursorPosition();
-
-  /// Returns the current cursor position as a coordinate.
-  ///
-  /// Warning: Linux and macOS terminals report their cursor position by
-  /// posting an escape sequence to stdin in response to a request. However,
-  /// if there is lots of other keyboard input at the same time, some
-  /// terminals may interleave that input in the response. There is no
-  /// easy way around this; the recommendation is therefore to use this call
-  /// before reading keyboard input, to get an original offset, and then
-  /// track the local cursor independently based on keyboard input.
-  Coordinate? get cursorPosition;
-
-  /// Sets the cursor to a specific coordinate.
-  ///
-  /// Coordinates are measured from the top left of the screen, and are
-  /// zero-based.
-  set cursorPosition(Coordinate? cursor);
 
   /// Sets the console foreground color to a named ANSI color.
   ///

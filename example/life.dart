@@ -10,8 +10,8 @@ import 'package:dart_console/terminal/impl/auto/terminal_lib.dart';
 
 final console = SneathConsoleImpl(autodetectSneathTerminal());
 final random = Random();
-final rows = console.windowHeight;
-final cols = console.windowWidth;
+final rows = console.dimensions.height;
+final cols = console.dimensions.width;
 final size = rows * cols;
 final temp = List<bool>.filled(size, false, growable: false);
 final data = List<bool>.generate(size, (i) => random.nextBool(), growable: false);

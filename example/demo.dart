@@ -25,22 +25,22 @@ abstract class Demo {
     console.setBackgroundColor(NamedAnsiColors.blue);
     console.setForegroundColor(NamedAnsiColors.white);
     console.clearScreen();
-    final row = (console.windowHeight / 2).round() - 1;
-    final progressBarWidth = max(console.windowWidth - 10, 10);
-    console.cursorPosition = CoordinateImpl(row - 2, 0);
+    final row = (console.dimensions.height / 2).round() - 1;
+    final progressBarWidth = max(console.dimensions.width - 10, 10);
+    console.cursorPosition.update(SneathCoordinateImpl(row - 2, 0));
     console.writeLine('L O A D I N G', ConsoleTextAlignments.center);
-    console.cursorPosition = CoordinateImpl(row + 2, 0);
+    console.cursorPosition.update(SneathCoordinateImpl(row + 2, 0));
     console.writeLine('Please wait while we make you some avocado toast...', ConsoleTextAlignments.center);
     console.hideCursor();
     for (var i = 0; i <= 50; i++) {
-      console.cursorPosition = CoordinateImpl(row, 4);
+      console.cursorPosition.update(SneathCoordinateImpl(row, 4));
       final progress = (i / 50 * progressBarWidth).ceil();
       final bar = '[${'#' * progress}${' ' * (progressBarWidth - progress)}]';
       console.write(bar);
       sleep(const Duration(milliseconds: 40));
     }
     console.showCursor();
-    console.cursorPosition = CoordinateImpl(console.windowHeight - 3, 0);
+    console.cursorPosition.update(SneathCoordinateImpl(console.dimensions.height - 3, 0));
   }
 
   static void colorSetAndAlignmentDemonstration(SneathConsole console) {
@@ -49,8 +49,8 @@ abstract class Demo {
     console.writeLine('Simple Demo', ConsoleTextAlignments.center);
     console.resetColorAttributes();
     console.writeLine();
-    console.writeLine('This console window has ${console.windowWidth} cols and '
-        '${console.windowHeight} rows.');
+    console.writeLine('This console window has ${console.dimensions.width} cols and '
+        '${console.dimensions.height} rows.');
     console.writeLine();
     console.writeLine('This text is left aligned.', ConsoleTextAlignments.left);
     console.writeLine('This text is center aligned.', ConsoleTextAlignments.center);
@@ -97,20 +97,20 @@ abstract class Demo {
   }
 
   static void twinklingStartsDemo(SneathConsole console) {
-    final stars = Queue<Coordinate>();
+    final stars = Queue<SneathCoordinate>();
     final rng = Random();
     const numStars = 750;
     const maxStarsOnScreen = 250;
     void addStar() {
-      final star = CoordinateImpl(rng.nextInt(console.windowHeight - 1) + 1, rng.nextInt(console.windowWidth));
-      console.cursorPosition = star;
+      final star = SneathCoordinateImpl(rng.nextInt(console.dimensions.height - 1) + 1, rng.nextInt(console.dimensions.width));
+      console.cursorPosition.update(star);
       console.write('*');
       stars.addLast(star);
     }
 
     void removeStar() {
       final star = stars.first;
-      console.cursorPosition = star;
+      console.cursorPosition.update(star);
       console.write(' ');
       stars.removeFirst();
     }
@@ -131,7 +131,7 @@ abstract class Demo {
       sleep(const Duration(milliseconds: 1));
     }
     console.resetColorAttributes();
-    console.cursorPosition = CoordinateImpl(console.windowHeight - 3, 0);
+    console.cursorPosition.update(SneathCoordinateImpl(console.dimensions.height - 3, 0));
     console.showCursor();
   }
 }

@@ -1,10 +1,10 @@
 import '../interface/coordinate.dart';
 
-class CoordinateImpl implements Coordinate {
+class SneathCoordinateImpl implements SneathCoordinate {
   @override
   final int row;
   @override
   final int col;
 
-  const CoordinateImpl(this.row, this.col);
+  const SneathCoordinateImpl(this.row, this.col);
 }

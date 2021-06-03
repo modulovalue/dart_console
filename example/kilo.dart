@@ -38,8 +38,8 @@ int screenFileRowOffset = 0;
 int screenRowColOffset = 0;
 
 // Allow lines for the status bar and message bar
-final editorWindowHeight = console.windowHeight - 2;
-final editorWindowWidth = console.windowWidth;
+final editorWindowHeight = console.dimensions.height - 2;
+final editorWindowWidth = console.dimensions.width;
 
 // Index of the row last find match was on, or -1 if no match
 int findLastMatchRow = -1;
@@ -389,7 +389,7 @@ void editorRefreshScreen() {
   editorDrawRows();
   editorDrawStatusBar();
   editorDrawMessageBar();
-  console.cursorPosition = CoordinateImpl(cursorRow - screenFileRowOffset, cursorRenderCol - screenRowColOffset);
+  console.cursorPosition.update(SneathCoordinateImpl(cursorRow - screenFileRowOffset, cursorRenderCol - screenRowColOffset));
   console.showCursor();
 }
 
@@ -405,7 +405,7 @@ String? editorPrompt(
   final originalCursorRow = cursorRow;
   editorSetStatusMessage(message);
   editorRefreshScreen();
-  console.cursorPosition = CoordinateImpl(console.windowHeight - 1, message.length);
+  console.cursorPosition.update(SneathCoordinateImpl(console.dimensions.height - 1, message.length));
   final response = console.readLine(cancelOnEscape: true, callback: callback);
   cursorRow = originalCursorRow;
   editorSetStatusMessage('');

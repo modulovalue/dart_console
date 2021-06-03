@@ -6,24 +6,35 @@ import '../../ansi/interface/color.dart';
 import '../../terminal/interface/terminal_lib.dart';
 import '../interface/console.dart';
 import '../interface/control_character.dart';
-import '../interface/coordinate.dart';
+import '../interface/cursor_position.dart';
+import '../interface/dimensions.dart';
 import '../interface/key.dart';
 import '../interface/text_alignment.dart';
 import 'coordinate.dart';
+import 'cursor_position.dart';
+import 'dimensions/constant.dart';
 import 'key.dart';
 import 'text_alignment.dart';
 
+/// TODO have a mixin and separate impls. for scrolling and non scrolling.
 class SneathConsoleImpl implements SneathConsole {
-  // We cache these values so we don't have to keep retrieving them. The
-  // downside is that the class isn't dynamically responsive to a resized
-  // console, but that's not unusual for console applications anyway.
-  int _windowWidth = 0;
-  int _windowHeight = 0;
   bool _isRawMode = false;
   final SneathTerminal _terminal;
   final _ScrollbackBuffer? _scrollbackBuffer;
 
   SneathConsoleImpl(this._terminal) : _scrollbackBuffer = null;
+
+  @override
+  late final SneathConsoleDimensions dimensions = SneathConsoleDimensionsCachedImpl(
+    _terminal,
+    cursorPosition,
+  );
+
+  @override
+  late final SneathCursorPositionDelegate cursorPosition = SneathCursorPositionDelegateImpl(
+    _terminal,
+    (newRawMode) => rawMode = newRawMode,
+  );
 
   /// Create a named constructor specifically for scrolling consoles
   /// Use `Console.scrolling(recordBlanks: false)` to omit blank lines
@@ -56,56 +67,6 @@ class SneathConsoleImpl implements SneathConsole {
   void eraseCursorToEnd() => stdout.write(AnsiConstants.ansiEraseCursorToEnd);
 
   @override
-  int get windowWidth {
-    if (_windowWidth == 0) {
-      // try using ioctl() to give us the screen size
-      final width = _terminal.getWindowWidth();
-      if (width != -1) {
-        _windowWidth = width;
-      } else {
-        // otherwise, fall back to the approach of setting the cursor to beyond
-        // the edge of the screen and then reading back its actual position
-        final originalCursor = cursorPosition;
-        stdout.write(AnsiConstants.ansiMoveCursorToScreenEdge);
-        final newCursor = cursorPosition;
-        cursorPosition = originalCursor;
-        if (newCursor != null) {
-          _windowWidth = newCursor.col;
-        } else {
-          // we've run out of options; terminal is unsupported
-          throw const SneathConsoleExceptionImpl("Couldn't retrieve window width");
-        }
-      }
-    }
-    return _windowWidth;
-  }
-
-  @override
-  int get windowHeight {
-    if (_windowHeight == 0) {
-      // try using ioctl() to give us the screen size
-      final height = _terminal.getWindowHeight();
-      if (height != -1) {
-        _windowHeight = height;
-      } else {
-        // otherwise, fall back to the approach of setting the cursor to beyond
-        // the edge of the screen and then reading back its actual position
-        final originalCursor = cursorPosition;
-        stdout.write(AnsiConstants.ansiMoveCursorToScreenEdge);
-        final newCursor = cursorPosition;
-        cursorPosition = originalCursor;
-        if (newCursor != null) {
-          _windowHeight = newCursor.row;
-        } else {
-          // we've run out of options; terminal is unsupported
-          throw const SneathConsoleExceptionImpl("Couldn't retrieve window height");
-        }
-      }
-    }
-    return _windowHeight;
-  }
-
-  @override
   void hideCursor() => stdout.write(AnsiConstants.ansiHideCursor);
 
   @override
@@ -127,70 +88,21 @@ class SneathConsoleImpl implements SneathConsole {
   void resetCursorPosition() => stdout.write(AnsiLib.ansiCursorPosition(1, 1));
 
   @override
-  Coordinate? get cursorPosition {
-    rawMode = true;
-    stdout.write(AnsiConstants.ansiDeviceStatusReportCursorPosition);
-    // returns a Cursor Position Report result in the form <ESC>[24;80R
-    // which we have to parse apart, unfortunately
-    var result = '';
-    var i = 0;
-    // avoid infinite loop if we're getting a bad result
-    while (i < 16) {
-      // ignore: use_string_buffers
-      result += String.fromCharCode(stdin.readByteSync());
-      if (result.endsWith('R')) {
-        break;
-      }
-      i++;
-    }
-    rawMode = false;
-    if (result[0] != '\x1b') {
-      print(' result: $result  result.length: ${result.length}');
-      return null;
-    } else {
-      result = result.substring(2, result.length - 1);
-      final coords = result.split(';');
-      if (coords.length != 2) {
-        print(' coords.length: ${coords.length}');
-        return null;
-      } else {
-        final parsedX = int.tryParse(coords[0]);
-        final parsedY = int.tryParse(coords[1]);
-        if ((parsedX != null) && (parsedY != null)) {
-          return CoordinateImpl(parsedX - 1, parsedY - 1);
-        } else {
-          print(' coords[0]: ${coords[0]}   coords[1]: ${coords[1]}');
-          return null;
-        }
-      }
-    }
-  }
+  void setForegroundColor(NamedAnsiColor foreground) => stdout.write(AnsiLib.ansiSetColor(foreground.foregroundColorCode));
 
   @override
-  set cursorPosition(Coordinate? cursor) {
-    if (cursor != null) {
-      _terminal.setCursorPosition(cursor.col, cursor.row);
-    }
-  }
-
-  @override
-  void setForegroundColor(NamedAnsiColor foreground) {
-    stdout.write(AnsiLib.ansiSetColor(foreground.foregroundColorCode));
-  }
-
-  @override
-  void setBackgroundColor(NamedAnsiColor background) {
-    stdout.write(AnsiLib.ansiSetColor(background.backgroundColorCode));
-  }
+  void setBackgroundColor(NamedAnsiColor background) => stdout.write(AnsiLib.ansiSetColor(background.backgroundColorCode));
 
   @override
   void setForegroundExtendedColor(int colorValue) {
+    /// TODO have a type for extended colors.
     assert(colorValue >= 0 && colorValue <= 0xFF, 'Color must be a value between 0 and 255.');
     stdout.write(AnsiLib.ansiSetExtendedForegroundColor(colorValue));
   }
 
   @override
   void setBackgroundExtendedColor(int colorValue) {
+    /// TODO have a type for extended colors.
     assert(colorValue >= 0 && colorValue <= 0xFF, 'Color must be a value between 0 and 255.');
     stdout.write(AnsiLib.ansiSetExtendedBackgroundColor(colorValue));
   }
@@ -226,14 +138,13 @@ class SneathConsoleImpl implements SneathConsole {
     stderr.write('\n');
   }
 
-  /// TODO think about adding write Centered/Left/Right Line extensions?
   @override
   void writeLine([
     String? text,
     ConsoleTextAlignment alignment = ConsoleTextAlignments.left,
   ]) {
     if (text != null) {
-      stdout.write(alignment.align(text, windowWidth));
+      stdout.write(alignment.align(text, dimensions.width));
     }
     stdout.write(newLine);
   }
@@ -400,9 +311,10 @@ class SneathConsoleImpl implements SneathConsole {
   }) {
     var buffer = '';
     var index = 0; // cursor position relative to buffer, not screen
-    final screenRow = cursorPosition!.row;
-    final screenColOffset = cursorPosition!.col;
-    final bufferMaxLength = windowWidth - screenColOffset - 3;
+    final _currentCursorPosition = cursorPosition.get();
+    final screenRow = _currentCursorPosition!.row;
+    final screenColOffset = _currentCursorPosition.col;
+    final bufferMaxLength = dimensions.width - screenColOffset - 3;
     for (;;) {
       final key = readKey();
       key.match(
@@ -528,10 +440,10 @@ class SneathConsoleImpl implements SneathConsole {
           }
         },
       );
-      cursorPosition = CoordinateImpl(screenRow, screenColOffset);
+      cursorPosition.update(SneathCoordinateImpl(screenRow, screenColOffset));
       eraseCursorToEnd();
       write(buffer); // allow for backspace condition
-      cursorPosition = CoordinateImpl(screenRow, screenColOffset + index);
+      cursorPosition.update(SneathCoordinateImpl(screenRow, screenColOffset + index));
       if (callback != null) callback(buffer, key);
     }
   }
@@ -540,7 +452,10 @@ class SneathConsoleImpl implements SneathConsole {
   void writeLineCentered(String? text) => writeLine(text, ConsoleTextAlignments.center);
 
   @override
-  void writeLines(Iterable<String> lines, ConsoleTextAlignment alignment) {
+  void writeLines(
+    Iterable<String> lines,
+    ConsoleTextAlignment alignment,
+  ) {
     for (final line in lines) {
       writeLine(line, alignment);
     }
@@ -570,15 +485,6 @@ abstract class _ScrollbackBuffer {
   /// the next line. The final 'next line' is the original contents of the
   /// line buffer.
   String? down();
-}
-
-class SneathConsoleExceptionImpl implements Exception {
-  final String message;
-
-  const SneathConsoleExceptionImpl(this.message);
-
-  @override
-  String toString() => 'SneathConsoleExceptionImpl{message: $message}';
 }
 
 class _ScrollbackBufferImpl implements _ScrollbackBuffer {

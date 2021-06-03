@@ -8,9 +8,9 @@ import '../example/readme.dart' as readme_example;
 void main() {
   test("Coordinate positioning", () {
     final console = SneathConsoleImpl(autodetectSneathTerminal());
-    const coordinate = CoordinateImpl(5, 8);
-    console.cursorPosition = coordinate;
-    final returnedCoordinate = console.cursorPosition!;
+    const coordinate = SneathCoordinateImpl(5, 8);
+    console.cursorPosition.update(coordinate);
+    final returnedCoordinate = console.cursorPosition.get()!;
     expect(coordinate.row, equals(returnedCoordinate.row));
     expect(coordinate.col, equals(returnedCoordinate.col));
   });

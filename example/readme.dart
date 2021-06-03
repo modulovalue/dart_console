@@ -7,7 +7,7 @@ void main() {
   console.clearScreen();
   console.resetCursorPosition();
   console.writeLine(
-    'Console size is ${console.windowWidth} cols and ${console.windowHeight} rows.',
+    'Console size is ${console.dimensions.width} cols and ${console.dimensions.height} rows.',
     ConsoleTextAlignments.center,
   );
   console.writeLine();
