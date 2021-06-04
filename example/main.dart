@@ -15,7 +15,7 @@ void main() {
   console.writeLine('This text is left aligned.', ConsoleTextAlignments.left);
   console.writeLine('This text is center aligned.', ConsoleTextAlignments.center);
   console.writeLine('This text is right aligned.', ConsoleTextAlignments.right);
-  for (final color in NamedAnsiColors.all) {
+  for (final color in NamedAnsiColors.allDarkAndBright) {
     console.setForegroundColor(color);
     console.writeLine(color.name);
   }

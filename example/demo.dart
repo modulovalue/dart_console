@@ -2,7 +2,9 @@ import 'dart:collection';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:dart_console/ansi/impl/ansi.dart';
 import 'package:dart_console/ansi/impl/color.dart';
+import 'package:dart_console/ansi/impl/extended_color.dart';
 import 'package:dart_console/console/impl/console.dart';
 import 'package:dart_console/console/impl/coordinate.dart';
 import 'package:dart_console/console/impl/key.dart';
@@ -55,7 +57,7 @@ abstract class Demo {
     console.writeLine('This text is left aligned.', ConsoleTextAlignments.left);
     console.writeLine('This text is center aligned.', ConsoleTextAlignments.center);
     console.writeLine('This text is right aligned.', ConsoleTextAlignments.right);
-    for (final color in NamedAnsiColors.all) {
+    for (final color in NamedAnsiColors.allDarkAndBright) {
       console.setForegroundColor(color);
       console.writeLine(color.name);
     }
@@ -71,7 +73,7 @@ abstract class Demo {
     for (var i = 0; i < 16; i++) {
       for (var j = 0; j < 16; j++) {
         final color = i * 16 + j;
-        console.setForegroundExtendedColor(color);
+        console.setForegroundExtendedColor(AnsiExtendedColorPaletteRawImpl(color));
         console.write(color.toString().padLeft(4));
       }
       console.writeLine();
@@ -85,10 +87,10 @@ abstract class Demo {
     console.writeLine('ANSI Extended 256-Color Background Test', ConsoleTextAlignments.center);
     console.resetColorAttributes();
     console.writeLine();
-    for (var i = 0; i < 16; i++) {
-      for (var j = 0; j < 16; j++) {
-        final color = i * 16 + j;
-        console.setBackgroundExtendedColor(color);
+    for (var i = 0; i < AnsiConstants.nibbleSize; i++) {
+      for (var j = 0; j < AnsiConstants.nibbleSize; j++) {
+        final color = i * AnsiConstants.nibbleSize + j;
+        console.setBackgroundExtendedColor(AnsiExtendedColorPaletteRawImpl(color));
         console.write(color.toString().padLeft(4));
       }
       console.writeLine();
@@ -151,7 +153,7 @@ void main(List<String> arguments) {
     }
     final key = console.readKey();
     console.resetColorAttributes();
-    if (key == const KeyControlImpl(ControlCharacter.ctrlC)) {
+    if (key == const KeyControlImpl(ControlCharacters.ctrlC)) {
       exit(1);
     }
   }

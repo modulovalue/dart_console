@@ -2,6 +2,8 @@ import 'dart:io';
 import 'dart:math';
 
 import '../../ansi/impl/ansi.dart';
+import '../../ansi/impl/ansi_lib.dart';
+import '../../ansi/interface/byte_color.dart';
 import '../../ansi/interface/color.dart';
 import '../../terminal/interface/terminal_lib.dart';
 import '../interface/console.dart';
@@ -13,7 +15,7 @@ import '../interface/text_alignment.dart';
 import 'coordinate.dart';
 import 'cursor_position.dart';
 import 'dimensions/constant.dart';
-import 'key.dart';
+import 'parser.dart';
 import 'text_alignment.dart';
 
 /// TODO have a mixin and separate impls. for scrolling and non scrolling.
@@ -85,26 +87,33 @@ class SneathConsoleImpl implements SneathConsole {
   void cursorDown() => stdout.write(AnsiConstants.ansiCursorDown);
 
   @override
-  void resetCursorPosition() => stdout.write(AnsiLib.ansiCursorPosition(1, 1));
+  void resetCursorPosition() => //
+      stdout.write(const AnsiStandardLib().cursorPosition(1, 1));
 
   @override
-  void setForegroundColor(NamedAnsiColor foreground) => stdout.write(AnsiLib.ansiSetColor(foreground.foregroundColorCode));
+  void setForegroundColor(NamedAnsiColor foreground) => //
+      stdout.write(const AnsiStandardLibDerived().ansiSetTextColor(foreground));
 
   @override
-  void setBackgroundColor(NamedAnsiColor background) => stdout.write(AnsiLib.ansiSetColor(background.backgroundColorCode));
+  void setBackgroundColor(NamedAnsiColor background) => //
+      stdout.write(const AnsiStandardLibDerived().ansiSetBackgroundColor(background));
 
   @override
-  void setForegroundExtendedColor(int colorValue) {
-    /// TODO have a type for extended colors.
-    assert(colorValue >= 0 && colorValue <= 0xFF, 'Color must be a value between 0 and 255.');
-    stdout.write(AnsiLib.ansiSetExtendedForegroundColor(colorValue));
+  void setForegroundExtendedColor(AnsiExtendedColorPalette color) {
+    stdout.write(
+      const AnsiStandardLibDerived().ansiSetExtendedForegroundColor(
+        color,
+      ),
+    );
   }
 
   @override
-  void setBackgroundExtendedColor(int colorValue) {
-    /// TODO have a type for extended colors.
-    assert(colorValue >= 0 && colorValue <= 0xFF, 'Color must be a value between 0 and 255.');
-    stdout.write(AnsiLib.ansiSetExtendedBackgroundColor(colorValue));
+  void setBackgroundExtendedColor(AnsiExtendedColorPalette color) {
+    stdout.write(
+      const AnsiStandardLibDerived().ansiSetExtendedBackgroundColor(
+        color,
+      ),
+    );
   }
 
   @override
@@ -114,7 +123,7 @@ class SneathConsoleImpl implements SneathConsole {
     bool blink = false,
     bool inverted = false,
   }) =>
-      stdout.write(AnsiLib.ansiSetTextStyles(
+      stdout.write(const AnsiStandardLibDerived().ansiSetTextStyles(
         bold: bold,
         underscore: underscore,
         blink: blink,
@@ -127,6 +136,7 @@ class SneathConsoleImpl implements SneathConsole {
   @override
   void write(String text) => stdout.write(text);
 
+  /// TODO extract constants.
   @override
   String get newLine => _isRawMode ? '\r\n' : '\n';
 
@@ -135,6 +145,7 @@ class SneathConsoleImpl implements SneathConsole {
     stderr.write(text);
     // Even if we're in raw mode, we write '\n', since raw mode only applies
     // to stdout
+    /// TODO extract constants.
     stderr.write('\n');
   }
 
@@ -149,157 +160,14 @@ class SneathConsoleImpl implements SneathConsole {
     stdout.write(newLine);
   }
 
+  final AnsiParser parser = const AnsiParserImpl(AnsiParserInputBufferStdinImpl());
+
   @override
   Key readKey() {
-    var codeUnit = 0;
     rawMode = true;
-    while (codeUnit <= 0) {
-      codeUnit = stdin.readByteSync();
-    }
-    if (codeUnit >= 0x01 && codeUnit <= 0x1a) {
-      rawMode = false;
-      // Ctrl+A through Ctrl+Z are mapped to the 1st-26th entries in the
-      // enum, so it's easy to convert them across
-      return KeyControlMutableImpl(ControlCharacter.values[codeUnit]);
-    } else if (codeUnit == 0x1b) {
-      int charCode;
-      KeyControlMutableImpl key;
-      // escape sequence (e.g. \x1b[A for up arrow)
-      key = KeyControlMutableImpl(ControlCharacter.escape);
-      final escapeSequence = <String>[];
-      charCode = stdin.readByteSync();
-      if (charCode == -1) {
-        rawMode = false;
-        return key;
-      } else {
-        escapeSequence.add(String.fromCharCode(charCode));
-        if (charCode == 127) {
-          key = KeyControlMutableImpl(ControlCharacter.wordBackspace);
-        } else if (escapeSequence[0] == '[') {
-          charCode = stdin.readByteSync();
-          // ignore: invariant_booleans
-          if (charCode == -1) {
-            rawMode = false;
-            return key;
-          } else {
-            escapeSequence.add(String.fromCharCode(charCode));
-            switch (escapeSequence[1]) {
-
-              /// TODO put constants into control character once it is an adt.
-              case 'A':
-                key.controlChar = ControlCharacter.arrowUp;
-                break;
-              case 'B':
-                key.controlChar = ControlCharacter.arrowDown;
-                break;
-              case 'C':
-                key.controlChar = ControlCharacter.arrowRight;
-                break;
-              case 'D':
-                key.controlChar = ControlCharacter.arrowLeft;
-                break;
-              case 'H':
-                key.controlChar = ControlCharacter.home;
-                break;
-              case 'F':
-                key.controlChar = ControlCharacter.end;
-                break;
-              default:
-                if (escapeSequence[1].codeUnits[0] > '0'.codeUnits[0] && escapeSequence[1].codeUnits[0] < '9'.codeUnits[0]) {
-                  charCode = stdin.readByteSync();
-                  // ignore: invariant_booleans
-                  if (charCode == -1) {
-                    rawMode = false;
-                    return key;
-                  } else {
-                    escapeSequence.add(String.fromCharCode(charCode));
-                    if (escapeSequence[2] != '~') {
-                      key.controlChar = ControlCharacter.unknown;
-                    } else {
-                      switch (escapeSequence[1]) {
-                        case '1':
-                          key.controlChar = ControlCharacter.home;
-                          break;
-                        case '3':
-                          key.controlChar = ControlCharacter.delete;
-                          break;
-                        case '4':
-                          key.controlChar = ControlCharacter.end;
-                          break;
-                        case '5':
-                          key.controlChar = ControlCharacter.pageUp;
-                          break;
-                        case '6':
-                          key.controlChar = ControlCharacter.pageDown;
-                          break;
-                        case '7':
-                          key.controlChar = ControlCharacter.home;
-                          break;
-                        case '8':
-                          key.controlChar = ControlCharacter.end;
-                          break;
-                        default:
-                          key.controlChar = ControlCharacter.unknown;
-                      }
-                    }
-                  }
-                } else {
-                  key.controlChar = ControlCharacter.unknown;
-                }
-            }
-          }
-        } else if (escapeSequence[0] == 'O') {
-          charCode = stdin.readByteSync();
-          if (charCode == -1) {
-            rawMode = false;
-            return key;
-          } else {
-            escapeSequence.add(String.fromCharCode(charCode));
-            // ignore: prefer_asserts_with_message
-            assert(escapeSequence.length == 2);
-            switch (escapeSequence[1]) {
-              case 'H':
-                key.controlChar = ControlCharacter.home;
-                break;
-              case 'F':
-                key.controlChar = ControlCharacter.end;
-                break;
-              case 'P':
-                key.controlChar = ControlCharacter.F1;
-                break;
-              case 'Q':
-                key.controlChar = ControlCharacter.F2;
-                break;
-              case 'R':
-                key.controlChar = ControlCharacter.F3;
-                break;
-              case 'S':
-                key.controlChar = ControlCharacter.F4;
-                break;
-              default:
-            }
-          }
-        } else if (escapeSequence[0] == 'b') {
-          key.controlChar = ControlCharacter.wordLeft;
-        } else if (escapeSequence[0] == 'f') {
-          key.controlChar = ControlCharacter.wordRight;
-        } else {
-          key.controlChar = ControlCharacter.unknown;
-        }
-        rawMode = false;
-        return key;
-      }
-    } else if (codeUnit == 0x7f) {
-      rawMode = false;
-      return KeyControlMutableImpl(ControlCharacter.backspace);
-    } else if (codeUnit == 0x00 || (codeUnit >= 0x1c && codeUnit <= 0x1f)) {
-      rawMode = false;
-      return KeyControlMutableImpl(ControlCharacter.unknown);
-    } else {
-      // Assume other characters are printable.
-      rawMode = false;
-      return KeyPrintableImpl(String.fromCharCode(codeUnit));
-    }
+    final key = parser.readKey();
+    rawMode = false;
+    return key;
   }
 
   @override
@@ -331,51 +199,51 @@ class SneathConsoleImpl implements SneathConsole {
         },
         control: (key) {
           switch (key.controlChar) {
-            case ControlCharacter.enter:
+            case ControlCharacters.enter:
               if (_scrollbackBuffer != null) {
                 _scrollbackBuffer!.add(buffer);
               }
               writeLine();
               return buffer;
-            case ControlCharacter.ctrlC:
+            case ControlCharacters.ctrlC:
               if (cancelOnBreak) return null;
               break;
-            case ControlCharacter.escape:
+            case ControlCharacters.escape:
               if (cancelOnEscape) return null;
               break;
-            case ControlCharacter.backspace:
-            case ControlCharacter.ctrlH:
+            case ControlCharacters.backspace:
+            case ControlCharacters.ctrlH:
               if (index > 0) {
                 buffer = buffer.substring(0, index - 1) + buffer.substring(index);
                 index--;
               }
               break;
-            case ControlCharacter.ctrlU:
+            case ControlCharacters.ctrlU:
               buffer = buffer.substring(index, buffer.length);
               index = 0;
               break;
-            case ControlCharacter.delete:
-            case ControlCharacter.ctrlD:
+            case ControlCharacters.delete:
+            case ControlCharacters.ctrlD:
               if (index < buffer.length - 1) {
                 buffer = buffer.substring(0, index) + buffer.substring(index + 1);
               } else if (cancelOnEOF) {
                 return null;
               }
               break;
-            case ControlCharacter.ctrlK:
+            case ControlCharacters.ctrlK:
               buffer = buffer.substring(0, index);
               break;
-            case ControlCharacter.arrowLeft:
-            case ControlCharacter.ctrlB:
+            case ControlCharacters.arrowLeft:
+            case ControlCharacters.ctrlB:
               index = index > 0 ? index - 1 : index;
               break;
-            case ControlCharacter.arrowUp:
+            case ControlCharacters.arrowUp:
               if (_scrollbackBuffer != null) {
                 buffer = _scrollbackBuffer!.up(buffer);
                 index = buffer.length;
               }
               break;
-            case ControlCharacter.arrowDown:
+            case ControlCharacters.arrowDown:
               if (_scrollbackBuffer != null) {
                 final temp = _scrollbackBuffer!.down();
                 if (temp != null) {
@@ -384,57 +252,56 @@ class SneathConsoleImpl implements SneathConsole {
                 }
               }
               break;
-            case ControlCharacter.arrowRight:
-            case ControlCharacter.ctrlF:
+            case ControlCharacters.arrowRight:
+            case ControlCharacters.ctrlF:
               index = index < buffer.length ? index + 1 : index;
               break;
-            case ControlCharacter.wordLeft:
+            case ControlCharacters.wordLeft:
               if (index > 0) {
                 final bufferLeftOfCursor = buffer.substring(0, index - 1);
                 final lastSpace = bufferLeftOfCursor.lastIndexOf(' ');
                 index = lastSpace != -1 ? lastSpace + 1 : 0;
               }
               break;
-            case ControlCharacter.wordRight:
+            case ControlCharacters.wordRight:
               if (index < buffer.length) {
                 final bufferRightOfCursor = buffer.substring(index + 1);
                 final nextSpace = bufferRightOfCursor.indexOf(' ');
                 index = nextSpace != -1 ? min(index + nextSpace + 2, buffer.length) : buffer.length;
               }
               break;
-            case ControlCharacter.home:
-            case ControlCharacter.ctrlA:
+            case ControlCharacters.home:
+            case ControlCharacters.ctrlA:
               index = 0;
               break;
-            case ControlCharacter.end:
-            case ControlCharacter.ctrlE:
+            case ControlCharacters.end:
+            case ControlCharacters.ctrlE:
               index = buffer.length;
               break;
-            case ControlCharacter.none:
-            case ControlCharacter.ctrlG:
-            case ControlCharacter.tab:
-            case ControlCharacter.ctrlJ:
-            case ControlCharacter.ctrlL:
-            case ControlCharacter.ctrlN:
-            case ControlCharacter.ctrlO:
-            case ControlCharacter.ctrlP:
-            case ControlCharacter.ctrlQ:
-            case ControlCharacter.ctrlR:
-            case ControlCharacter.ctrlS:
-            case ControlCharacter.ctrlT:
-            case ControlCharacter.ctrlV:
-            case ControlCharacter.ctrlW:
-            case ControlCharacter.ctrlX:
-            case ControlCharacter.ctrlY:
-            case ControlCharacter.ctrlZ:
-            case ControlCharacter.pageUp:
-            case ControlCharacter.pageDown:
-            case ControlCharacter.wordBackspace:
-            case ControlCharacter.F1:
-            case ControlCharacter.F2:
-            case ControlCharacter.F3:
-            case ControlCharacter.F4:
-            case ControlCharacter.unknown:
+            case ControlCharacters.ctrlG:
+            case ControlCharacters.tab:
+            case ControlCharacters.ctrlJ:
+            case ControlCharacters.ctrlL:
+            case ControlCharacters.ctrlN:
+            case ControlCharacters.ctrlO:
+            case ControlCharacters.ctrlP:
+            case ControlCharacters.ctrlQ:
+            case ControlCharacters.ctrlR:
+            case ControlCharacters.ctrlS:
+            case ControlCharacters.ctrlT:
+            case ControlCharacters.ctrlV:
+            case ControlCharacters.ctrlW:
+            case ControlCharacters.ctrlX:
+            case ControlCharacters.ctrlY:
+            case ControlCharacters.ctrlZ:
+            case ControlCharacters.pageUp:
+            case ControlCharacters.pageDown:
+            case ControlCharacters.wordBackspace:
+            case ControlCharacters.F1:
+            case ControlCharacters.F2:
+            case ControlCharacters.F3:
+            case ControlCharacters.F4:
+            case ControlCharacters.unknown:
               // Do nothing.
               break;
           }
@@ -463,6 +330,13 @@ class SneathConsoleImpl implements SneathConsole {
 
   @override
   void writeLinesCentered(Iterable<String> lines) => lines.forEach(writeLineCentered);
+}
+
+class AnsiParserInputBufferStdinImpl implements AnsiParserInputBuffer {
+  const AnsiParserInputBufferStdinImpl();
+
+  @override
+  int readByte() => stdin.readByteSync();
 }
 
 /// The ScrollbackBuffer class is a utility for handling multi-line user

@@ -15,7 +15,7 @@ void main() {
     key.match(
       printable: print,
       control: (key) {
-        if (key.controlChar == ControlCharacter.ctrlQ) {
+        if (key.controlChar == ControlCharacters.ctrlQ) {
           console.clearScreen();
           console.resetCursorPosition();
           console.rawMode = false;

@@ -127,13 +127,13 @@ void editorFindCallback(String query, Key key) {
   key.match(
     printable: _handleOther,
     control: (key) {
-      if (key.controlChar == ControlCharacter.enter || key.controlChar == ControlCharacter.escape) {
+      if (key.controlChar == ControlCharacters.enter || key.controlChar == ControlCharacters.escape) {
         findLastMatchRow = -1;
         findDirection = FindDirection.forwards;
         return;
-      } else if (key.controlChar == ControlCharacter.arrowRight || key.controlChar == ControlCharacter.arrowDown) {
+      } else if (key.controlChar == ControlCharacters.arrowRight || key.controlChar == ControlCharacters.arrowDown) {
         findDirection = FindDirection.forwards;
-      } else if (key.controlChar == ControlCharacter.arrowLeft || key.controlChar == ControlCharacter.arrowUp) {
+      } else if (key.controlChar == ControlCharacters.arrowLeft || key.controlChar == ControlCharacters.arrowUp) {
         findDirection = FindDirection.backwards;
       } else {
         _handleOther();
@@ -417,7 +417,7 @@ String? editorPrompt(
 //
 void editorMoveCursor(ControlCharacter key) {
   switch (key) {
-    case ControlCharacter.arrowLeft:
+    case ControlCharacters.arrowLeft:
       if (cursorCol != 0) {
         cursorCol--;
       } else if (cursorRow > 0) {
@@ -425,7 +425,7 @@ void editorMoveCursor(ControlCharacter key) {
         cursorCol = fileRows[cursorRow].length;
       }
       break;
-    case ControlCharacter.arrowRight:
+    case ControlCharacters.arrowRight:
       if (cursorRow < fileRows.length) {
         if (cursorCol < fileRows[cursorRow].length) {
           cursorCol++;
@@ -435,70 +435,69 @@ void editorMoveCursor(ControlCharacter key) {
         }
       }
       break;
-    case ControlCharacter.arrowUp:
+    case ControlCharacters.arrowUp:
       if (cursorRow != 0) cursorRow--;
       break;
-    case ControlCharacter.arrowDown:
+    case ControlCharacters.arrowDown:
       if (cursorRow < fileRows.length) cursorRow++;
       break;
-    case ControlCharacter.pageUp:
+    case ControlCharacters.pageUp:
       cursorRow = screenFileRowOffset;
       for (var i = 0; i < editorWindowHeight; i++) {
-        editorMoveCursor(ControlCharacter.arrowUp);
+        editorMoveCursor(ControlCharacters.arrowUp);
       }
       break;
-    case ControlCharacter.pageDown:
+    case ControlCharacters.pageDown:
       cursorRow = screenFileRowOffset + editorWindowHeight - 1;
       for (var i = 0; i < editorWindowHeight; i++) {
-        editorMoveCursor(ControlCharacter.arrowDown);
+        editorMoveCursor(ControlCharacters.arrowDown);
       }
       break;
-    case ControlCharacter.home:
+    case ControlCharacters.home:
       cursorCol = 0;
       break;
-    case ControlCharacter.end:
+    case ControlCharacters.end:
       if (cursorRow < fileRows.length) {
         cursorCol = fileRows[cursorRow].length;
       }
       break;
-    case ControlCharacter.none:
-    case ControlCharacter.ctrlA:
-    case ControlCharacter.ctrlB:
-    case ControlCharacter.ctrlC:
-    case ControlCharacter.ctrlD:
-    case ControlCharacter.ctrlE:
-    case ControlCharacter.ctrlF:
-    case ControlCharacter.ctrlG:
-    case ControlCharacter.ctrlH:
-    case ControlCharacter.tab:
-    case ControlCharacter.ctrlJ:
-    case ControlCharacter.ctrlK:
-    case ControlCharacter.ctrlL:
-    case ControlCharacter.enter:
-    case ControlCharacter.ctrlN:
-    case ControlCharacter.ctrlO:
-    case ControlCharacter.ctrlP:
-    case ControlCharacter.ctrlQ:
-    case ControlCharacter.ctrlR:
-    case ControlCharacter.ctrlS:
-    case ControlCharacter.ctrlT:
-    case ControlCharacter.ctrlU:
-    case ControlCharacter.ctrlV:
-    case ControlCharacter.ctrlW:
-    case ControlCharacter.ctrlX:
-    case ControlCharacter.ctrlY:
-    case ControlCharacter.ctrlZ:
-    case ControlCharacter.wordLeft:
-    case ControlCharacter.wordRight:
-    case ControlCharacter.escape:
-    case ControlCharacter.delete:
-    case ControlCharacter.backspace:
-    case ControlCharacter.wordBackspace:
-    case ControlCharacter.F1:
-    case ControlCharacter.F2:
-    case ControlCharacter.F3:
-    case ControlCharacter.F4:
-    case ControlCharacter.unknown:
+    case ControlCharacters.ctrlA:
+    case ControlCharacters.ctrlB:
+    case ControlCharacters.ctrlC:
+    case ControlCharacters.ctrlD:
+    case ControlCharacters.ctrlE:
+    case ControlCharacters.ctrlF:
+    case ControlCharacters.ctrlG:
+    case ControlCharacters.ctrlH:
+    case ControlCharacters.tab:
+    case ControlCharacters.ctrlJ:
+    case ControlCharacters.ctrlK:
+    case ControlCharacters.ctrlL:
+    case ControlCharacters.enter:
+    case ControlCharacters.ctrlN:
+    case ControlCharacters.ctrlO:
+    case ControlCharacters.ctrlP:
+    case ControlCharacters.ctrlQ:
+    case ControlCharacters.ctrlR:
+    case ControlCharacters.ctrlS:
+    case ControlCharacters.ctrlT:
+    case ControlCharacters.ctrlU:
+    case ControlCharacters.ctrlV:
+    case ControlCharacters.ctrlW:
+    case ControlCharacters.ctrlX:
+    case ControlCharacters.ctrlY:
+    case ControlCharacters.ctrlZ:
+    case ControlCharacters.wordLeft:
+    case ControlCharacters.wordRight:
+    case ControlCharacters.escape:
+    case ControlCharacters.delete:
+    case ControlCharacters.backspace:
+    case ControlCharacters.wordBackspace:
+    case ControlCharacters.F1:
+    case ControlCharacters.F2:
+    case ControlCharacters.F3:
+    case ControlCharacters.F4:
+    case ControlCharacters.unknown:
       // Do nothing.
       break;
   }
@@ -516,71 +515,70 @@ void editorProcessKeypress() {
     },
     control: (key) {
       switch (key.controlChar) {
-        case ControlCharacter.ctrlQ:
+        case ControlCharacters.ctrlQ:
           editorQuit();
           break;
-        case ControlCharacter.ctrlS:
+        case ControlCharacters.ctrlS:
           editorSave();
           break;
-        case ControlCharacter.ctrlF:
+        case ControlCharacters.ctrlF:
           editorFind();
           break;
-        case ControlCharacter.backspace:
-        case ControlCharacter.ctrlH:
+        case ControlCharacters.backspace:
+        case ControlCharacters.ctrlH:
           editorBackspaceChar();
           break;
-        case ControlCharacter.delete:
-          editorMoveCursor(ControlCharacter.arrowRight);
+        case ControlCharacters.delete:
+          editorMoveCursor(ControlCharacters.arrowRight);
           editorBackspaceChar();
           break;
-        case ControlCharacter.enter:
+        case ControlCharacters.enter:
           editorInsertNewline();
           break;
-        case ControlCharacter.arrowLeft:
-        case ControlCharacter.arrowUp:
-        case ControlCharacter.arrowRight:
-        case ControlCharacter.arrowDown:
-        case ControlCharacter.pageUp:
-        case ControlCharacter.pageDown:
-        case ControlCharacter.home:
-        case ControlCharacter.end:
+        case ControlCharacters.arrowLeft:
+        case ControlCharacters.arrowUp:
+        case ControlCharacters.arrowRight:
+        case ControlCharacters.arrowDown:
+        case ControlCharacters.pageUp:
+        case ControlCharacters.pageDown:
+        case ControlCharacters.home:
+        case ControlCharacters.end:
           editorMoveCursor(key.controlChar);
           break;
-        case ControlCharacter.ctrlA:
-          editorMoveCursor(ControlCharacter.home);
+        case ControlCharacters.ctrlA:
+          editorMoveCursor(ControlCharacters.home);
           break;
-        case ControlCharacter.ctrlE:
-          editorMoveCursor(ControlCharacter.end);
+        case ControlCharacters.ctrlE:
+          editorMoveCursor(ControlCharacters.end);
           break;
-        case ControlCharacter.none:
-        case ControlCharacter.ctrlB:
-        case ControlCharacter.ctrlC:
-        case ControlCharacter.ctrlD:
-        case ControlCharacter.ctrlG:
-        case ControlCharacter.tab:
-        case ControlCharacter.ctrlJ:
-        case ControlCharacter.ctrlK:
-        case ControlCharacter.ctrlL:
-        case ControlCharacter.ctrlN:
-        case ControlCharacter.ctrlO:
-        case ControlCharacter.ctrlP:
-        case ControlCharacter.ctrlR:
-        case ControlCharacter.ctrlT:
-        case ControlCharacter.ctrlU:
-        case ControlCharacter.ctrlV:
-        case ControlCharacter.ctrlW:
-        case ControlCharacter.ctrlX:
-        case ControlCharacter.ctrlY:
-        case ControlCharacter.ctrlZ:
-        case ControlCharacter.wordLeft:
-        case ControlCharacter.wordRight:
-        case ControlCharacter.escape:
-        case ControlCharacter.wordBackspace:
-        case ControlCharacter.F1:
-        case ControlCharacter.F2:
-        case ControlCharacter.F3:
-        case ControlCharacter.F4:
-        case ControlCharacter.unknown:
+        case ControlCharacters.ctrlB:
+        case ControlCharacters.ctrlC:
+        case ControlCharacters.ctrlD:
+        case ControlCharacters.ctrlG:
+        case ControlCharacters.tab:
+        case ControlCharacters.ctrlJ:
+        case ControlCharacters.ctrlK:
+        case ControlCharacters.ctrlL:
+        case ControlCharacters.ctrlN:
+        case ControlCharacters.ctrlO:
+        case ControlCharacters.ctrlP:
+        case ControlCharacters.ctrlR:
+        case ControlCharacters.ctrlT:
+        case ControlCharacters.ctrlU:
+        case ControlCharacters.ctrlV:
+        case ControlCharacters.ctrlW:
+        case ControlCharacters.ctrlX:
+        case ControlCharacters.ctrlY:
+        case ControlCharacters.ctrlZ:
+        case ControlCharacters.wordLeft:
+        case ControlCharacters.wordRight:
+        case ControlCharacters.escape:
+        case ControlCharacters.wordBackspace:
+        case ControlCharacters.F1:
+        case ControlCharacters.F2:
+        case ControlCharacters.F3:
+        case ControlCharacters.F4:
+        case ControlCharacters.unknown:
           // Do nothing.
           break;
       }

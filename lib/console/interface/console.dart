@@ -1,3 +1,4 @@
+import '../../ansi/interface/byte_color.dart';
 import '../../ansi/interface/color.dart';
 import 'control_character.dart';
 import 'cursor_position.dart';
@@ -108,14 +109,14 @@ abstract class SneathConsole {
   /// See https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit for
   /// the full set of colors. You may also run `examples/demo.dart` for this
   /// package, which provides a sample of each color in this list.
-  void setForegroundExtendedColor(int colorValue);
+  void setForegroundExtendedColor(AnsiExtendedColorPalette color);
 
   /// Sets the background to one of 256 extended ANSI colors.
   ///
   /// See https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit for
   /// the full set of colors. You may also run `examples/demo.dart` for this
   /// package, which provides a sample of each color in this list.
-  void setBackgroundExtendedColor(int colorValue);
+  void setBackgroundExtendedColor(AnsiExtendedColorPalette color);
 
   /// Sets the text style.
   ///

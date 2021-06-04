@@ -8,13 +8,6 @@ class KeyControlImpl with KeyControlMixin {
   const KeyControlImpl(this.controlChar);
 }
 
-class KeyControlMutableImpl with KeyControlMixin {
-  @override
-  ControlCharacter controlChar;
-
-  KeyControlMutableImpl(this.controlChar);
-}
-
 mixin KeyControlMixin implements KeyControl {
   @override
   ControlCharacter get controlChar;

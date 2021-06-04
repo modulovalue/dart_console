@@ -30,7 +30,7 @@ class SneathCursorPositionDelegateImpl implements SneathCursorPositionDelegate {
       i++;
     }
     setRawModeDelegate(false);
-    if (result[0] != '\x1b') {
+    if (result[0] != AnsiConstants.escape) {
       print(' result: $result  result.length: ${result.length}');
       return null;
     } else {

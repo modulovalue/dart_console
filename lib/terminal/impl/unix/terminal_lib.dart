@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:ffi/ffi.dart';
 
 import '../../../ansi/impl/ansi.dart';
+import '../../../ansi/impl/ansi_lib.dart';
 import '../../interface/terminal_lib.dart';
 
 /// glibc-dependent library for interrogating and manipulating the console.
@@ -125,7 +126,7 @@ class SneathTerminalUnixImpl implements SneathTerminal {
   void clearScreen() => stdout.write(AnsiConstants.ansiEraseInDisplayAll + AnsiConstants.ansiResetCursorPosition);
 
   @override
-  void setCursorPosition(int col, int row) => stdout.write(AnsiLib.ansiCursorPosition(row + 1, col + 1));
+  void setCursorPosition(int col, int row) => stdout.write(const AnsiStandardLib().cursorPosition(row + 1, col + 1));
 }
 
 final IOCTL_TIOCGWINSZ = Platform.isMacOS ? 0x40087468 : 0x5413;

@@ -80,7 +80,7 @@ void update() {
 void input() {
   final key = console.readKey();
   if (key is KeyControl) {
-    if (key.controlChar == ControlCharacter.escape) {
+    if (key.controlChar == ControlCharacters.escape) {
       done = true;
     }
   }
