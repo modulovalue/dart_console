@@ -1,10 +1,11 @@
 import 'dart:io';
 import 'dart:math';
 
-import '../../ansi/impl/ansi.dart';
-import '../../ansi/impl/ansi_lib.dart';
-import '../../ansi/interface/byte_color.dart';
-import '../../ansi/interface/color.dart';
+import '../../ansi/color/interface/color_types/extended.dart';
+import '../../ansi/color/interface/generalizing/named_basic.dart';
+import '../../ansi/parser/impl/parser.dart';
+import '../../ansi/parser/interface/parser.dart';
+import '../../ansi/spec/lib.dart';
 import '../../terminal/interface/terminal_lib.dart';
 import '../interface/console.dart';
 import '../interface/control_character.dart';
@@ -15,7 +16,6 @@ import '../interface/text_alignment.dart';
 import 'coordinate.dart';
 import 'cursor_position.dart';
 import 'dimensions/constant.dart';
-import 'parser.dart';
 import 'text_alignment.dart';
 
 /// TODO have a mixin and separate impls. for scrolling and non scrolling.
@@ -63,28 +63,28 @@ class SneathConsoleImpl implements SneathConsole {
   void clearScreen() => _terminal.clearScreen();
 
   @override
-  void eraseLine() => stdout.write(AnsiConstants.ansiEraseInLineAll);
+  void eraseLine() => stdout.write(AnsiStandardLib.ansiEraseInLineAll);
 
   @override
-  void eraseCursorToEnd() => stdout.write(AnsiConstants.ansiEraseCursorToEnd);
+  void eraseCursorToEnd() => stdout.write(AnsiStandardLib.ansiEraseCursorToEnd);
 
   @override
-  void hideCursor() => stdout.write(AnsiConstants.ansiHideCursor);
+  void hideCursor() => stdout.write(AnsiStandardLib.ansiHideCursor);
 
   @override
-  void showCursor() => stdout.write(AnsiConstants.ansiShowCursor);
+  void showCursor() => stdout.write(AnsiStandardLib.ansiShowCursor);
 
   @override
-  void cursorLeft() => stdout.write(AnsiConstants.ansiCursorLeft);
+  void cursorLeft() => stdout.write(AnsiStandardLib.ansiCursorLeft);
 
   @override
-  void cursorRight() => stdout.write(AnsiConstants.ansiCursorRight);
+  void cursorRight() => stdout.write(AnsiStandardLib.ansiCursorRight);
 
   @override
-  void cursorUp() => stdout.write(AnsiConstants.ansiCursorUp);
+  void cursorUp() => stdout.write(AnsiStandardLib.ansiCursorUp);
 
   @override
-  void cursorDown() => stdout.write(AnsiConstants.ansiCursorDown);
+  void cursorDown() => stdout.write(AnsiStandardLib.ansiCursorDown);
 
   @override
   void resetCursorPosition() => //
@@ -131,7 +131,7 @@ class SneathConsoleImpl implements SneathConsole {
       ));
 
   @override
-  void resetColorAttributes() => stdout.write(AnsiConstants.ansiResetColor);
+  void resetColorAttributes() => stdout.write(AnsiStandardLib.ansiResetColor);
 
   @override
   void write(String text) => stdout.write(text);

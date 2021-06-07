@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:dart_console/ansi/impl/ansi.dart';
+import 'package:dart_console/ansi/spec/lib.dart';
 import 'package:dart_console/dc/base.dart';
 import 'package:dart_console/dc/progress.dart';
 import 'package:dart_console/dc/window.dart';
@@ -47,7 +47,7 @@ class DemoWindow extends DCWindow {
       title = title == 'Hello' ? 'Goodbye' : 'Hello';
       draw();
     });
-    keyboard.bindKey(AnsiConstants.space).listen((_) {
+    keyboard.bindKey(AnsiStandardLib.space).listen((_) {
       showWelcomeMessage = false;
       draw();
     });

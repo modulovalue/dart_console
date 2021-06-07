@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import '../../../ansi/impl/ansi.dart';
+import '../../../ansi/spec/lib.dart';
 import '../../../terminal/interface/terminal_lib.dart';
 import '../../interface/cursor_position.dart';
 import '../../interface/dimensions.dart';
@@ -27,7 +27,7 @@ class SneathConsoleDimensionsCachedImpl implements SneathConsoleDimensions {
         // otherwise, fall back to the approach of setting the cursor to beyond
         // the edge of the screen and then reading back its actual position
         final originalCursor = cursorPosition.get();
-        stdout.write(AnsiConstants.ansiMoveCursorToScreenEdge);
+        stdout.write(AnsiStandardLib.ansiMoveCursorToScreenEdge);
         final newCursor = cursorPosition.get();
         cursorPosition.update(originalCursor);
         if (newCursor != null) {
@@ -54,7 +54,7 @@ class SneathConsoleDimensionsCachedImpl implements SneathConsoleDimensions {
         // otherwise, fall back to the approach of setting the cursor to beyond
         // the edge of the screen and then reading back its actual position
         final originalCursor = cursorPosition.get();
-        stdout.write(AnsiConstants.ansiMoveCursorToScreenEdge);
+        stdout.write(AnsiStandardLib.ansiMoveCursorToScreenEdge);
         final newCursor = cursorPosition.get();
         cursorPosition.update(originalCursor);
         if (newCursor != null) {

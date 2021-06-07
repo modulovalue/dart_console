@@ -3,7 +3,7 @@ import 'dart:math' as math;
 
 import 'package:dart_console/dc/base.dart';
 import 'package:dart_console/dc/drawing_canvas.dart';
-import 'package:dart_console/util/utils.dart';
+import 'package:dart_console/util/bresenham.dart';
 
 final canvas = DrawingCanvasImpl(160, 160);
 

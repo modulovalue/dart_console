@@ -1,6 +1,7 @@
 import 'dart:io';
 
-import 'package:dart_console/ansi/impl/color.dart';
+import 'package:dart_console/ansi/color/impl/color.dart';
+import 'package:dart_console/ansi/color/impl/color_more.dart';
 import 'package:dart_console/console/impl/console.dart';
 import 'package:dart_console/terminal/impl/auto/terminal_lib.dart';
 
@@ -14,12 +15,12 @@ void main() {
   final console = SneathConsoleImpl(autodetectSneathTerminal());
   const prompt = '>>> ';
   console.write('The ');
-  console.setForegroundColor(NamedAnsiColors.brightYellow);
+  console.setForegroundColor(const BrightAnsiColorAdapter(NamedAnsiColors.yellow));
   console.write('Console.readLine()');
   console.resetColorAttributes();
   console.writeLine(' method provides a basic readline implementation.');
   console.write('Unlike the built-in ');
-  console.setForegroundColor(NamedAnsiColors.brightYellow);
+  console.setForegroundColor(const BrightAnsiColorAdapter(NamedAnsiColors.yellow));
   console.write('stdin.readLineSync()');
   console.resetColorAttributes();
   console.writeLine(' method, you can use arrow keys as well as home/end.');

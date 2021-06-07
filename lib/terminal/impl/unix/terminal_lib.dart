@@ -3,8 +3,7 @@ import 'dart:io';
 
 import 'package:ffi/ffi.dart';
 
-import '../../../ansi/impl/ansi.dart';
-import '../../../ansi/impl/ansi_lib.dart';
+import '../../../ansi/spec/lib.dart';
 import '../../interface/terminal_lib.dart';
 
 /// glibc-dependent library for interrogating and manipulating the console.
@@ -123,7 +122,7 @@ class SneathTerminalUnixImpl implements SneathTerminal {
   }
 
   @override
-  void clearScreen() => stdout.write(AnsiConstants.ansiEraseInDisplayAll + AnsiConstants.ansiResetCursorPosition);
+  void clearScreen() => stdout.write(AnsiStandardLib.ansiEraseInDisplayAll + AnsiStandardLib.ansiResetCursorPosition);
 
   @override
   void setCursorPosition(int col, int row) => stdout.write(const AnsiStandardLib().cursorPosition(row + 1, col + 1));

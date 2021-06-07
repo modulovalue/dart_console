@@ -1,6 +1,7 @@
 import 'dart:io';
 
-import '../ansi/impl/ansi.dart';
+import '../ansi/spec/bracket.dart';
+import '../ansi/spec/csi.dart';
 
 /// The root of the console API
 class DCConsole {
@@ -122,7 +123,7 @@ class DCConsole {
 
   int get columns => rawConsole.columns;
 
-  void writeANSI(String after) => rawConsole.write('${AnsiConstants.controlSequenceIdentifier}$after');
+  void writeANSI(String after) => rawConsole.write(controlSequenceIdentifier + after);
 
   DCCursorPosition getCursorPosition() {
     final lm = rawConsole.lineMode;
@@ -141,7 +142,7 @@ class DCConsole {
     rawConsole.lineMode = lm;
     rawConsole.echoMode = em;
     var str = String.fromCharCodes(bytes);
-    str = str.substring(str.lastIndexOf(AnsiConstants.ansiBracket) + 1, str.length - 1);
+    str = str.substring(str.lastIndexOf(ansiBracket) + 1, str.length - 1);
     final parts = List<int>.from(str.split(';').map<int>((it) => int.parse(it))).toList();
     return DCCursorPosition(parts[1], parts[0]);
   }
@@ -168,12 +169,12 @@ class DCColor {
   String toString({bool background = false}) {
     /// TODO Whats the difference when it comes to xterm and the other case
     if (xterm) {
-      return '${AnsiConstants.controlSequenceIdentifier}${background ? 38 : 48};5;${id}m';
+      return '${controlSequenceIdentifier}${background ? 38 : 48};5;${id}m';
     } else {
       if (bright) {
-        return '${AnsiConstants.controlSequenceIdentifier}1;${(background ? 40 : 30) + id}m';
+        return '${controlSequenceIdentifier}1;${(background ? 40 : 30) + id}m';
       } else {
-        return '${AnsiConstants.controlSequenceIdentifier}0;${(background ? 40 : 30) + id}m';
+        return '${controlSequenceIdentifier}0;${(background ? 40 : 30) + id}m';
       }
     }
   }

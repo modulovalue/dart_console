@@ -1,11 +1,11 @@
-import 'package:dart_console/dc/base.dart';
-import 'package:dart_console/dc/keyboard.dart';
+// import 'dart:convert';
+// import 'dart:io';
+
+import 'package:dart_console/keyboard/impl/keyboard.dart';
 
 // Traps up and down arrow and echos to console.
 void main() {
-  final console = DCConsole(DCStdioConsoleAdapter());
-  final keyboard = DCKeyboard(console);
-  keyboard.init();
+  final keyboard = TerminalKeyboardImpl.stdin();
   keyboard.bindKey('up').listen((_) {
     print('Up.');
   });

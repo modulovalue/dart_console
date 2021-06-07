@@ -4,7 +4,7 @@ import 'dart:math';
 
 import 'package:dart_console/dc/base.dart';
 import 'package:dart_console/dc/drawing_canvas.dart';
-import 'package:dart_console/util/utils.dart';
+import 'package:dart_console/util/bresenham.dart';
 import 'package:vector_math/vector_math.dart';
 
 final console = DCConsole(DCStdioConsoleAdapter());

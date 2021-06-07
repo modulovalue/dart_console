@@ -1,31 +1,27 @@
+import '../color/impl/graphics_rendition_commands.dart';
+import '../color/interface/color_types/extended.dart';
+import '../color/interface/generalizing/basic.dart';
+import '../spec/command_argument_separator.dart';
+import '../spec/csi.dart';
+import 'ascii.dart';
+
 /// https://notes.burke.libbey.me/ansi-escape-codes/
-abstract class AnsiConstants {
-  // An escape character can also be represented by the following values.
-  // \e (https://en.wikipedia.org/wiki/Escape_sequences_in_C)
-  // \033 (https://unix.stackexchange.com/questions/116243/what-does-a-bash-sequence-033999d-mean-and-where-is-it-explained)
-  static const escape = '\x1b';
-  static const escapeByte = 27; // or 0x1b in hex
-  static const ansiBracket = '[';
-  static const ansiBracketByte = 91;
-  static const controlSequenceIdentifier = escape + ansiBracket;
-  static const commandArgumentSeparator = ";";
-  static const commandArgumentSeparatorByte = 59; // or 0x3b in hex
-  static const stdinEndOfFileIndicator = -1;
-  static const byteSize = 0xff;
-  static const nibbleSize = 0xf;
-  static const byteStart = 0;
+/// https://en.wikipedia.org/wiki/ANSI_escape_code
+/// http://www.climagic.org/mirrors/VT100_Escape_Codes.html
+/// TODO remove this by having everything in a file in spec.
+/// TODO find an exhaustive reference.
+class AnsiStandardLib {
   static const space = " ";
-
   static const commandOPrefix = "O";
-
-  static const charArrowUp = "A";
-  static const charArrowDown = "B";
-  static const charArrowRight = "C";
-  static const charArrowLeft = "D";
+  static const commandOPrefixByte = $O;
   static const charEnd = "F";
+  static const charEndByte = $F;
   static const charHome = "H";
+  static const charHomeByte = $H;
   static const charWordRight = "f";
+  static const charWordRightByte = $f;
   static const charWordLeft = "b";
+  static const charWordLeftByte = $b;
 
   /// TODO move into ansi lib
   static const ansiDeviceStatusReportCursorPosition = controlSequenceIdentifier + '6n';
@@ -41,9 +37,152 @@ abstract class AnsiConstants {
   static const ansiResetCursorPosition = controlSequenceIdentifier + 'H';
   static const ansiMoveCursorToScreenEdge = controlSequenceIdentifier + '999C' + controlSequenceIdentifier + '999B';
   static const ansiResetColor = controlSequenceIdentifier + 'm';
+
+  static const cursorUpName = "A";
+  static const cursorUpNameByte = $A;
+  static const cursorDownName = "B";
+  static const cursorDownNameByte = $B;
+  static const cursorForwardName = "C";
+  static const cursorForwardNameByte = $C;
+  static const cursorBackName = "D";
+  static const cursorBackNameByte = $D;
+  static const cursorNextLineName = "E";
+  static const cursorPreviousLineName = "F";
+  static const cursorHorizontalAbsoluteName1 = "G";
+  static const cursorHorizontalAbsoluteName2 = "f";
+  static const cursorPositionName = "H";
+  static const eraseInDisplayName = "J";
+  static const eraseInLineName = "K";
+  static const scrollUpName = "S";
+  static const scrollDownName = "T";
+  static const saveCursorPosName = "s";
+  static const restoreCursorPosName = "u";
+  static const selectGraphicsRenditionName = "m";
+  static const showCursorName = "?25h";
+  static const hideCursorName = "?25l";
+
+  const AnsiStandardLib();
+
+  /// Set graphics rendition mode.
+  String selectGraphicsRendition(GraphicsRenditionNode nodes) =>
+      controlSequenceIdentifier + nodes.commands.join(commandArgumentSeparator) + selectGraphicsRenditionName;
+
+  /// Shows the cursor.
+  String showCursor() => controlSequenceIdentifier + showCursorName;
+
+  /// Hides the cursor
+  String hideCursor() => controlSequenceIdentifier + hideCursorName;
+
+  /// Move cursor up by n.
+  String cursorUp(int n) => controlSequenceIdentifier + n.toString() + cursorUpName;
+
+  /// Move cursor down by n.
+  String cursorDown(int n) => controlSequenceIdentifier + n.toString() + cursorDownName;
+
+  /// Move cursor forward by n.
+  String cursorForward(int n) => controlSequenceIdentifier + n.toString() + cursorForwardName;
+
+  /// Move cursor back by n.
+  String cursorBack(int n) => controlSequenceIdentifier + n.toString() + cursorBackName;
+
+  /// Move cursor to the beginning of the line n lines down.
+  String cursorNextLine(int n) => controlSequenceIdentifier + n.toString() + cursorNextLineName;
+
+  /// Move cursor to the beginning of the line n lines up.
+  String cursorPreviousLine(int n) => controlSequenceIdentifier + n.toString() + cursorPreviousLineName;
+
+  /// Move cursor to the column n within the current row.
+  String cursorHorizontalAbsolute1(int n) => controlSequenceIdentifier + n.toString() + cursorHorizontalAbsoluteName1;
+
+  /// Move cursor to the column n within the current row.
+  String cursorHorizontalAbsolute2(int n) => controlSequenceIdentifier + n.toString() + cursorHorizontalAbsoluteName2;
+
+  /// Move cursor to row n, column m, counting from the top left corner.
+  String cursorPosition(int row, int column) =>
+      controlSequenceIdentifier + row.toString() + commandArgumentSeparator + column.toString() + cursorPositionName;
+
+  /// Clear part of the screen. 0, 1, 2, and 3 have various specific functions.
+  // TODO Clear Screen: \u001b[{n}J clears the screen
+  // TODO n=0 clears from cursor until end of screen,
+  // TODO n=1 clears from cursor to beginning of screen
+  // TODO n=2 clears entire screen
+  String eraseInDisplay() => controlSequenceIdentifier + eraseInDisplayName;
+
+  /// Clear part of the line. 0, 1, and 2 have various specific functions
+  // TODO Clear Line: \u001b[{n}K clears the current line
+  // TODO n=0 clears from cursor to end of line
+  // TODO n=1 clears from cursor to start of line
+  // TODO n=2 clears entire line
+  String eraseInLine() => controlSequenceIdentifier + eraseInLineName;
+
+  /// Scroll window up by n lines.
+  String scrollUp(int n) => controlSequenceIdentifier + n.toString() + scrollUpName;
+
+  /// Scroll window down by n lines.
+  String scrollDown(int n) => controlSequenceIdentifier + n.toString() + scrollDownName;
+
+  /// Save current cursor position for use with u.
+  String saveCursorPosition() => controlSequenceIdentifier + saveCursorPosName;
+
+  /// Set cursor back to position last saved by s.
+  String restoreCursorPosition() => controlSequenceIdentifier + restoreCursorPosName;
+}
+
+/// Meaningful functions that are derived from the base functions.
+class AnsiStandardLibDerived {
+  const AnsiStandardLibDerived();
+
+  String ansiSetExtendedForegroundColor(AnsiExtendedColorPalette color) => //
+      const AnsiStandardLib().selectGraphicsRendition(
+        GraphicsRenditionNodeExtendedTextColorImpl(color),
+      );
+
+  String ansiSetExtendedBackgroundColor(AnsiExtendedColorPalette color) => //
+      const AnsiStandardLib().selectGraphicsRendition(
+        GraphicsRenditionNodeExtendedBackgroundColorImpl(color),
+      );
+
+  String ansiSetTextColor(AnsiForegroundColor color) => //
+      const AnsiStandardLib().selectGraphicsRendition(
+        GraphicsRenditionNodeColorImpl(color.foregroundColorCode),
+      );
+
+  String ansiSetBackgroundColor(AnsiBackgroundColor color) => //
+      const AnsiStandardLib().selectGraphicsRendition(
+        GraphicsRenditionNodeColorImpl(color.backgroundColorCode),
+      );
+
+  /// Moves the cursor to the start of the line. Same as '\r'.
+  String carriageReturn() => //
+      const AnsiStandardLib().cursorHorizontalAbsolute1(1);
+
+  String ansiSetTextStyles({
+    bool bold = false,
+    bool underscore = false,
+    bool blink = false,
+    bool inverted = false,
+  }) =>
+      const AnsiStandardLib().selectGraphicsRendition(
+        CompositeGraphicsRenditionNode(
+          [
+            if (bold) const GraphicsRenditionNodeHighlightImpl(),
+            if (underscore) const GraphicsRenditionNodeUnderlineImpl(),
+            if (blink) const GraphicsRenditionNodeBlinkImpl(),
+            if (inverted) const GraphicsRenditionNodeInvertedImpl(),
+          ],
+        ),
+      );
 }
 
 final inputSequences = {
+  'A': 'up',
+  'B': 'down',
+  'C': 'right',
+  'D': 'left',
+  'E': '5',
+  'F': 'end',
+  'G': '5',
+  'H': 'home',
   '1~': 'home',
   '2~': 'insert',
   '3~': 'delete',
@@ -77,6 +216,12 @@ final inputSequences = {
   '32~': 'f18',
   '33~': 'f19',
   '34~': 'f20',
+  'OA': 'up',
+  'OB': 'down',
+  'OC': 'right',
+  'OD': 'left',
+  'OH': 'home',
+  'OF': 'end',
   'OP': 'f1',
   'OQ': 'f2',
   'OR': 'f3',

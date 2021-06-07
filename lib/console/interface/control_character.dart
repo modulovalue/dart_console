@@ -1,7 +1,9 @@
-import '../../ansi/impl/ansi.dart';
-
 /// Non-printable characters that can be entered from the keyboard.
+/// TODO collapse control characters into a subclass of key?
+// Unknown is not a control character and should be removed. These cases should be handled outside.
+// Or perhaps add a supertype where one child is unknown and the other represents all valid control characters.
 abstract class ControlCharacters {
+  static const unknown = ControlCharacterUnknownImpl._();
   static const ctrlA = ControlCharacterCtrlAImpl._();
   static const ctrlB = ControlCharacterCtrlBImpl._();
   static const ctrlC = ControlCharacterCtrlCImpl._(); // Break
@@ -46,7 +48,6 @@ abstract class ControlCharacters {
   static const F2 = ControlCharacterF2Impl._();
   static const F3 = ControlCharacterF3Impl._();
   static const F4 = ControlCharacterF4Impl._();
-  static const unknown = ControlCharacterUnknownImpl._();
 }
 
 abstract class ControlCharacter {}
@@ -100,8 +101,6 @@ class ControlCharacterCtrlLImpl implements ControlCharacter {
 }
 
 class ControlCharacterEnterImpl implements ControlCharacter {
-  static const byteIndicator = 13;
-
   const ControlCharacterEnterImpl._();
 }
 
@@ -158,30 +157,18 @@ class ControlCharacterCtrlZImpl implements ControlCharacter {
 }
 
 class ControlCharacterArrowUpImpl implements ControlCharacter {
-  static const stringIndicator = AnsiConstants.charArrowUp;
-  static const bigOStringIndicator = AnsiConstants.charArrowUp;
-
   const ControlCharacterArrowUpImpl._();
 }
 
 class ControlCharacterArrowDownImpl implements ControlCharacter {
-  static const stringIndicator = AnsiConstants.charArrowDown;
-  static const bigOStringIndicator = AnsiConstants.charArrowDown;
-
   const ControlCharacterArrowDownImpl._();
 }
 
 class ControlCharacterArrowRightImpl implements ControlCharacter {
-  static const stringIndicator = AnsiConstants.charArrowRight;
-  static const bigOStringIndicator = AnsiConstants.charArrowRight;
-
   const ControlCharacterArrowRightImpl._();
 }
 
 class ControlCharacterArrowLeftImpl implements ControlCharacter {
-  static const stringIndicator = AnsiConstants.charArrowLeft;
-  static const bigOStringIndicator = AnsiConstants.charArrowLeft;
-
   const ControlCharacterArrowLeftImpl._();
 }
 
@@ -202,16 +189,10 @@ class ControlCharacterWordRightImpl implements ControlCharacter {
 }
 
 class ControlCharacterHomeImpl implements ControlCharacter {
-  static const String stringIndicator = AnsiConstants.charHome;
-  static const String bigOStringIndicator = AnsiConstants.charHome;
-
   const ControlCharacterHomeImpl._();
 }
 
 class ControlCharacterEndImpl implements ControlCharacter {
-  static const String stringIndicator = AnsiConstants.charEnd;
-  static const String bigOStringIndicator = AnsiConstants.charEnd;
-
   const ControlCharacterEndImpl._();
 }
 
@@ -232,30 +213,18 @@ class ControlCharacterWordBackspaceImpl implements ControlCharacter {
 }
 
 class ControlCharacterF1Impl implements ControlCharacter {
-  static const stringIndicator = "M";
-  static const bigOStringIndicator = "P";
-
   const ControlCharacterF1Impl._();
 }
 
 class ControlCharacterF2Impl implements ControlCharacter {
-  static const stringIndicator = "N";
-  static const bigOStringIndicator = "Q";
-
   const ControlCharacterF2Impl._();
 }
 
 class ControlCharacterF3Impl implements ControlCharacter {
-  static const stringIndicator = "O";
-  static const bigOStringIndicator = "R";
-
   const ControlCharacterF3Impl._();
 }
 
 class ControlCharacterF4Impl implements ControlCharacter {
-  static const stringIndicator = "P";
-  static const bigOStringIndicator = "S";
-
   const ControlCharacterF4Impl._();
 }
 

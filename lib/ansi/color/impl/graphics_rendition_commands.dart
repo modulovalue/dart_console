@@ -1,5 +1,5 @@
-import '../interface/basic_ansi_color.dart';
-import '../interface/byte_color.dart';
+import '../interface/color_types/basic.dart';
+import '../interface/color_types/extended.dart';
 
 /// Base node for graphics rendition command nodes.
 /// TODO crossed out 9 enable 29 disable.
@@ -8,7 +8,7 @@ import '../interface/byte_color.dart';
 /// TODO overlined 53 enable 55 disable.
 /// TODO what is conceal at 8 and reveal at 28.
 abstract class GraphicsRenditionNode {
-  Iterable<int> get commands;
+  Iterable<String> get commands;
 }
 
 /// Reset: turn off all attributes.
@@ -16,7 +16,7 @@ class GraphicsRenditionNodeResetImpl implements GraphicsRenditionNode {
   const GraphicsRenditionNodeResetImpl();
 
   @override
-  Iterable<int> get commands => const [0];
+  Iterable<String> get commands => const ["0"];
 }
 
 /// Bold (or bright, it’s up to the terminal and the user config to some extent).
@@ -25,7 +25,7 @@ class GraphicsRenditionNodeHighlightImpl implements GraphicsRenditionNode {
   const GraphicsRenditionNodeHighlightImpl();
 
   @override
-  Iterable<int> get commands => const [1];
+  Iterable<String> get commands => const ["1"];
 }
 
 /// Italic.
@@ -34,7 +34,7 @@ class GraphicsRenditionNodeItalicImpl implements GraphicsRenditionNode {
   const GraphicsRenditionNodeItalicImpl();
 
   @override
-  Iterable<int> get commands => const [3];
+  Iterable<String> get commands => const ["3"];
 }
 
 /// Underline.
@@ -43,7 +43,7 @@ class GraphicsRenditionNodeUnderlineImpl implements GraphicsRenditionNode {
   const GraphicsRenditionNodeUnderlineImpl();
 
   @override
-  Iterable<int> get commands => const [4];
+  Iterable<String> get commands => const ["4"];
 }
 
 /// Blink.
@@ -52,7 +52,7 @@ class GraphicsRenditionNodeBlinkImpl implements GraphicsRenditionNode {
   const GraphicsRenditionNodeBlinkImpl();
 
   @override
-  Iterable<int> get commands => const [5];
+  Iterable<String> get commands => const ["5"];
 }
 
 /// Inverted also known as reversed.
@@ -63,7 +63,7 @@ class GraphicsRenditionNodeInvertedImpl implements GraphicsRenditionNode {
   const GraphicsRenditionNodeInvertedImpl();
 
   @override
-  Iterable<int> get commands => const [7];
+  Iterable<String> get commands => const ["7"];
 }
 
 /// Set text colour from the basic colour palette of 0–7.
@@ -74,8 +74,8 @@ class GraphicsRenditionNodeTextColorImpl implements GraphicsRenditionNode {
   const GraphicsRenditionNodeTextColorImpl(this.color);
 
   @override
-  Iterable<int> get commands sync* {
-    yield 30 + color.paletteNumberTribit;
+  Iterable<String> get commands sync* {
+    yield "3" + color.paletteNumberTribit.toString();
   }
 }
 
@@ -86,8 +86,8 @@ class GraphicsRenditionNodeBrightTextColorImpl implements GraphicsRenditionNode 
   const GraphicsRenditionNodeBrightTextColorImpl(this.color);
 
   @override
-  Iterable<int> get commands sync* {
-    yield 90 + color.paletteNumberTribit;
+  Iterable<String> get commands sync* {
+    yield "9" + color.paletteNumberTribit.toString();
   }
 }
 
@@ -99,8 +99,8 @@ class GraphicsRenditionNodeBackgroundColorImpl implements GraphicsRenditionNode 
   const GraphicsRenditionNodeBackgroundColorImpl(this.color);
 
   @override
-  Iterable<int> get commands sync* {
-    yield 40 + color.paletteNumberTribit;
+  Iterable<String> get commands sync* {
+    yield "4" + color.paletteNumberTribit.toString();
   }
 }
 
@@ -111,8 +111,8 @@ class GraphicsRenditionNodeBrightBackgroundColorImpl implements GraphicsRenditio
   const GraphicsRenditionNodeBrightBackgroundColorImpl(this.color);
 
   @override
-  Iterable<int> get commands sync* {
-    yield 100 + color.paletteNumberTribit;
+  Iterable<String> get commands sync* {
+    yield "10" + color.paletteNumberTribit.toString();
   }
 }
 
@@ -126,8 +126,8 @@ class GraphicsRenditionNodeColorImpl implements GraphicsRenditionNode {
   const GraphicsRenditionNodeColorImpl(this.raw);
 
   @override
-  Iterable<int> get commands sync* {
-    yield raw;
+  Iterable<String> get commands sync* {
+    yield raw.toString();
   }
 }
 
@@ -139,10 +139,10 @@ class GraphicsRenditionNodeExtendedTextColorImpl implements GraphicsRenditionNod
   const GraphicsRenditionNodeExtendedTextColorImpl(this.color);
 
   @override
-  Iterable<int> get commands sync* {
-    yield 38;
-    yield 5;
-    yield color.paletteNumberByte;
+  Iterable<String> get commands sync* {
+    yield "38";
+    yield "5";
+    yield color.paletteNumberByte.toString();
   }
 }
 
@@ -154,10 +154,10 @@ class GraphicsRenditionNodeExtendedBackgroundColorImpl implements GraphicsRendit
   const GraphicsRenditionNodeExtendedBackgroundColorImpl(this.color);
 
   @override
-  Iterable<int> get commands sync* {
-    yield 48;
-    yield 5;
-    yield color.paletteNumberByte;
+  Iterable<String> get commands sync* {
+    yield "48";
+    yield "5";
+    yield color.paletteNumberByte.toString();
   }
 }
 
@@ -170,12 +170,12 @@ class GraphicsRenditionNodeRGBTextColorImpl implements GraphicsRenditionNode {
   const GraphicsRenditionNodeRGBTextColorImpl(this.r, this.g, this.b);
 
   @override
-  Iterable<int> get commands sync* {
-    yield 38;
-    yield 2;
-    yield r;
-    yield g;
-    yield b;
+  Iterable<String> get commands sync* {
+    yield "38";
+    yield "2";
+    yield r.toString();
+    yield g.toString();
+    yield b.toString();
   }
 }
 
@@ -188,12 +188,12 @@ class GraphicsRenditionNodeRGBBackgroundColorImpl implements GraphicsRenditionNo
   const GraphicsRenditionNodeRGBBackgroundColorImpl(this.r, this.g, this.b);
 
   @override
-  Iterable<int> get commands sync* {
-    yield 48;
-    yield 2;
-    yield r;
-    yield g;
-    yield b;
+  Iterable<String> get commands sync* {
+    yield "48";
+    yield "2";
+    yield r.toString();
+    yield g.toString();
+    yield b.toString();
   }
 }
 
@@ -204,7 +204,7 @@ class CompositeGraphicsRenditionNode implements GraphicsRenditionNode {
   const CompositeGraphicsRenditionNode(this.nodes);
 
   @override
-  Iterable<int> get commands sync* {
+  Iterable<String> get commands sync* {
     for (final node in nodes) {
       yield* node.commands;
     }

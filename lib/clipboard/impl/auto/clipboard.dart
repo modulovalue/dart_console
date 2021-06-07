@@ -1,14 +1,14 @@
 import 'dart:io';
 
 import '../../interface/clipboard.dart';
-import '../macos_pbpaste/clipboard.dart';
+import '../macos_pb/clipboard.dart';
 import '../xclip/clipboard.dart';
 
 AutoClipboardResult autoGetClipboard() {
   if (Platform.isMacOS) {
     return const AutoClipboardResultSuccess(SystemClipboardMacosPbpaste());
   } else if (Platform.isLinux) {
-    if (File('/usr/bin/xclip').existsSync()) {
+    if (File(SystemClipboardXClipImpl.xclipLocation).existsSync()) {
       return const AutoClipboardResultSuccess(SystemClipboardXClipImpl());
     } else {
       return const AutoClipboardResultLinuxXClipNotFoundSystem();

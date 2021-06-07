@@ -1,16 +1,20 @@
 import 'dart:async';
 import 'dart:io';
 
+import '../keyboard/impl/keyboard.dart';
 import 'base.dart';
-import 'keyboard.dart';
 
 abstract class DCWindow {
   String title;
   Timer? _updateTimer;
   final DCConsole console;
-  final DCKeyboard keyboard;
+  final TerminalKeyboardImpl keyboard;
 
-  DCWindow(this.console, this.title) : keyboard = DCKeyboard(console) {
+  DCWindow(this.console, this.title)
+      : keyboard = TerminalKeyboardImpl(
+          byteStream: console.rawConsole.byteStream(),
+          moveCursorBackByOne: () => console.moveCursorBack(1),
+        ) {
     _init();
     initialize();
   }

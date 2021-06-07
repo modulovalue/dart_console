@@ -1,6 +1,7 @@
 import 'dart:io';
 
-import '../../ansi/impl/ansi.dart';
+import '../../ansi/spec/escape.dart';
+import '../../ansi/spec/lib.dart';
 import '../../terminal/interface/terminal_lib.dart';
 import '../interface/coordinate.dart';
 import '../interface/cursor_position.dart';
@@ -15,7 +16,7 @@ class SneathCursorPositionDelegateImpl implements SneathCursorPositionDelegate {
   @override
   SneathCoordinate? get() {
     setRawModeDelegate(true);
-    stdout.write(AnsiConstants.ansiDeviceStatusReportCursorPosition);
+    stdout.write(AnsiStandardLib.ansiDeviceStatusReportCursorPosition);
     // returns a Cursor Position Report result in the form <ESC>[24;80R
     // which we have to parse apart, unfortunately
     var result = '';
@@ -30,7 +31,7 @@ class SneathCursorPositionDelegateImpl implements SneathCursorPositionDelegate {
       i++;
     }
     setRawModeDelegate(false);
-    if (result[0] != AnsiConstants.escape) {
+    if (result[0] != ansiEscape) {
       print(' result: $result  result.length: ${result.length}');
       return null;
     } else {

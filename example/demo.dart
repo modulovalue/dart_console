@@ -2,9 +2,10 @@ import 'dart:collection';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:dart_console/ansi/impl/ansi.dart';
-import 'package:dart_console/ansi/impl/color.dart';
-import 'package:dart_console/ansi/impl/extended_color.dart';
+import 'package:dart_console/ansi/color/impl/color.dart';
+import 'package:dart_console/ansi/color/impl/color_more.dart';
+import 'package:dart_console/ansi/color/impl/extended_color.dart';
+import 'package:dart_console/ansi/spec/sizes.dart';
 import 'package:dart_console/console/impl/console.dart';
 import 'package:dart_console/console/impl/coordinate.dart';
 import 'package:dart_console/console/impl/key.dart';
@@ -13,6 +14,27 @@ import 'package:dart_console/console/interface/console.dart';
 import 'package:dart_console/console/interface/control_character.dart';
 import 'package:dart_console/console/interface/coordinate.dart';
 import 'package:dart_console/terminal/impl/auto/terminal_lib.dart';
+
+void main(List<String> arguments) {
+  final allDemos = Demo.allDemos();
+  final console = SneathConsoleImpl(autodetectSneathTerminal());
+  for (int i = 0; i < allDemos.length; i++) {
+    console.clearScreen();
+    allDemos[i](console);
+    console.writeLine();
+    final demoIsLast = i == allDemos.length - 1;
+    if (demoIsLast) {
+      console.writeLine('Press any key to end the demo sequence...');
+    } else {
+      console.writeLine('Press any key to continue, or Ctrl+C to quit...');
+    }
+    final key = console.readKey();
+    console.resetColorAttributes();
+    if (key == const KeyControlImpl(ControlCharacters.ctrlC)) {
+      exit(1);
+    }
+  }
+}
 
 abstract class Demo {
   static List<void Function(SneathConsole console)> allDemos() => [
@@ -24,8 +46,8 @@ abstract class Demo {
       ];
 
   static void whimsicalLoadingScreen(SneathConsole console) {
-    console.setBackgroundColor(NamedAnsiColors.blue);
-    console.setForegroundColor(NamedAnsiColors.white);
+    console.setBackgroundColor(const DarkAnsiColorAdapter(NamedAnsiColors.blue));
+    console.setForegroundColor(const DarkAnsiColorAdapter(NamedAnsiColors.white));
     console.clearScreen();
     final row = (console.dimensions.height / 2).round() - 1;
     final progressBarWidth = max(console.dimensions.width - 10, 10);
@@ -46,8 +68,8 @@ abstract class Demo {
   }
 
   static void colorSetAndAlignmentDemonstration(SneathConsole console) {
-    console.setBackgroundColor(NamedAnsiColors.blue);
-    console.setForegroundColor(NamedAnsiColors.white);
+    console.setBackgroundColor(const DarkAnsiColorAdapter(NamedAnsiColors.blue));
+    console.setForegroundColor(const DarkAnsiColorAdapter(NamedAnsiColors.white));
     console.writeLine('Simple Demo', ConsoleTextAlignments.center);
     console.resetColorAttributes();
     console.writeLine();
@@ -57,7 +79,7 @@ abstract class Demo {
     console.writeLine('This text is left aligned.', ConsoleTextAlignments.left);
     console.writeLine('This text is center aligned.', ConsoleTextAlignments.center);
     console.writeLine('This text is right aligned.', ConsoleTextAlignments.right);
-    for (final color in NamedAnsiColors.allDarkAndBright) {
+    for (final color in NamedAnsiColorsMore.allDarkAndBright) {
       console.setForegroundColor(color);
       console.writeLine(color.name);
     }
@@ -65,15 +87,15 @@ abstract class Demo {
   }
 
   static void extendedForegroundColorsDemonstration(SneathConsole console) {
-    console.setBackgroundColor(NamedAnsiColors.red);
-    console.setForegroundColor(NamedAnsiColors.white);
+    console.setBackgroundColor(const DarkAnsiColorAdapter(NamedAnsiColors.red));
+    console.setForegroundColor(const DarkAnsiColorAdapter(NamedAnsiColors.white));
     console.writeLine('ANSI Extended 256-Color Foreground Test', ConsoleTextAlignments.center);
     console.resetColorAttributes();
     console.writeLine();
     for (var i = 0; i < 16; i++) {
       for (var j = 0; j < 16; j++) {
         final color = i * 16 + j;
-        console.setForegroundExtendedColor(AnsiExtendedColorPaletteRawImpl(color));
+        console.setForegroundExtendedColor(AnsiExtendedColorPaletteRawImpl(color, "Unknown"));
         console.write(color.toString().padLeft(4));
       }
       console.writeLine();
@@ -82,15 +104,15 @@ abstract class Demo {
   }
 
   static void extendedBackgroundColorsDemonstration(SneathConsole console) {
-    console.setBackgroundColor(NamedAnsiColors.green);
-    console.setForegroundColor(NamedAnsiColors.white);
+    console.setBackgroundColor(const DarkAnsiColorAdapter(NamedAnsiColors.green));
+    console.setForegroundColor(const DarkAnsiColorAdapter(NamedAnsiColors.white));
     console.writeLine('ANSI Extended 256-Color Background Test', ConsoleTextAlignments.center);
     console.resetColorAttributes();
     console.writeLine();
-    for (var i = 0; i < AnsiConstants.nibbleSize; i++) {
-      for (var j = 0; j < AnsiConstants.nibbleSize; j++) {
-        final color = i * AnsiConstants.nibbleSize + j;
-        console.setBackgroundExtendedColor(AnsiExtendedColorPaletteRawImpl(color));
+    for (var i = 0; i < nibbleSize; i++) {
+      for (var j = 0; j < nibbleSize; j++) {
+        final color = i * nibbleSize + j;
+        console.setBackgroundExtendedColor(AnsiExtendedColorPaletteRawImpl(color, "Unknown"));
         console.write(color.toString().padLeft(4));
       }
       console.writeLine();
@@ -117,12 +139,12 @@ abstract class Demo {
       stars.removeFirst();
     }
 
-    console.setBackgroundColor(NamedAnsiColors.yellow);
-    console.setForegroundColor(NamedAnsiColors.brightBlack);
+    console.setBackgroundColor(const DarkAnsiColorAdapter(NamedAnsiColors.yellow));
+    console.setForegroundColor(const BrightAnsiColorAdapter(NamedAnsiColors.black));
     console.writeLine('Stars', ConsoleTextAlignments.center);
     console.resetColorAttributes();
     console.hideCursor();
-    console.setForegroundColor(NamedAnsiColors.brightYellow);
+    console.setForegroundColor(const BrightAnsiColorAdapter(NamedAnsiColors.yellow));
     for (var i = 0; i < numStars; i++) {
       if (i < numStars - maxStarsOnScreen) {
         addStar();
@@ -135,26 +157,5 @@ abstract class Demo {
     console.resetColorAttributes();
     console.cursorPosition.update(SneathCoordinateImpl(console.dimensions.height - 3, 0));
     console.showCursor();
-  }
-}
-
-void main(List<String> arguments) {
-  final allDemos = Demo.allDemos();
-  final console = SneathConsoleImpl(autodetectSneathTerminal());
-  for (int i = 0; i < allDemos.length; i++) {
-    console.clearScreen();
-    allDemos[i](console);
-    console.writeLine();
-    final demoIsLast = i == allDemos.length - 1;
-    if (demoIsLast) {
-      console.writeLine('Press any key to end the demo sequence...');
-    } else {
-      console.writeLine('Press any key to continue, or Ctrl+C to quit...');
-    }
-    final key = console.readKey();
-    console.resetColorAttributes();
-    if (key == const KeyControlImpl(ControlCharacters.ctrlC)) {
-      exit(1);
-    }
   }
 }

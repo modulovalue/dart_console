@@ -1,5 +1,5 @@
-import '../../ansi/interface/byte_color.dart';
-import '../../ansi/interface/color.dart';
+import '../../ansi/color/interface/color_types/extended.dart';
+import '../../ansi/color/interface/generalizing/named_basic.dart';
 import 'control_character.dart';
 import 'cursor_position.dart';
 import 'dimensions.dart';
