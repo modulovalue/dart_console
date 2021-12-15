@@ -8,7 +8,9 @@ void main() {
   final console = DCConsole(DCStdioConsoleAdapter());
   final loader = DCWideLoadingBar(console);
   final timer = loader.loop();
-  Future<dynamic>.delayed(const Duration(seconds: 5)).then((dynamic _) {
-    timer.cancel();
-  });
+  Future<dynamic>.delayed(const Duration(seconds: 5)).then(
+    (final dynamic _) {
+      timer.cancel();
+    },
+  );
 }

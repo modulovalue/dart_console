@@ -11,7 +11,10 @@ class SneathCursorPositionDelegateImpl implements SneathCursorPositionDelegate {
   final SneathTerminal terminal;
   final void Function(bool) setRawModeDelegate;
 
-  const SneathCursorPositionDelegateImpl(this.terminal, this.setRawModeDelegate);
+  const SneathCursorPositionDelegateImpl(
+    final this.terminal,
+    final this.setRawModeDelegate,
+  );
 
   @override
   SneathCoordinate? get() {
@@ -54,7 +57,9 @@ class SneathCursorPositionDelegateImpl implements SneathCursorPositionDelegate {
   }
 
   @override
-  void update(SneathCoordinate? cursor) {
+  void update(
+    final SneathCoordinate? cursor,
+  ) {
     if (cursor != null) {
       terminal.setCursorPosition(cursor.col, cursor.row);
     }

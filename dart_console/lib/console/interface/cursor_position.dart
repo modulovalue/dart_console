@@ -16,5 +16,7 @@ abstract class SneathCursorPositionDelegate {
   ///
   /// Coordinates are measured from the top left of the screen, and are
   /// zero-based.
-  void update(SneathCoordinate? cursor);
+  void update(
+    final SneathCoordinate? cursor,
+  );
 }

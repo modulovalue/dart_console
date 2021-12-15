@@ -7,7 +7,7 @@ import '../example/readme.dart' as readme_example;
 
 void main() {
   test("Coordinate positioning", () {
-    final console = SneathConsoleImpl(autodetectSneathTerminal());
+    final console = SneathConsoleImpl(autoSneathTerminal());
     const coordinate = SneathCoordinateImpl(5, 8);
     console.cursorPosition.update(coordinate);
     final returnedCoordinate = console.cursorPosition.get()!;

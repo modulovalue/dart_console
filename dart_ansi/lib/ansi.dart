@@ -2,7 +2,7 @@
 // https://en.wikipedia.org/wiki/ANSI_escape_code
 // http://www.climagic.org/mirrors/VT100_Escape_Codes.html
 
-/// TODO add a second layer to provide a more ordered overview of the spec, move color implementations and commands into that layer.
+// TODO add a second layer to provide a better overview of the spec, move color implementations and commands into that layer.
 
 /// What character, that comes after the escape
 /// character indicates an ansi escape sequence?
@@ -150,9 +150,9 @@ const ansiSelectGraphicsRenditionName = "m";
 const ansiShowCursorName = "?25h";
 const ansiHideCursorName = "?25l";
 
-/// TODO rgb colors.
+// TODO rgb colors.
 abstract class AnsiBasicPalette {
-  /// TODO make this be a string or rather a byte.
+  // TODO make this be a string or rather a byte.
   int get paletteNumberTribit;
 }
 
@@ -180,35 +180,64 @@ abstract class AnsiExtendedColorPalette {
 }
 
 /// Set graphics rendition mode.
-String ansiSelectGraphicsRendition(GraphicsRenditionNode nodes) =>
+String ansiSelectGraphicsRendition(
+  final GraphicsRenditionNode nodes,
+) =>
     controlSequenceIdentifier + nodes.commands.join(commandArgumentSeparator) + ansiSelectGraphicsRenditionName;
 
 /// Move cursor up by n.
-String ansiCursorUpBy(int n) => controlSequenceIdentifier + n.toString() + ansiCursorUpName;
+String ansiCursorUpBy(
+  final int n,
+) =>
+    controlSequenceIdentifier + n.toString() + ansiCursorUpName;
 
 /// Move cursor down by n.
-String ansiCursorDownBy(int n) => controlSequenceIdentifier + n.toString() + ansiCursorDownName;
+String ansiCursorDownBy(
+  final int n,
+) =>
+    controlSequenceIdentifier + n.toString() + ansiCursorDownName;
 
 /// Move cursor forward by n.
-String ansiCursorForwardBy(int n) => controlSequenceIdentifier + n.toString() + ansiCursorForwardName;
+String ansiCursorForwardBy(
+  final int n,
+) =>
+    controlSequenceIdentifier + n.toString() + ansiCursorForwardName;
 
 /// Move cursor back by n.
-String ansiCursorBackBy(int n) => controlSequenceIdentifier + n.toString() + ansiCursorBackName;
+String ansiCursorBackBy(
+  final int n,
+) =>
+    controlSequenceIdentifier + n.toString() + ansiCursorBackName;
 
 /// Move cursor to the beginning of the line n lines down.
-String ansiCursorNextLineBy(int n) => controlSequenceIdentifier + n.toString() + ansiCursorNextLineName;
+String ansiCursorNextLineBy(
+  final int n,
+) =>
+    controlSequenceIdentifier + n.toString() + ansiCursorNextLineName;
 
 /// Move cursor to the beginning of the line n lines up.
-String ansiCursorPreviousLineBy(int n) => controlSequenceIdentifier + n.toString() + ansiCursorPreviousLineName;
+String ansiCursorPreviousLineBy(
+  final int n,
+) =>
+    controlSequenceIdentifier + n.toString() + ansiCursorPreviousLineName;
 
 /// Move cursor to the column n within the current row.
-String ansiCursorHorizontalAbsolute1(int n) => controlSequenceIdentifier + n.toString() + ansiCursorHorizontalAbsoluteName1;
+String ansiCursorHorizontalAbsolute1(
+  final int n,
+) =>
+    controlSequenceIdentifier + n.toString() + ansiCursorHorizontalAbsoluteName1;
 
 /// Move cursor to the column n within the current row.
-String ansiCursorHorizontalAbsolute2(int n) => controlSequenceIdentifier + n.toString() + ansiCursorHorizontalAbsoluteName2;
+String ansiCursorHorizontalAbsolute2(
+  final int n,
+) =>
+    controlSequenceIdentifier + n.toString() + ansiCursorHorizontalAbsoluteName2;
 
 /// Move cursor to row n, column m, counting from the top left corner.
-String ansiCursorPositionTo(int row, int column) =>
+String ansiCursorPositionTo(
+  final int row,
+  final int column,
+) =>
     controlSequenceIdentifier + row.toString() + commandArgumentSeparator + column.toString() + ansiCursorPositionName;
 
 /// Clear part of the screen. 0, 1, 2, and 3 have various specific functions.
@@ -226,10 +255,16 @@ String ansiEraseInDisplay() => controlSequenceIdentifier + ansiEraseInDisplayNam
 String ansiEraseInLine() => controlSequenceIdentifier + ansiEraseInLineName;
 
 /// Scroll window up by n lines.
-String ansiScrollUpBy(int n) => controlSequenceIdentifier + n.toString() + ansiScrollUpName;
+String ansiScrollUpBy(
+  final int n,
+) =>
+    controlSequenceIdentifier + n.toString() + ansiScrollUpName;
 
 /// Scroll window down by n lines.
-String ansiScrollDownBy(int n) => controlSequenceIdentifier + n.toString() + ansiScrollDownName;
+String ansiScrollDownBy(
+  final int n,
+) =>
+    controlSequenceIdentifier + n.toString() + ansiScrollDownName;
 
 /// Save current cursor position for use with u.
 String ansiSaveCursorPosition() => controlSequenceIdentifier + ansiSaveCursorPosName;
@@ -237,35 +272,42 @@ String ansiSaveCursorPosition() => controlSequenceIdentifier + ansiSaveCursorPos
 /// Set cursor back to position last saved by s.
 String ansiRestoreCursorPosition() => controlSequenceIdentifier + ansiRestoreCursorPosName;
 
-String ansiSetExtendedForegroundColor(AnsiExtendedColorPalette color) => //
-ansiSelectGraphicsRendition(
-  GraphicsRenditionNodeExtendedTextColorImpl(color),
-);
+String ansiSetExtendedForegroundColor(
+  final AnsiExtendedColorPalette color,
+) =>
+    ansiSelectGraphicsRendition(
+      GraphicsRenditionNodeExtendedTextColorImpl(color),
+    );
 
-String ansiSetExtendedBackgroundColor(AnsiExtendedColorPalette color) => //
-ansiSelectGraphicsRendition(
-  GraphicsRenditionNodeExtendedBackgroundColorImpl(color),
-);
+String ansiSetExtendedBackgroundColor(
+  final AnsiExtendedColorPalette color,
+) =>
+    ansiSelectGraphicsRendition(
+      GraphicsRenditionNodeExtendedBackgroundColorImpl(color),
+    );
 
-String ansiSetTextColor(AnsiForegroundColor color) => //
-ansiSelectGraphicsRendition(
-  GraphicsRenditionNodeColorImpl(color.foregroundColorCode),
-);
+String ansiSetTextColor(
+  final AnsiForegroundColor color,
+) =>
+    ansiSelectGraphicsRendition(
+      GraphicsRenditionNodeColorImpl(color.foregroundColorCode),
+    );
 
-String ansiSetBackgroundColor(AnsiBackgroundColor color) => //
-ansiSelectGraphicsRendition(
-  GraphicsRenditionNodeColorImpl(color.backgroundColorCode),
-);
+String ansiSetBackgroundColor(
+  final AnsiBackgroundColor color,
+) =>
+    ansiSelectGraphicsRendition(
+      GraphicsRenditionNodeColorImpl(color.backgroundColorCode),
+    );
 
 /// Moves the cursor to the start of the line. Same as '\r'.
-String ansiCarriageReturn() => //
-ansiCursorHorizontalAbsolute1(1);
+String ansiCarriageReturn() => ansiCursorHorizontalAbsolute1(1);
 
 String ansiSetTextStyles({
-  bool bold = false,
-  bool underscore = false,
-  bool blink = false,
-  bool inverted = false,
+  final bool bold = false,
+  final bool underscore = false,
+  final bool blink = false,
+  final bool inverted = false,
 }) =>
     ansiSelectGraphicsRendition(
       CompositeGraphicsRenditionNode(
@@ -278,9 +320,9 @@ String ansiSetTextStyles({
       ),
     );
 
-/// TODO find an exhaustive reference.
+// TODO find an exhaustive reference.
 
-/// TODO support all these input sequences.
+// TODO support all these input sequences.
 const inputSequences = {
   'A': 'up',
   'B': 'down',
@@ -787,7 +829,9 @@ class GraphicsRenditionNodeInvertedImpl implements GraphicsRenditionNode {
 class GraphicsRenditionNodeTextColorImpl implements GraphicsRenditionNode {
   final AnsiBasicPalette color;
 
-  const GraphicsRenditionNodeTextColorImpl(this.color);
+  const GraphicsRenditionNodeTextColorImpl(
+    final this.color,
+  );
 
   @override
   Iterable<String> get commands sync* {
@@ -799,7 +843,9 @@ class GraphicsRenditionNodeTextColorImpl implements GraphicsRenditionNode {
 class GraphicsRenditionNodeBrightTextColorImpl implements GraphicsRenditionNode {
   final AnsiBasicPalette color;
 
-  const GraphicsRenditionNodeBrightTextColorImpl(this.color);
+  const GraphicsRenditionNodeBrightTextColorImpl(
+    final this.color,
+  );
 
   @override
   Iterable<String> get commands sync* {
@@ -808,11 +854,13 @@ class GraphicsRenditionNodeBrightTextColorImpl implements GraphicsRenditionNode 
 }
 
 /// Set background colour.
-/// TODO reset BG color is 49?
+// TODO reset BG color is 49?
 class GraphicsRenditionNodeBackgroundColorImpl implements GraphicsRenditionNode {
   final AnsiBasicPalette color;
 
-  const GraphicsRenditionNodeBackgroundColorImpl(this.color);
+  const GraphicsRenditionNodeBackgroundColorImpl(
+    final this.color,
+  );
 
   @override
   Iterable<String> get commands sync* {
@@ -824,7 +872,9 @@ class GraphicsRenditionNodeBackgroundColorImpl implements GraphicsRenditionNode 
 class GraphicsRenditionNodeBrightBackgroundColorImpl implements GraphicsRenditionNode {
   final AnsiBasicPalette color;
 
-  const GraphicsRenditionNodeBrightBackgroundColorImpl(this.color);
+  const GraphicsRenditionNodeBrightBackgroundColorImpl(
+    final this.color,
+  );
 
   @override
   Iterable<String> get commands sync* {
@@ -839,7 +889,9 @@ class GraphicsRenditionNodeBrightBackgroundColorImpl implements GraphicsRenditio
 class GraphicsRenditionNodeColorImpl implements GraphicsRenditionNode {
   final int raw;
 
-  const GraphicsRenditionNodeColorImpl(this.raw);
+  const GraphicsRenditionNodeColorImpl(
+    final this.raw,
+  );
 
   @override
   Iterable<String> get commands sync* {
@@ -852,7 +904,9 @@ class GraphicsRenditionNodeColorImpl implements GraphicsRenditionNode {
 class GraphicsRenditionNodeExtendedTextColorImpl implements GraphicsRenditionNode {
   final AnsiExtendedColorPalette color;
 
-  const GraphicsRenditionNodeExtendedTextColorImpl(this.color);
+  const GraphicsRenditionNodeExtendedTextColorImpl(
+    final this.color,
+  );
 
   @override
   Iterable<String> get commands sync* {
@@ -867,7 +921,9 @@ class GraphicsRenditionNodeExtendedTextColorImpl implements GraphicsRenditionNod
 class GraphicsRenditionNodeExtendedBackgroundColorImpl implements GraphicsRenditionNode {
   final AnsiExtendedColorPalette color;
 
-  const GraphicsRenditionNodeExtendedBackgroundColorImpl(this.color);
+  const GraphicsRenditionNodeExtendedBackgroundColorImpl(
+    final this.color,
+  );
 
   @override
   Iterable<String> get commands sync* {
@@ -883,7 +939,11 @@ class GraphicsRenditionNodeRGBTextColorImpl implements GraphicsRenditionNode {
   final int g;
   final int b;
 
-  const GraphicsRenditionNodeRGBTextColorImpl(this.r, this.g, this.b);
+  const GraphicsRenditionNodeRGBTextColorImpl(
+    final this.r,
+    final this.g,
+    final this.b,
+  );
 
   @override
   Iterable<String> get commands sync* {
@@ -901,7 +961,11 @@ class GraphicsRenditionNodeRGBBackgroundColorImpl implements GraphicsRenditionNo
   final int g;
   final int b;
 
-  const GraphicsRenditionNodeRGBBackgroundColorImpl(this.r, this.g, this.b);
+  const GraphicsRenditionNodeRGBBackgroundColorImpl(
+    final this.r,
+    final this.g,
+    final this.b,
+  );
 
   @override
   Iterable<String> get commands sync* {
@@ -917,7 +981,9 @@ class GraphicsRenditionNodeRGBBackgroundColorImpl implements GraphicsRenditionNo
 class CompositeGraphicsRenditionNode implements GraphicsRenditionNode {
   final Iterable<GraphicsRenditionNode> nodes;
 
-  const CompositeGraphicsRenditionNode(this.nodes);
+  const CompositeGraphicsRenditionNode(
+    final this.nodes,
+  );
 
   @override
   Iterable<String> get commands sync* {
@@ -929,264 +995,287 @@ class CompositeGraphicsRenditionNode implements GraphicsRenditionNode {
 
 /// See https://jonasjacek.github.io/colors/
 abstract class AnsiExtendedColors implements AnsiExtendedColorPalette {
-  static const Black = AnsiExtendedColorPaletteRawImpl(smallestNumberExtendedPalette, "Black");
-  static const Maroon = AnsiExtendedColorPaletteRawImpl(1, "Maroon");
-  static const Green = AnsiExtendedColorPaletteRawImpl(2, "Green");
-  static const Olive = AnsiExtendedColorPaletteRawImpl(3, "Olive");
-  static const Navy = AnsiExtendedColorPaletteRawImpl(4, "Navy");
-  static const Purple = AnsiExtendedColorPaletteRawImpl(5, "Purple");
-  static const Teal = AnsiExtendedColorPaletteRawImpl(6, "Teal");
-  static const Silver = AnsiExtendedColorPaletteRawImpl(7, "Silver");
-  static const Grey = AnsiExtendedColorPaletteRawImpl(8, "Grey");
-  static const Red = AnsiExtendedColorPaletteRawImpl(9, "Red");
-  static const Lime = AnsiExtendedColorPaletteRawImpl(10, "Lime");
-  static const Yellow = AnsiExtendedColorPaletteRawImpl(11, "Yellow");
-  static const Blue = AnsiExtendedColorPaletteRawImpl(12, "Blue");
-  static const Fuchsia = AnsiExtendedColorPaletteRawImpl(13, "Fuchsia");
-  static const Aqua = AnsiExtendedColorPaletteRawImpl(14, "Aqua");
-  static const White = AnsiExtendedColorPaletteRawImpl(15, "White");
-  static const Grey0 = AnsiExtendedColorPaletteRawImpl(16, "Grey0");
-  static const NavyBlue = AnsiExtendedColorPaletteRawImpl(17, "NavyBlue");
-  static const DarkBlue = AnsiExtendedColorPaletteRawImpl(18, "DarkBlue");
-  static const Blue3 = AnsiExtendedColorPaletteRawImpl(19, "Blue3");
-  static const Blue3_2 = AnsiExtendedColorPaletteRawImpl(20, "Blue3_2");
-  static const Blue1 = AnsiExtendedColorPaletteRawImpl(21, "Blue1");
-  static const DarkGreen = AnsiExtendedColorPaletteRawImpl(22, "DarkGreen");
-  static const DeepSkyBlue4 = AnsiExtendedColorPaletteRawImpl(23, "DeepSkyBlue4");
-  static const DeepSkyBlue4_2 = AnsiExtendedColorPaletteRawImpl(24, "DeepSkyBlue4_2");
-  static const DeepSkyBlue4_3 = AnsiExtendedColorPaletteRawImpl(25, "DeepSkyBlue4_3");
-  static const DodgerBlue3 = AnsiExtendedColorPaletteRawImpl(26, "DodgerBlue3");
-  static const DodgerBlue2 = AnsiExtendedColorPaletteRawImpl(27, "DodgerBlue2");
-  static const Green4 = AnsiExtendedColorPaletteRawImpl(28, "Green4");
-  static const SpringGreen4 = AnsiExtendedColorPaletteRawImpl(29, "SpringGreen4");
-  static const Turquoise4 = AnsiExtendedColorPaletteRawImpl(30, "Turquoise4");
-  static const DeepSkyBlue3 = AnsiExtendedColorPaletteRawImpl(31, "DeepSkyBlue3");
-  static const DeepSkyBlue3_2 = AnsiExtendedColorPaletteRawImpl(32, "DeepSkyBlue3_2");
-  static const DodgerBlue1 = AnsiExtendedColorPaletteRawImpl(33, "DodgerBlue1");
-  static const Green3 = AnsiExtendedColorPaletteRawImpl(34, "Green3");
-  static const SpringGreen3 = AnsiExtendedColorPaletteRawImpl(35, "SpringGreen3");
-  static const DarkCyan = AnsiExtendedColorPaletteRawImpl(36, "DarkCyan");
-  static const LightSeaGreen = AnsiExtendedColorPaletteRawImpl(37, "LightSeaGreen");
-  static const DeepSkyBlue2 = AnsiExtendedColorPaletteRawImpl(38, "DeepSkyBlue2");
-  static const DeepSkyBlue1 = AnsiExtendedColorPaletteRawImpl(39, "DeepSkyBlue1");
-  static const Green3_2 = AnsiExtendedColorPaletteRawImpl(40, "Green3_2");
-  static const SpringGreen3_2 = AnsiExtendedColorPaletteRawImpl(41, "SpringGreen3_2");
-  static const SpringGreen2 = AnsiExtendedColorPaletteRawImpl(42, "SpringGreen2");
-  static const Cyan3 = AnsiExtendedColorPaletteRawImpl(43, "Cyan3");
-  static const DarkTurquoise = AnsiExtendedColorPaletteRawImpl(44, "DarkTurquoise");
-  static const Turquoise2 = AnsiExtendedColorPaletteRawImpl(45, "Turquoise2");
-  static const Green1 = AnsiExtendedColorPaletteRawImpl(46, "Green1");
-  static const SpringGreen2_2 = AnsiExtendedColorPaletteRawImpl(47, "SpringGreen2_2");
-  static const SpringGreen1 = AnsiExtendedColorPaletteRawImpl(48, "SpringGreen1");
-  static const MediumSpringGreen = AnsiExtendedColorPaletteRawImpl(49, "MediumSpringGreen");
-  static const Cyan2 = AnsiExtendedColorPaletteRawImpl(50, "Cyan2");
-  static const Cyan1 = AnsiExtendedColorPaletteRawImpl(51, "Cyan1");
-  static const DarkRed = AnsiExtendedColorPaletteRawImpl(52, "DarkRed");
-  static const DeepPink4 = AnsiExtendedColorPaletteRawImpl(53, "DeepPink4");
-  static const Purple4 = AnsiExtendedColorPaletteRawImpl(54, "Purple4");
-  static const Purple4_2 = AnsiExtendedColorPaletteRawImpl(55, "Purple4_2");
-  static const Purple3 = AnsiExtendedColorPaletteRawImpl(56, "Purple3");
-  static const BlueViolet = AnsiExtendedColorPaletteRawImpl(57, "BlueViolet");
-  static const Orange4 = AnsiExtendedColorPaletteRawImpl(58, "Orange4");
-  static const Grey37 = AnsiExtendedColorPaletteRawImpl(59, "Grey37");
-  static const MediumPurple4 = AnsiExtendedColorPaletteRawImpl(60, "MediumPurple4");
-  static const SlateBlue3 = AnsiExtendedColorPaletteRawImpl(61, "SlateBlue3");
-  static const SlateBlue3_2 = AnsiExtendedColorPaletteRawImpl(62, "SlateBlue3_2");
-  static const RoyalBlue1 = AnsiExtendedColorPaletteRawImpl(63, "RoyalBlue1");
-  static const Chartreuse4 = AnsiExtendedColorPaletteRawImpl(64, "Chartreuse4");
-  static const DarkSeaGreen4 = AnsiExtendedColorPaletteRawImpl(65, "DarkSeaGreen4");
-  static const PaleTurquoise4 = AnsiExtendedColorPaletteRawImpl(66, "PaleTurquoise4");
-  static const SteelBlue = AnsiExtendedColorPaletteRawImpl(67, "SteelBlue");
-  static const SteelBlue3 = AnsiExtendedColorPaletteRawImpl(68, "SteelBlue3");
-  static const CornflowerBlue = AnsiExtendedColorPaletteRawImpl(69, "CornflowerBlue");
-  static const Chartreuse3 = AnsiExtendedColorPaletteRawImpl(70, "Chartreuse3");
-  static const DarkSeaGreen4_2 = AnsiExtendedColorPaletteRawImpl(71, "DarkSeaGreen4_2");
-  static const CadetBlue = AnsiExtendedColorPaletteRawImpl(72, "CadetBlue");
-  static const CadetBlue_2 = AnsiExtendedColorPaletteRawImpl(73, "CadetBlue_2");
-  static const SkyBlue3 = AnsiExtendedColorPaletteRawImpl(74, "SkyBlue3");
-  static const SteelBlue1 = AnsiExtendedColorPaletteRawImpl(75, "SteelBlue1");
-  static const Chartreuse3_2 = AnsiExtendedColorPaletteRawImpl(76, "Chartreuse3_2");
-  static const PaleGreen3 = AnsiExtendedColorPaletteRawImpl(77, "PaleGreen3");
-  static const SeaGreen3 = AnsiExtendedColorPaletteRawImpl(78, "SeaGreen3");
-  static const Aquamarine3 = AnsiExtendedColorPaletteRawImpl(79, "Aquamarine3");
-  static const MediumTurquoise = AnsiExtendedColorPaletteRawImpl(80, "MediumTurquoise");
-  static const SteelBlue1_2 = AnsiExtendedColorPaletteRawImpl(81, "SteelBlue1_2");
-  static const Chartreuse2 = AnsiExtendedColorPaletteRawImpl(82, "Chartreuse2");
-  static const SeaGreen2 = AnsiExtendedColorPaletteRawImpl(83, "SeaGreen2");
-  static const SeaGreen1 = AnsiExtendedColorPaletteRawImpl(84, "SeaGreen1");
-  static const SeaGreen1_2 = AnsiExtendedColorPaletteRawImpl(85, "SeaGreen1_2");
-  static const Aquamarine1 = AnsiExtendedColorPaletteRawImpl(86, "Aquamarine1");
-  static const DarkSlateGray2 = AnsiExtendedColorPaletteRawImpl(87, "DarkSlateGray2");
-  static const DarkRed_2 = AnsiExtendedColorPaletteRawImpl(88, "DarkRed_2");
-  static const DeepPink4_2 = AnsiExtendedColorPaletteRawImpl(89, "DeepPink4_2");
-  static const DarkMagenta = AnsiExtendedColorPaletteRawImpl(90, "DarkMagenta");
-  static const DarkMagenta_2 = AnsiExtendedColorPaletteRawImpl(91, "DarkMagenta_2");
-  static const DarkViolet = AnsiExtendedColorPaletteRawImpl(92, "DarkViolet");
-  static const Purple_2 = AnsiExtendedColorPaletteRawImpl(93, "Purple_2");
-  static const Orange4_2 = AnsiExtendedColorPaletteRawImpl(94, "Orange4_2");
-  static const LightPink4 = AnsiExtendedColorPaletteRawImpl(95, "LightPink4");
-  static const Plum4 = AnsiExtendedColorPaletteRawImpl(96, "Plum4");
-  static const MediumPurple3 = AnsiExtendedColorPaletteRawImpl(97, "MediumPurple3");
-  static const MediumPurple3_2 = AnsiExtendedColorPaletteRawImpl(98, "MediumPurple3_2");
-  static const SlateBlue1 = AnsiExtendedColorPaletteRawImpl(99, "SlateBlue1");
-  static const Yellow4 = AnsiExtendedColorPaletteRawImpl(100, "Yellow4");
-  static const Wheat4 = AnsiExtendedColorPaletteRawImpl(101, "Wheat4");
-  static const Grey53 = AnsiExtendedColorPaletteRawImpl(102, "Grey53");
-  static const LightSlateGrey = AnsiExtendedColorPaletteRawImpl(103, "LightSlateGrey");
-  static const MediumPurple = AnsiExtendedColorPaletteRawImpl(104, "MediumPurple");
-  static const LightSlateBlue = AnsiExtendedColorPaletteRawImpl(105, "LightSlateBlue");
-  static const Yellow4_2 = AnsiExtendedColorPaletteRawImpl(106, "Yellow4_2");
-  static const DarkOliveGreen3 = AnsiExtendedColorPaletteRawImpl(107, "DarkOliveGreen3");
-  static const DarkSeaGreen = AnsiExtendedColorPaletteRawImpl(108, "DarkSeaGreen");
-  static const LightSkyBlue3 = AnsiExtendedColorPaletteRawImpl(109, "LightSkyBlue3");
-  static const LightSkyBlue3_2 = AnsiExtendedColorPaletteRawImpl(110, "LightSkyBlue3_2");
-  static const SkyBlue2 = AnsiExtendedColorPaletteRawImpl(111, "SkyBlue2");
-  static const Chartreuse2_2 = AnsiExtendedColorPaletteRawImpl(112, "Chartreuse2_2");
-  static const DarkOliveGreen3_2 = AnsiExtendedColorPaletteRawImpl(113, "DarkOliveGreen3_2");
-  static const PaleGreen3_2 = AnsiExtendedColorPaletteRawImpl(114, "PaleGreen3_2");
-  static const DarkSeaGreen3 = AnsiExtendedColorPaletteRawImpl(115, "DarkSeaGreen3");
-  static const DarkSlateGray3 = AnsiExtendedColorPaletteRawImpl(116, "DarkSlateGray3");
-  static const SkyBlue1 = AnsiExtendedColorPaletteRawImpl(117, "SkyBlue1");
-  static const Chartreuse1 = AnsiExtendedColorPaletteRawImpl(118, "Chartreuse1");
-  static const LightGreen = AnsiExtendedColorPaletteRawImpl(119, "LightGreen");
-  static const LightGreen_2 = AnsiExtendedColorPaletteRawImpl(120, "LightGreen_2");
-  static const PaleGreen1 = AnsiExtendedColorPaletteRawImpl(121, "PaleGreen1");
-  static const Aquamarine1_2 = AnsiExtendedColorPaletteRawImpl(122, "Aquamarine1_2");
-  static const DarkSlateGray1 = AnsiExtendedColorPaletteRawImpl(123, "DarkSlateGray1");
-  static const Red3 = AnsiExtendedColorPaletteRawImpl(124, "Red3");
-  static const DeepPink4_3 = AnsiExtendedColorPaletteRawImpl(125, "DeepPink4_3");
-  static const MediumVioletRed = AnsiExtendedColorPaletteRawImpl(126, "MediumVioletRed");
-  static const Magenta3 = AnsiExtendedColorPaletteRawImpl(127, "Magenta3");
-  static const DarkViolet_2 = AnsiExtendedColorPaletteRawImpl(128, "DarkViolet_2");
-  static const Purple_3 = AnsiExtendedColorPaletteRawImpl(129, "Purple_3");
-  static const DarkOrange3 = AnsiExtendedColorPaletteRawImpl(130, "DarkOrange3");
-  static const IndianRed = AnsiExtendedColorPaletteRawImpl(131, "IndianRed");
-  static const HotPink3 = AnsiExtendedColorPaletteRawImpl(132, "HotPink3");
-  static const MediumOrchid3 = AnsiExtendedColorPaletteRawImpl(133, "MediumOrchid3");
-  static const MediumOrchid = AnsiExtendedColorPaletteRawImpl(134, "MediumOrchid");
-  static const MediumPurple2 = AnsiExtendedColorPaletteRawImpl(135, "MediumPurple2");
-  static const DarkGoldenrod = AnsiExtendedColorPaletteRawImpl(136, "DarkGoldenrod");
-  static const LightSalmon3 = AnsiExtendedColorPaletteRawImpl(137, "LightSalmon3");
-  static const RosyBrown = AnsiExtendedColorPaletteRawImpl(138, "RosyBrown");
-  static const Grey63 = AnsiExtendedColorPaletteRawImpl(139, "Grey63");
-  static const MediumPurple2_2 = AnsiExtendedColorPaletteRawImpl(140, "MediumPurple2_2");
-  static const MediumPurple1 = AnsiExtendedColorPaletteRawImpl(141, "MediumPurple1");
-  static const Gold3 = AnsiExtendedColorPaletteRawImpl(142, "Gold3");
-  static const DarkKhaki = AnsiExtendedColorPaletteRawImpl(143, "DarkKhaki");
-  static const NavajoWhite3 = AnsiExtendedColorPaletteRawImpl(144, "NavajoWhite3");
-  static const Grey69 = AnsiExtendedColorPaletteRawImpl(145, "Grey69");
-  static const LightSteelBlue3 = AnsiExtendedColorPaletteRawImpl(146, "LightSteelBlue3");
-  static const LightSteelBlue = AnsiExtendedColorPaletteRawImpl(147, "LightSteelBlue");
-  static const Yellow3 = AnsiExtendedColorPaletteRawImpl(148, "Yellow3");
-  static const DarkOliveGreen3_3 = AnsiExtendedColorPaletteRawImpl(149, "DarkOliveGreen3_3");
-  static const DarkSeaGreen3_2 = AnsiExtendedColorPaletteRawImpl(150, "DarkSeaGreen3_2");
-  static const DarkSeaGreen2 = AnsiExtendedColorPaletteRawImpl(151, "DarkSeaGreen2");
-  static const LightCyan3 = AnsiExtendedColorPaletteRawImpl(152, "LightCyan3");
-  static const LightSkyBlue1 = AnsiExtendedColorPaletteRawImpl(153, "LightSkyBlue1");
-  static const GreenYellow = AnsiExtendedColorPaletteRawImpl(154, "GreenYellow");
-  static const DarkOliveGreen2 = AnsiExtendedColorPaletteRawImpl(155, "DarkOliveGreen2");
-  static const PaleGreen1_2 = AnsiExtendedColorPaletteRawImpl(156, "PaleGreen1_2");
-  static const DarkSeaGreen2_2 = AnsiExtendedColorPaletteRawImpl(157, "DarkSeaGreen2_2");
-  static const DarkSeaGreen1 = AnsiExtendedColorPaletteRawImpl(158, "DarkSeaGreen1");
-  static const PaleTurquoise1 = AnsiExtendedColorPaletteRawImpl(159, "PaleTurquoise1");
-  static const Red3_2 = AnsiExtendedColorPaletteRawImpl(160, "Red3_2");
-  static const DeepPink3 = AnsiExtendedColorPaletteRawImpl(161, "DeepPink3");
-  static const DeepPink3_2 = AnsiExtendedColorPaletteRawImpl(162, "DeepPink3_2");
-  static const Magenta3_2 = AnsiExtendedColorPaletteRawImpl(163, "Magenta3_2");
-  static const Magenta3_3 = AnsiExtendedColorPaletteRawImpl(164, "Magenta3_3");
-  static const Magenta2 = AnsiExtendedColorPaletteRawImpl(165, "Magenta2");
-  static const DarkOrange3_2 = AnsiExtendedColorPaletteRawImpl(166, "DarkOrange3_2");
-  static const IndianRed_2 = AnsiExtendedColorPaletteRawImpl(167, "IndianRed_2");
-  static const HotPink3_2 = AnsiExtendedColorPaletteRawImpl(168, "HotPink3_2");
-  static const HotPink2 = AnsiExtendedColorPaletteRawImpl(169, "HotPink2");
-  static const Orchid = AnsiExtendedColorPaletteRawImpl(170, "Orchid");
-  static const MediumOrchid1 = AnsiExtendedColorPaletteRawImpl(171, "MediumOrchid1");
-  static const Orange3 = AnsiExtendedColorPaletteRawImpl(172, "Orange3");
-  static const LightSalmon3_2 = AnsiExtendedColorPaletteRawImpl(173, "LightSalmon3_2");
-  static const LightPink3 = AnsiExtendedColorPaletteRawImpl(174, "LightPink3");
-  static const Pink3 = AnsiExtendedColorPaletteRawImpl(175, "Pink3");
-  static const Plum3 = AnsiExtendedColorPaletteRawImpl(176, "Plum3");
-  static const Violet = AnsiExtendedColorPaletteRawImpl(177, "Violet");
-  static const Gold3_2 = AnsiExtendedColorPaletteRawImpl(178, "Gold3_2");
-  static const LightGoldenrod3 = AnsiExtendedColorPaletteRawImpl(179, "LightGoldenrod3");
-  static const Tan = AnsiExtendedColorPaletteRawImpl(180, "Tan");
-  static const MistyRose3 = AnsiExtendedColorPaletteRawImpl(181, "MistyRose3");
-  static const Thistle3 = AnsiExtendedColorPaletteRawImpl(182, "Thistle3");
-  static const Plum2 = AnsiExtendedColorPaletteRawImpl(183, "Plum2");
-  static const Yellow3_2 = AnsiExtendedColorPaletteRawImpl(184, "Yellow3_2");
-  static const Khaki3 = AnsiExtendedColorPaletteRawImpl(185, "Khaki3");
-  static const LightGoldenrod2 = AnsiExtendedColorPaletteRawImpl(186, "LightGoldenrod2");
-  static const LightYellow3 = AnsiExtendedColorPaletteRawImpl(187, "LightYellow3");
-  static const Grey84 = AnsiExtendedColorPaletteRawImpl(188, "Grey84");
-  static const LightSteelBlue1 = AnsiExtendedColorPaletteRawImpl(189, "LightSteelBlue1");
-  static const Yellow2 = AnsiExtendedColorPaletteRawImpl(190, "Yellow2");
-  static const DarkOliveGreen1 = AnsiExtendedColorPaletteRawImpl(191, "DarkOliveGreen1");
-  static const DarkOliveGreen1_2 = AnsiExtendedColorPaletteRawImpl(192, "DarkOliveGreen1_2");
-  static const DarkSeaGreen1_2 = AnsiExtendedColorPaletteRawImpl(193, "DarkSeaGreen1_2");
-  static const Honeydew2 = AnsiExtendedColorPaletteRawImpl(194, "Honeydew2");
-  static const LightCyan1 = AnsiExtendedColorPaletteRawImpl(195, "LightCyan1");
-  static const Red1 = AnsiExtendedColorPaletteRawImpl(196, "Red1");
-  static const DeepPink2 = AnsiExtendedColorPaletteRawImpl(197, "DeepPink2");
-  static const DeepPink1 = AnsiExtendedColorPaletteRawImpl(198, "DeepPink1");
-  static const DeepPink1_2 = AnsiExtendedColorPaletteRawImpl(199, "DeepPink1_2");
-  static const Magenta2_2 = AnsiExtendedColorPaletteRawImpl(200, "Magenta2_2");
-  static const Magenta1 = AnsiExtendedColorPaletteRawImpl(201, "Magenta1");
-  static const OrangeRed1 = AnsiExtendedColorPaletteRawImpl(202, "OrangeRed1");
-  static const IndianRed1 = AnsiExtendedColorPaletteRawImpl(203, "IndianRed1");
-  static const IndianRed1_2 = AnsiExtendedColorPaletteRawImpl(204, "IndianRed1_2");
-  static const HotPink = AnsiExtendedColorPaletteRawImpl(205, "HotPink");
-  static const HotPink_2 = AnsiExtendedColorPaletteRawImpl(206, "HotPink_2");
-  static const MediumOrchid1_2 = AnsiExtendedColorPaletteRawImpl(207, "MediumOrchid1_2");
-  static const DarkOrange = AnsiExtendedColorPaletteRawImpl(208, "DarkOrange");
-  static const Salmon1 = AnsiExtendedColorPaletteRawImpl(209, "Salmon1");
-  static const LightCoral = AnsiExtendedColorPaletteRawImpl(210, "LightCoral");
-  static const PaleVioletRed1 = AnsiExtendedColorPaletteRawImpl(211, "PaleVioletRed1");
-  static const Orchid2 = AnsiExtendedColorPaletteRawImpl(212, "Orchid2");
-  static const Orchid1 = AnsiExtendedColorPaletteRawImpl(213, "Orchid1");
-  static const Orange1 = AnsiExtendedColorPaletteRawImpl(214, "Orange1");
-  static const SandyBrown = AnsiExtendedColorPaletteRawImpl(215, "SandyBrown");
-  static const LightSalmon1 = AnsiExtendedColorPaletteRawImpl(216, "LightSalmon1");
-  static const LightPink1 = AnsiExtendedColorPaletteRawImpl(217, "LightPink1");
-  static const Pink1 = AnsiExtendedColorPaletteRawImpl(218, "Pink1");
-  static const Plum1 = AnsiExtendedColorPaletteRawImpl(219, "Plum1");
-  static const Gold1 = AnsiExtendedColorPaletteRawImpl(220, "Gold1");
-  static const LightGoldenrod2_2 = AnsiExtendedColorPaletteRawImpl(221, "LightGoldenrod2_2");
-  static const LightGoldenrod2_3 = AnsiExtendedColorPaletteRawImpl(222, "LightGoldenrod2_3");
-  static const NavajoWhite1 = AnsiExtendedColorPaletteRawImpl(223, "NavajoWhite1");
-  static const MistyRose1 = AnsiExtendedColorPaletteRawImpl(224, "MistyRose1");
-  static const Thistle1 = AnsiExtendedColorPaletteRawImpl(225, "Thistle1");
-  static const Yellow1 = AnsiExtendedColorPaletteRawImpl(226, "Yellow1");
-  static const LightGoldenrod1 = AnsiExtendedColorPaletteRawImpl(227, "LightGoldenrod1");
-  static const Khaki1 = AnsiExtendedColorPaletteRawImpl(228, "Khaki1");
-  static const Wheat1 = AnsiExtendedColorPaletteRawImpl(229, "Wheat1");
-  static const Cornsilk1 = AnsiExtendedColorPaletteRawImpl(230, "Cornsilk1");
-  static const Grey100 = AnsiExtendedColorPaletteRawImpl(231, "Grey100");
-  static const Grey3 = AnsiExtendedColorPaletteRawImpl(232, "Grey3");
-  static const Grey7 = AnsiExtendedColorPaletteRawImpl(233, "Grey7");
-  static const Grey11 = AnsiExtendedColorPaletteRawImpl(234, "Grey11");
-  static const Grey15 = AnsiExtendedColorPaletteRawImpl(235, "Grey15");
-  static const Grey19 = AnsiExtendedColorPaletteRawImpl(236, "Grey19");
-  static const Grey23 = AnsiExtendedColorPaletteRawImpl(237, "Grey23");
-  static const Grey27 = AnsiExtendedColorPaletteRawImpl(238, "Grey27");
-  static const Grey30 = AnsiExtendedColorPaletteRawImpl(239, "Grey30");
-  static const Grey35 = AnsiExtendedColorPaletteRawImpl(240, "Grey35");
-  static const Grey39 = AnsiExtendedColorPaletteRawImpl(241, "Grey39");
-  static const Grey42 = AnsiExtendedColorPaletteRawImpl(242, "Grey42");
-  static const Grey46 = AnsiExtendedColorPaletteRawImpl(243, "Grey46");
-  static const Grey50 = AnsiExtendedColorPaletteRawImpl(244, "Grey50");
-  static const Grey54 = AnsiExtendedColorPaletteRawImpl(245, "Grey54");
-  static const Grey58 = AnsiExtendedColorPaletteRawImpl(246, "Grey58");
-  static const Grey62 = AnsiExtendedColorPaletteRawImpl(247, "Grey62");
-  static const Grey66 = AnsiExtendedColorPaletteRawImpl(248, "Grey66");
-  static const Grey70 = AnsiExtendedColorPaletteRawImpl(249, "Grey70");
-  static const Grey74 = AnsiExtendedColorPaletteRawImpl(250, "Grey74");
-  static const Grey78 = AnsiExtendedColorPaletteRawImpl(251, "Grey78");
-  static const Grey82 = AnsiExtendedColorPaletteRawImpl(252, "Grey82");
-  static const Grey85 = AnsiExtendedColorPaletteRawImpl(253, "Grey85");
-  static const Grey89 = AnsiExtendedColorPaletteRawImpl(254, "Grey89");
-  static const Grey93 = AnsiExtendedColorPaletteRawImpl(biggestNumberExtendedPalette, "Grey93");
+  static const AnsiExtendedColorPaletteRawImpl Black =
+      AnsiExtendedColorPaletteRawImpl(smallestNumberExtendedPalette, "Black");
+  static const AnsiExtendedColorPaletteRawImpl Maroon = AnsiExtendedColorPaletteRawImpl(1, "Maroon");
+  static const AnsiExtendedColorPaletteRawImpl Green = AnsiExtendedColorPaletteRawImpl(2, "Green");
+  static const AnsiExtendedColorPaletteRawImpl Olive = AnsiExtendedColorPaletteRawImpl(3, "Olive");
+  static const AnsiExtendedColorPaletteRawImpl Navy = AnsiExtendedColorPaletteRawImpl(4, "Navy");
+  static const AnsiExtendedColorPaletteRawImpl Purple = AnsiExtendedColorPaletteRawImpl(5, "Purple");
+  static const AnsiExtendedColorPaletteRawImpl Teal = AnsiExtendedColorPaletteRawImpl(6, "Teal");
+  static const AnsiExtendedColorPaletteRawImpl Silver = AnsiExtendedColorPaletteRawImpl(7, "Silver");
+  static const AnsiExtendedColorPaletteRawImpl Grey = AnsiExtendedColorPaletteRawImpl(8, "Grey");
+  static const AnsiExtendedColorPaletteRawImpl Red = AnsiExtendedColorPaletteRawImpl(9, "Red");
+  static const AnsiExtendedColorPaletteRawImpl Lime = AnsiExtendedColorPaletteRawImpl(10, "Lime");
+  static const AnsiExtendedColorPaletteRawImpl Yellow = AnsiExtendedColorPaletteRawImpl(11, "Yellow");
+  static const AnsiExtendedColorPaletteRawImpl Blue = AnsiExtendedColorPaletteRawImpl(12, "Blue");
+  static const AnsiExtendedColorPaletteRawImpl Fuchsia = AnsiExtendedColorPaletteRawImpl(13, "Fuchsia");
+  static const AnsiExtendedColorPaletteRawImpl Aqua = AnsiExtendedColorPaletteRawImpl(14, "Aqua");
+  static const AnsiExtendedColorPaletteRawImpl White = AnsiExtendedColorPaletteRawImpl(15, "White");
+  static const AnsiExtendedColorPaletteRawImpl Grey0 = AnsiExtendedColorPaletteRawImpl(16, "Grey0");
+  static const AnsiExtendedColorPaletteRawImpl NavyBlue = AnsiExtendedColorPaletteRawImpl(17, "NavyBlue");
+  static const AnsiExtendedColorPaletteRawImpl DarkBlue = AnsiExtendedColorPaletteRawImpl(18, "DarkBlue");
+  static const AnsiExtendedColorPaletteRawImpl Blue3 = AnsiExtendedColorPaletteRawImpl(19, "Blue3");
+  static const AnsiExtendedColorPaletteRawImpl Blue3_2 = AnsiExtendedColorPaletteRawImpl(20, "Blue3_2");
+  static const AnsiExtendedColorPaletteRawImpl Blue1 = AnsiExtendedColorPaletteRawImpl(21, "Blue1");
+  static const AnsiExtendedColorPaletteRawImpl DarkGreen = AnsiExtendedColorPaletteRawImpl(22, "DarkGreen");
+  static const AnsiExtendedColorPaletteRawImpl DeepSkyBlue4 = AnsiExtendedColorPaletteRawImpl(23, "DeepSkyBlue4");
+  static const AnsiExtendedColorPaletteRawImpl DeepSkyBlue4_2 = AnsiExtendedColorPaletteRawImpl(24, "DeepSkyBlue4_2");
+  static const AnsiExtendedColorPaletteRawImpl DeepSkyBlue4_3 = AnsiExtendedColorPaletteRawImpl(25, "DeepSkyBlue4_3");
+  static const AnsiExtendedColorPaletteRawImpl DodgerBlue3 = AnsiExtendedColorPaletteRawImpl(26, "DodgerBlue3");
+  static const AnsiExtendedColorPaletteRawImpl DodgerBlue2 = AnsiExtendedColorPaletteRawImpl(27, "DodgerBlue2");
+  static const AnsiExtendedColorPaletteRawImpl Green4 = AnsiExtendedColorPaletteRawImpl(28, "Green4");
+  static const AnsiExtendedColorPaletteRawImpl SpringGreen4 = AnsiExtendedColorPaletteRawImpl(29, "SpringGreen4");
+  static const AnsiExtendedColorPaletteRawImpl Turquoise4 = AnsiExtendedColorPaletteRawImpl(30, "Turquoise4");
+  static const AnsiExtendedColorPaletteRawImpl DeepSkyBlue3 = AnsiExtendedColorPaletteRawImpl(31, "DeepSkyBlue3");
+  static const AnsiExtendedColorPaletteRawImpl DeepSkyBlue3_2 = AnsiExtendedColorPaletteRawImpl(32, "DeepSkyBlue3_2");
+  static const AnsiExtendedColorPaletteRawImpl DodgerBlue1 = AnsiExtendedColorPaletteRawImpl(33, "DodgerBlue1");
+  static const AnsiExtendedColorPaletteRawImpl Green3 = AnsiExtendedColorPaletteRawImpl(34, "Green3");
+  static const AnsiExtendedColorPaletteRawImpl SpringGreen3 = AnsiExtendedColorPaletteRawImpl(35, "SpringGreen3");
+  static const AnsiExtendedColorPaletteRawImpl DarkCyan = AnsiExtendedColorPaletteRawImpl(36, "DarkCyan");
+  static const AnsiExtendedColorPaletteRawImpl LightSeaGreen = AnsiExtendedColorPaletteRawImpl(37, "LightSeaGreen");
+  static const AnsiExtendedColorPaletteRawImpl DeepSkyBlue2 = AnsiExtendedColorPaletteRawImpl(38, "DeepSkyBlue2");
+  static const AnsiExtendedColorPaletteRawImpl DeepSkyBlue1 = AnsiExtendedColorPaletteRawImpl(39, "DeepSkyBlue1");
+  static const AnsiExtendedColorPaletteRawImpl Green3_2 = AnsiExtendedColorPaletteRawImpl(40, "Green3_2");
+  static const AnsiExtendedColorPaletteRawImpl SpringGreen3_2 = AnsiExtendedColorPaletteRawImpl(41, "SpringGreen3_2");
+  static const AnsiExtendedColorPaletteRawImpl SpringGreen2 = AnsiExtendedColorPaletteRawImpl(42, "SpringGreen2");
+  static const AnsiExtendedColorPaletteRawImpl Cyan3 = AnsiExtendedColorPaletteRawImpl(43, "Cyan3");
+  static const AnsiExtendedColorPaletteRawImpl DarkTurquoise = AnsiExtendedColorPaletteRawImpl(44, "DarkTurquoise");
+  static const AnsiExtendedColorPaletteRawImpl Turquoise2 = AnsiExtendedColorPaletteRawImpl(45, "Turquoise2");
+  static const AnsiExtendedColorPaletteRawImpl Green1 = AnsiExtendedColorPaletteRawImpl(46, "Green1");
+  static const AnsiExtendedColorPaletteRawImpl SpringGreen2_2 = AnsiExtendedColorPaletteRawImpl(47, "SpringGreen2_2");
+  static const AnsiExtendedColorPaletteRawImpl SpringGreen1 = AnsiExtendedColorPaletteRawImpl(48, "SpringGreen1");
+  static const AnsiExtendedColorPaletteRawImpl MediumSpringGreen =
+      AnsiExtendedColorPaletteRawImpl(49, "MediumSpringGreen");
+  static const AnsiExtendedColorPaletteRawImpl Cyan2 = AnsiExtendedColorPaletteRawImpl(50, "Cyan2");
+  static const AnsiExtendedColorPaletteRawImpl Cyan1 = AnsiExtendedColorPaletteRawImpl(51, "Cyan1");
+  static const AnsiExtendedColorPaletteRawImpl DarkRed = AnsiExtendedColorPaletteRawImpl(52, "DarkRed");
+  static const AnsiExtendedColorPaletteRawImpl DeepPink4 = AnsiExtendedColorPaletteRawImpl(53, "DeepPink4");
+  static const AnsiExtendedColorPaletteRawImpl Purple4 = AnsiExtendedColorPaletteRawImpl(54, "Purple4");
+  static const AnsiExtendedColorPaletteRawImpl Purple4_2 = AnsiExtendedColorPaletteRawImpl(55, "Purple4_2");
+  static const AnsiExtendedColorPaletteRawImpl Purple3 = AnsiExtendedColorPaletteRawImpl(56, "Purple3");
+  static const AnsiExtendedColorPaletteRawImpl BlueViolet = AnsiExtendedColorPaletteRawImpl(57, "BlueViolet");
+  static const AnsiExtendedColorPaletteRawImpl Orange4 = AnsiExtendedColorPaletteRawImpl(58, "Orange4");
+  static const AnsiExtendedColorPaletteRawImpl Grey37 = AnsiExtendedColorPaletteRawImpl(59, "Grey37");
+  static const AnsiExtendedColorPaletteRawImpl MediumPurple4 = AnsiExtendedColorPaletteRawImpl(60, "MediumPurple4");
+  static const AnsiExtendedColorPaletteRawImpl SlateBlue3 = AnsiExtendedColorPaletteRawImpl(61, "SlateBlue3");
+  static const AnsiExtendedColorPaletteRawImpl SlateBlue3_2 = AnsiExtendedColorPaletteRawImpl(62, "SlateBlue3_2");
+  static const AnsiExtendedColorPaletteRawImpl RoyalBlue1 = AnsiExtendedColorPaletteRawImpl(63, "RoyalBlue1");
+  static const AnsiExtendedColorPaletteRawImpl Chartreuse4 = AnsiExtendedColorPaletteRawImpl(64, "Chartreuse4");
+  static const AnsiExtendedColorPaletteRawImpl DarkSeaGreen4 = AnsiExtendedColorPaletteRawImpl(65, "DarkSeaGreen4");
+  static const AnsiExtendedColorPaletteRawImpl PaleTurquoise4 = AnsiExtendedColorPaletteRawImpl(66, "PaleTurquoise4");
+  static const AnsiExtendedColorPaletteRawImpl SteelBlue = AnsiExtendedColorPaletteRawImpl(67, "SteelBlue");
+  static const AnsiExtendedColorPaletteRawImpl SteelBlue3 = AnsiExtendedColorPaletteRawImpl(68, "SteelBlue3");
+  static const AnsiExtendedColorPaletteRawImpl CornflowerBlue = AnsiExtendedColorPaletteRawImpl(69, "CornflowerBlue");
+  static const AnsiExtendedColorPaletteRawImpl Chartreuse3 = AnsiExtendedColorPaletteRawImpl(70, "Chartreuse3");
+  static const AnsiExtendedColorPaletteRawImpl DarkSeaGreen4_2 = AnsiExtendedColorPaletteRawImpl(71, "DarkSeaGreen4_2");
+  static const AnsiExtendedColorPaletteRawImpl CadetBlue = AnsiExtendedColorPaletteRawImpl(72, "CadetBlue");
+  static const AnsiExtendedColorPaletteRawImpl CadetBlue_2 = AnsiExtendedColorPaletteRawImpl(73, "CadetBlue_2");
+  static const AnsiExtendedColorPaletteRawImpl SkyBlue3 = AnsiExtendedColorPaletteRawImpl(74, "SkyBlue3");
+  static const AnsiExtendedColorPaletteRawImpl SteelBlue1 = AnsiExtendedColorPaletteRawImpl(75, "SteelBlue1");
+  static const AnsiExtendedColorPaletteRawImpl Chartreuse3_2 = AnsiExtendedColorPaletteRawImpl(76, "Chartreuse3_2");
+  static const AnsiExtendedColorPaletteRawImpl PaleGreen3 = AnsiExtendedColorPaletteRawImpl(77, "PaleGreen3");
+  static const AnsiExtendedColorPaletteRawImpl SeaGreen3 = AnsiExtendedColorPaletteRawImpl(78, "SeaGreen3");
+  static const AnsiExtendedColorPaletteRawImpl Aquamarine3 = AnsiExtendedColorPaletteRawImpl(79, "Aquamarine3");
+  static const AnsiExtendedColorPaletteRawImpl MediumTurquoise = AnsiExtendedColorPaletteRawImpl(80, "MediumTurquoise");
+  static const AnsiExtendedColorPaletteRawImpl SteelBlue1_2 = AnsiExtendedColorPaletteRawImpl(81, "SteelBlue1_2");
+  static const AnsiExtendedColorPaletteRawImpl Chartreuse2 = AnsiExtendedColorPaletteRawImpl(82, "Chartreuse2");
+  static const AnsiExtendedColorPaletteRawImpl SeaGreen2 = AnsiExtendedColorPaletteRawImpl(83, "SeaGreen2");
+  static const AnsiExtendedColorPaletteRawImpl SeaGreen1 = AnsiExtendedColorPaletteRawImpl(84, "SeaGreen1");
+  static const AnsiExtendedColorPaletteRawImpl SeaGreen1_2 = AnsiExtendedColorPaletteRawImpl(85, "SeaGreen1_2");
+  static const AnsiExtendedColorPaletteRawImpl Aquamarine1 = AnsiExtendedColorPaletteRawImpl(86, "Aquamarine1");
+  static const AnsiExtendedColorPaletteRawImpl DarkSlateGray2 = AnsiExtendedColorPaletteRawImpl(87, "DarkSlateGray2");
+  static const AnsiExtendedColorPaletteRawImpl DarkRed_2 = AnsiExtendedColorPaletteRawImpl(88, "DarkRed_2");
+  static const AnsiExtendedColorPaletteRawImpl DeepPink4_2 = AnsiExtendedColorPaletteRawImpl(89, "DeepPink4_2");
+  static const AnsiExtendedColorPaletteRawImpl DarkMagenta = AnsiExtendedColorPaletteRawImpl(90, "DarkMagenta");
+  static const AnsiExtendedColorPaletteRawImpl DarkMagenta_2 = AnsiExtendedColorPaletteRawImpl(91, "DarkMagenta_2");
+  static const AnsiExtendedColorPaletteRawImpl DarkViolet = AnsiExtendedColorPaletteRawImpl(92, "DarkViolet");
+  static const AnsiExtendedColorPaletteRawImpl Purple_2 = AnsiExtendedColorPaletteRawImpl(93, "Purple_2");
+  static const AnsiExtendedColorPaletteRawImpl Orange4_2 = AnsiExtendedColorPaletteRawImpl(94, "Orange4_2");
+  static const AnsiExtendedColorPaletteRawImpl LightPink4 = AnsiExtendedColorPaletteRawImpl(95, "LightPink4");
+  static const AnsiExtendedColorPaletteRawImpl Plum4 = AnsiExtendedColorPaletteRawImpl(96, "Plum4");
+  static const AnsiExtendedColorPaletteRawImpl MediumPurple3 = AnsiExtendedColorPaletteRawImpl(97, "MediumPurple3");
+  static const AnsiExtendedColorPaletteRawImpl MediumPurple3_2 = AnsiExtendedColorPaletteRawImpl(98, "MediumPurple3_2");
+  static const AnsiExtendedColorPaletteRawImpl SlateBlue1 = AnsiExtendedColorPaletteRawImpl(99, "SlateBlue1");
+  static const AnsiExtendedColorPaletteRawImpl Yellow4 = AnsiExtendedColorPaletteRawImpl(100, "Yellow4");
+  static const AnsiExtendedColorPaletteRawImpl Wheat4 = AnsiExtendedColorPaletteRawImpl(101, "Wheat4");
+  static const AnsiExtendedColorPaletteRawImpl Grey53 = AnsiExtendedColorPaletteRawImpl(102, "Grey53");
+  static const AnsiExtendedColorPaletteRawImpl LightSlateGrey = AnsiExtendedColorPaletteRawImpl(103, "LightSlateGrey");
+  static const AnsiExtendedColorPaletteRawImpl MediumPurple = AnsiExtendedColorPaletteRawImpl(104, "MediumPurple");
+  static const AnsiExtendedColorPaletteRawImpl LightSlateBlue = AnsiExtendedColorPaletteRawImpl(105, "LightSlateBlue");
+  static const AnsiExtendedColorPaletteRawImpl Yellow4_2 = AnsiExtendedColorPaletteRawImpl(106, "Yellow4_2");
+  static const AnsiExtendedColorPaletteRawImpl DarkOliveGreen3 =
+      AnsiExtendedColorPaletteRawImpl(107, "DarkOliveGreen3");
+  static const AnsiExtendedColorPaletteRawImpl DarkSeaGreen = AnsiExtendedColorPaletteRawImpl(108, "DarkSeaGreen");
+  static const AnsiExtendedColorPaletteRawImpl LightSkyBlue3 = AnsiExtendedColorPaletteRawImpl(109, "LightSkyBlue3");
+  static const AnsiExtendedColorPaletteRawImpl LightSkyBlue3_2 =
+      AnsiExtendedColorPaletteRawImpl(110, "LightSkyBlue3_2");
+  static const AnsiExtendedColorPaletteRawImpl SkyBlue2 = AnsiExtendedColorPaletteRawImpl(111, "SkyBlue2");
+  static const AnsiExtendedColorPaletteRawImpl Chartreuse2_2 = AnsiExtendedColorPaletteRawImpl(112, "Chartreuse2_2");
+  static const AnsiExtendedColorPaletteRawImpl DarkOliveGreen3_2 =
+      AnsiExtendedColorPaletteRawImpl(113, "DarkOliveGreen3_2");
+  static const AnsiExtendedColorPaletteRawImpl PaleGreen3_2 = AnsiExtendedColorPaletteRawImpl(114, "PaleGreen3_2");
+  static const AnsiExtendedColorPaletteRawImpl DarkSeaGreen3 = AnsiExtendedColorPaletteRawImpl(115, "DarkSeaGreen3");
+  static const AnsiExtendedColorPaletteRawImpl DarkSlateGray3 = AnsiExtendedColorPaletteRawImpl(116, "DarkSlateGray3");
+  static const AnsiExtendedColorPaletteRawImpl SkyBlue1 = AnsiExtendedColorPaletteRawImpl(117, "SkyBlue1");
+  static const AnsiExtendedColorPaletteRawImpl Chartreuse1 = AnsiExtendedColorPaletteRawImpl(118, "Chartreuse1");
+  static const AnsiExtendedColorPaletteRawImpl LightGreen = AnsiExtendedColorPaletteRawImpl(119, "LightGreen");
+  static const AnsiExtendedColorPaletteRawImpl LightGreen_2 = AnsiExtendedColorPaletteRawImpl(120, "LightGreen_2");
+  static const AnsiExtendedColorPaletteRawImpl PaleGreen1 = AnsiExtendedColorPaletteRawImpl(121, "PaleGreen1");
+  static const AnsiExtendedColorPaletteRawImpl Aquamarine1_2 = AnsiExtendedColorPaletteRawImpl(122, "Aquamarine1_2");
+  static const AnsiExtendedColorPaletteRawImpl DarkSlateGray1 = AnsiExtendedColorPaletteRawImpl(123, "DarkSlateGray1");
+  static const AnsiExtendedColorPaletteRawImpl Red3 = AnsiExtendedColorPaletteRawImpl(124, "Red3");
+  static const AnsiExtendedColorPaletteRawImpl DeepPink4_3 = AnsiExtendedColorPaletteRawImpl(125, "DeepPink4_3");
+  static const AnsiExtendedColorPaletteRawImpl MediumVioletRed =
+      AnsiExtendedColorPaletteRawImpl(126, "MediumVioletRed");
+  static const AnsiExtendedColorPaletteRawImpl Magenta3 = AnsiExtendedColorPaletteRawImpl(127, "Magenta3");
+  static const AnsiExtendedColorPaletteRawImpl DarkViolet_2 = AnsiExtendedColorPaletteRawImpl(128, "DarkViolet_2");
+  static const AnsiExtendedColorPaletteRawImpl Purple_3 = AnsiExtendedColorPaletteRawImpl(129, "Purple_3");
+  static const AnsiExtendedColorPaletteRawImpl DarkOrange3 = AnsiExtendedColorPaletteRawImpl(130, "DarkOrange3");
+  static const AnsiExtendedColorPaletteRawImpl IndianRed = AnsiExtendedColorPaletteRawImpl(131, "IndianRed");
+  static const AnsiExtendedColorPaletteRawImpl HotPink3 = AnsiExtendedColorPaletteRawImpl(132, "HotPink3");
+  static const AnsiExtendedColorPaletteRawImpl MediumOrchid3 = AnsiExtendedColorPaletteRawImpl(133, "MediumOrchid3");
+  static const AnsiExtendedColorPaletteRawImpl MediumOrchid = AnsiExtendedColorPaletteRawImpl(134, "MediumOrchid");
+  static const AnsiExtendedColorPaletteRawImpl MediumPurple2 = AnsiExtendedColorPaletteRawImpl(135, "MediumPurple2");
+  static const AnsiExtendedColorPaletteRawImpl DarkGoldenrod = AnsiExtendedColorPaletteRawImpl(136, "DarkGoldenrod");
+  static const AnsiExtendedColorPaletteRawImpl LightSalmon3 = AnsiExtendedColorPaletteRawImpl(137, "LightSalmon3");
+  static const AnsiExtendedColorPaletteRawImpl RosyBrown = AnsiExtendedColorPaletteRawImpl(138, "RosyBrown");
+  static const AnsiExtendedColorPaletteRawImpl Grey63 = AnsiExtendedColorPaletteRawImpl(139, "Grey63");
+  static const AnsiExtendedColorPaletteRawImpl MediumPurple2_2 =
+      AnsiExtendedColorPaletteRawImpl(140, "MediumPurple2_2");
+  static const AnsiExtendedColorPaletteRawImpl MediumPurple1 = AnsiExtendedColorPaletteRawImpl(141, "MediumPurple1");
+  static const AnsiExtendedColorPaletteRawImpl Gold3 = AnsiExtendedColorPaletteRawImpl(142, "Gold3");
+  static const AnsiExtendedColorPaletteRawImpl DarkKhaki = AnsiExtendedColorPaletteRawImpl(143, "DarkKhaki");
+  static const AnsiExtendedColorPaletteRawImpl NavajoWhite3 = AnsiExtendedColorPaletteRawImpl(144, "NavajoWhite3");
+  static const AnsiExtendedColorPaletteRawImpl Grey69 = AnsiExtendedColorPaletteRawImpl(145, "Grey69");
+  static const AnsiExtendedColorPaletteRawImpl LightSteelBlue3 =
+      AnsiExtendedColorPaletteRawImpl(146, "LightSteelBlue3");
+  static const AnsiExtendedColorPaletteRawImpl LightSteelBlue = AnsiExtendedColorPaletteRawImpl(147, "LightSteelBlue");
+  static const AnsiExtendedColorPaletteRawImpl Yellow3 = AnsiExtendedColorPaletteRawImpl(148, "Yellow3");
+  static const AnsiExtendedColorPaletteRawImpl DarkOliveGreen3_3 =
+      AnsiExtendedColorPaletteRawImpl(149, "DarkOliveGreen3_3");
+  static const AnsiExtendedColorPaletteRawImpl DarkSeaGreen3_2 =
+      AnsiExtendedColorPaletteRawImpl(150, "DarkSeaGreen3_2");
+  static const AnsiExtendedColorPaletteRawImpl DarkSeaGreen2 = AnsiExtendedColorPaletteRawImpl(151, "DarkSeaGreen2");
+  static const AnsiExtendedColorPaletteRawImpl LightCyan3 = AnsiExtendedColorPaletteRawImpl(152, "LightCyan3");
+  static const AnsiExtendedColorPaletteRawImpl LightSkyBlue1 = AnsiExtendedColorPaletteRawImpl(153, "LightSkyBlue1");
+  static const AnsiExtendedColorPaletteRawImpl GreenYellow = AnsiExtendedColorPaletteRawImpl(154, "GreenYellow");
+  static const AnsiExtendedColorPaletteRawImpl DarkOliveGreen2 =
+      AnsiExtendedColorPaletteRawImpl(155, "DarkOliveGreen2");
+  static const AnsiExtendedColorPaletteRawImpl PaleGreen1_2 = AnsiExtendedColorPaletteRawImpl(156, "PaleGreen1_2");
+  static const AnsiExtendedColorPaletteRawImpl DarkSeaGreen2_2 =
+      AnsiExtendedColorPaletteRawImpl(157, "DarkSeaGreen2_2");
+  static const AnsiExtendedColorPaletteRawImpl DarkSeaGreen1 = AnsiExtendedColorPaletteRawImpl(158, "DarkSeaGreen1");
+  static const AnsiExtendedColorPaletteRawImpl PaleTurquoise1 = AnsiExtendedColorPaletteRawImpl(159, "PaleTurquoise1");
+  static const AnsiExtendedColorPaletteRawImpl Red3_2 = AnsiExtendedColorPaletteRawImpl(160, "Red3_2");
+  static const AnsiExtendedColorPaletteRawImpl DeepPink3 = AnsiExtendedColorPaletteRawImpl(161, "DeepPink3");
+  static const AnsiExtendedColorPaletteRawImpl DeepPink3_2 = AnsiExtendedColorPaletteRawImpl(162, "DeepPink3_2");
+  static const AnsiExtendedColorPaletteRawImpl Magenta3_2 = AnsiExtendedColorPaletteRawImpl(163, "Magenta3_2");
+  static const AnsiExtendedColorPaletteRawImpl Magenta3_3 = AnsiExtendedColorPaletteRawImpl(164, "Magenta3_3");
+  static const AnsiExtendedColorPaletteRawImpl Magenta2 = AnsiExtendedColorPaletteRawImpl(165, "Magenta2");
+  static const AnsiExtendedColorPaletteRawImpl DarkOrange3_2 = AnsiExtendedColorPaletteRawImpl(166, "DarkOrange3_2");
+  static const AnsiExtendedColorPaletteRawImpl IndianRed_2 = AnsiExtendedColorPaletteRawImpl(167, "IndianRed_2");
+  static const AnsiExtendedColorPaletteRawImpl HotPink3_2 = AnsiExtendedColorPaletteRawImpl(168, "HotPink3_2");
+  static const AnsiExtendedColorPaletteRawImpl HotPink2 = AnsiExtendedColorPaletteRawImpl(169, "HotPink2");
+  static const AnsiExtendedColorPaletteRawImpl Orchid = AnsiExtendedColorPaletteRawImpl(170, "Orchid");
+  static const AnsiExtendedColorPaletteRawImpl MediumOrchid1 = AnsiExtendedColorPaletteRawImpl(171, "MediumOrchid1");
+  static const AnsiExtendedColorPaletteRawImpl Orange3 = AnsiExtendedColorPaletteRawImpl(172, "Orange3");
+  static const AnsiExtendedColorPaletteRawImpl LightSalmon3_2 = AnsiExtendedColorPaletteRawImpl(173, "LightSalmon3_2");
+  static const AnsiExtendedColorPaletteRawImpl LightPink3 = AnsiExtendedColorPaletteRawImpl(174, "LightPink3");
+  static const AnsiExtendedColorPaletteRawImpl Pink3 = AnsiExtendedColorPaletteRawImpl(175, "Pink3");
+  static const AnsiExtendedColorPaletteRawImpl Plum3 = AnsiExtendedColorPaletteRawImpl(176, "Plum3");
+  static const AnsiExtendedColorPaletteRawImpl Violet = AnsiExtendedColorPaletteRawImpl(177, "Violet");
+  static const AnsiExtendedColorPaletteRawImpl Gold3_2 = AnsiExtendedColorPaletteRawImpl(178, "Gold3_2");
+  static const AnsiExtendedColorPaletteRawImpl LightGoldenrod3 =
+      AnsiExtendedColorPaletteRawImpl(179, "LightGoldenrod3");
+  static const AnsiExtendedColorPaletteRawImpl Tan = AnsiExtendedColorPaletteRawImpl(180, "Tan");
+  static const AnsiExtendedColorPaletteRawImpl MistyRose3 = AnsiExtendedColorPaletteRawImpl(181, "MistyRose3");
+  static const AnsiExtendedColorPaletteRawImpl Thistle3 = AnsiExtendedColorPaletteRawImpl(182, "Thistle3");
+  static const AnsiExtendedColorPaletteRawImpl Plum2 = AnsiExtendedColorPaletteRawImpl(183, "Plum2");
+  static const AnsiExtendedColorPaletteRawImpl Yellow3_2 = AnsiExtendedColorPaletteRawImpl(184, "Yellow3_2");
+  static const AnsiExtendedColorPaletteRawImpl Khaki3 = AnsiExtendedColorPaletteRawImpl(185, "Khaki3");
+  static const AnsiExtendedColorPaletteRawImpl LightGoldenrod2 =
+      AnsiExtendedColorPaletteRawImpl(186, "LightGoldenrod2");
+  static const AnsiExtendedColorPaletteRawImpl LightYellow3 = AnsiExtendedColorPaletteRawImpl(187, "LightYellow3");
+  static const AnsiExtendedColorPaletteRawImpl Grey84 = AnsiExtendedColorPaletteRawImpl(188, "Grey84");
+  static const AnsiExtendedColorPaletteRawImpl LightSteelBlue1 =
+      AnsiExtendedColorPaletteRawImpl(189, "LightSteelBlue1");
+  static const AnsiExtendedColorPaletteRawImpl Yellow2 = AnsiExtendedColorPaletteRawImpl(190, "Yellow2");
+  static const AnsiExtendedColorPaletteRawImpl DarkOliveGreen1 =
+      AnsiExtendedColorPaletteRawImpl(191, "DarkOliveGreen1");
+  static const AnsiExtendedColorPaletteRawImpl DarkOliveGreen1_2 =
+      AnsiExtendedColorPaletteRawImpl(192, "DarkOliveGreen1_2");
+  static const AnsiExtendedColorPaletteRawImpl DarkSeaGreen1_2 =
+      AnsiExtendedColorPaletteRawImpl(193, "DarkSeaGreen1_2");
+  static const AnsiExtendedColorPaletteRawImpl Honeydew2 = AnsiExtendedColorPaletteRawImpl(194, "Honeydew2");
+  static const AnsiExtendedColorPaletteRawImpl LightCyan1 = AnsiExtendedColorPaletteRawImpl(195, "LightCyan1");
+  static const AnsiExtendedColorPaletteRawImpl Red1 = AnsiExtendedColorPaletteRawImpl(196, "Red1");
+  static const AnsiExtendedColorPaletteRawImpl DeepPink2 = AnsiExtendedColorPaletteRawImpl(197, "DeepPink2");
+  static const AnsiExtendedColorPaletteRawImpl DeepPink1 = AnsiExtendedColorPaletteRawImpl(198, "DeepPink1");
+  static const AnsiExtendedColorPaletteRawImpl DeepPink1_2 = AnsiExtendedColorPaletteRawImpl(199, "DeepPink1_2");
+  static const AnsiExtendedColorPaletteRawImpl Magenta2_2 = AnsiExtendedColorPaletteRawImpl(200, "Magenta2_2");
+  static const AnsiExtendedColorPaletteRawImpl Magenta1 = AnsiExtendedColorPaletteRawImpl(201, "Magenta1");
+  static const AnsiExtendedColorPaletteRawImpl OrangeRed1 = AnsiExtendedColorPaletteRawImpl(202, "OrangeRed1");
+  static const AnsiExtendedColorPaletteRawImpl IndianRed1 = AnsiExtendedColorPaletteRawImpl(203, "IndianRed1");
+  static const AnsiExtendedColorPaletteRawImpl IndianRed1_2 = AnsiExtendedColorPaletteRawImpl(204, "IndianRed1_2");
+  static const AnsiExtendedColorPaletteRawImpl HotPink = AnsiExtendedColorPaletteRawImpl(205, "HotPink");
+  static const AnsiExtendedColorPaletteRawImpl HotPink_2 = AnsiExtendedColorPaletteRawImpl(206, "HotPink_2");
+  static const AnsiExtendedColorPaletteRawImpl MediumOrchid1_2 =
+      AnsiExtendedColorPaletteRawImpl(207, "MediumOrchid1_2");
+  static const AnsiExtendedColorPaletteRawImpl DarkOrange = AnsiExtendedColorPaletteRawImpl(208, "DarkOrange");
+  static const AnsiExtendedColorPaletteRawImpl Salmon1 = AnsiExtendedColorPaletteRawImpl(209, "Salmon1");
+  static const AnsiExtendedColorPaletteRawImpl LightCoral = AnsiExtendedColorPaletteRawImpl(210, "LightCoral");
+  static const AnsiExtendedColorPaletteRawImpl PaleVioletRed1 = AnsiExtendedColorPaletteRawImpl(211, "PaleVioletRed1");
+  static const AnsiExtendedColorPaletteRawImpl Orchid2 = AnsiExtendedColorPaletteRawImpl(212, "Orchid2");
+  static const AnsiExtendedColorPaletteRawImpl Orchid1 = AnsiExtendedColorPaletteRawImpl(213, "Orchid1");
+  static const AnsiExtendedColorPaletteRawImpl Orange1 = AnsiExtendedColorPaletteRawImpl(214, "Orange1");
+  static const AnsiExtendedColorPaletteRawImpl SandyBrown = AnsiExtendedColorPaletteRawImpl(215, "SandyBrown");
+  static const AnsiExtendedColorPaletteRawImpl LightSalmon1 = AnsiExtendedColorPaletteRawImpl(216, "LightSalmon1");
+  static const AnsiExtendedColorPaletteRawImpl LightPink1 = AnsiExtendedColorPaletteRawImpl(217, "LightPink1");
+  static const AnsiExtendedColorPaletteRawImpl Pink1 = AnsiExtendedColorPaletteRawImpl(218, "Pink1");
+  static const AnsiExtendedColorPaletteRawImpl Plum1 = AnsiExtendedColorPaletteRawImpl(219, "Plum1");
+  static const AnsiExtendedColorPaletteRawImpl Gold1 = AnsiExtendedColorPaletteRawImpl(220, "Gold1");
+  static const AnsiExtendedColorPaletteRawImpl LightGoldenrod2_2 =
+      AnsiExtendedColorPaletteRawImpl(221, "LightGoldenrod2_2");
+  static const AnsiExtendedColorPaletteRawImpl LightGoldenrod2_3 =
+      AnsiExtendedColorPaletteRawImpl(222, "LightGoldenrod2_3");
+  static const AnsiExtendedColorPaletteRawImpl NavajoWhite1 = AnsiExtendedColorPaletteRawImpl(223, "NavajoWhite1");
+  static const AnsiExtendedColorPaletteRawImpl MistyRose1 = AnsiExtendedColorPaletteRawImpl(224, "MistyRose1");
+  static const AnsiExtendedColorPaletteRawImpl Thistle1 = AnsiExtendedColorPaletteRawImpl(225, "Thistle1");
+  static const AnsiExtendedColorPaletteRawImpl Yellow1 = AnsiExtendedColorPaletteRawImpl(226, "Yellow1");
+  static const AnsiExtendedColorPaletteRawImpl LightGoldenrod1 =
+      AnsiExtendedColorPaletteRawImpl(227, "LightGoldenrod1");
+  static const AnsiExtendedColorPaletteRawImpl Khaki1 = AnsiExtendedColorPaletteRawImpl(228, "Khaki1");
+  static const AnsiExtendedColorPaletteRawImpl Wheat1 = AnsiExtendedColorPaletteRawImpl(229, "Wheat1");
+  static const AnsiExtendedColorPaletteRawImpl Cornsilk1 = AnsiExtendedColorPaletteRawImpl(230, "Cornsilk1");
+  static const AnsiExtendedColorPaletteRawImpl Grey100 = AnsiExtendedColorPaletteRawImpl(231, "Grey100");
+  static const AnsiExtendedColorPaletteRawImpl Grey3 = AnsiExtendedColorPaletteRawImpl(232, "Grey3");
+  static const AnsiExtendedColorPaletteRawImpl Grey7 = AnsiExtendedColorPaletteRawImpl(233, "Grey7");
+  static const AnsiExtendedColorPaletteRawImpl Grey11 = AnsiExtendedColorPaletteRawImpl(234, "Grey11");
+  static const AnsiExtendedColorPaletteRawImpl Grey15 = AnsiExtendedColorPaletteRawImpl(235, "Grey15");
+  static const AnsiExtendedColorPaletteRawImpl Grey19 = AnsiExtendedColorPaletteRawImpl(236, "Grey19");
+  static const AnsiExtendedColorPaletteRawImpl Grey23 = AnsiExtendedColorPaletteRawImpl(237, "Grey23");
+  static const AnsiExtendedColorPaletteRawImpl Grey27 = AnsiExtendedColorPaletteRawImpl(238, "Grey27");
+  static const AnsiExtendedColorPaletteRawImpl Grey30 = AnsiExtendedColorPaletteRawImpl(239, "Grey30");
+  static const AnsiExtendedColorPaletteRawImpl Grey35 = AnsiExtendedColorPaletteRawImpl(240, "Grey35");
+  static const AnsiExtendedColorPaletteRawImpl Grey39 = AnsiExtendedColorPaletteRawImpl(241, "Grey39");
+  static const AnsiExtendedColorPaletteRawImpl Grey42 = AnsiExtendedColorPaletteRawImpl(242, "Grey42");
+  static const AnsiExtendedColorPaletteRawImpl Grey46 = AnsiExtendedColorPaletteRawImpl(243, "Grey46");
+  static const AnsiExtendedColorPaletteRawImpl Grey50 = AnsiExtendedColorPaletteRawImpl(244, "Grey50");
+  static const AnsiExtendedColorPaletteRawImpl Grey54 = AnsiExtendedColorPaletteRawImpl(245, "Grey54");
+  static const AnsiExtendedColorPaletteRawImpl Grey58 = AnsiExtendedColorPaletteRawImpl(246, "Grey58");
+  static const AnsiExtendedColorPaletteRawImpl Grey62 = AnsiExtendedColorPaletteRawImpl(247, "Grey62");
+  static const AnsiExtendedColorPaletteRawImpl Grey66 = AnsiExtendedColorPaletteRawImpl(248, "Grey66");
+  static const AnsiExtendedColorPaletteRawImpl Grey70 = AnsiExtendedColorPaletteRawImpl(249, "Grey70");
+  static const AnsiExtendedColorPaletteRawImpl Grey74 = AnsiExtendedColorPaletteRawImpl(250, "Grey74");
+  static const AnsiExtendedColorPaletteRawImpl Grey78 = AnsiExtendedColorPaletteRawImpl(251, "Grey78");
+  static const AnsiExtendedColorPaletteRawImpl Grey82 = AnsiExtendedColorPaletteRawImpl(252, "Grey82");
+  static const AnsiExtendedColorPaletteRawImpl Grey85 = AnsiExtendedColorPaletteRawImpl(253, "Grey85");
+  static const AnsiExtendedColorPaletteRawImpl Grey89 = AnsiExtendedColorPaletteRawImpl(254, "Grey89");
+  static const AnsiExtendedColorPaletteRawImpl Grey93 =
+      AnsiExtendedColorPaletteRawImpl(biggestNumberExtendedPalette, "Grey93");
 
-  static const all = [
+  static const List<AnsiExtendedColorPaletteRawImpl> all = [
     Black,
     Maroon,
     Green,
@@ -1463,22 +1552,24 @@ class AnsiExtendedColorPaletteRawImpl implements NamedAnsiExtendedColor {
   @override
   final String name;
 
-  const AnsiExtendedColorPaletteRawImpl(this.paletteNumberByte, this.name)
-      : assert(
-  paletteNumberByte >= byteStart && paletteNumberByte <= byteSize,
-  'Color must be a value between 0 and 255.',
-  );
+  const AnsiExtendedColorPaletteRawImpl(
+    final this.paletteNumberByte,
+    final this.name,
+  ) : assert(
+          paletteNumberByte >= byteStart && paletteNumberByte <= byteSize,
+          'Color must be a value between 0 and 255.',
+        );
 }
 
 abstract class NamedAnsiColors {
-  static const black = NamedAnsiColorBlackImpl._();
-  static const red = NamedAnsiColorRedImpl._();
-  static const green = NamedAnsiColorGreenImpl._();
-  static const yellow = NamedAnsiColorYellowImpl._();
-  static const blue = NamedAnsiColorBlueImpl._();
-  static const magenta = NamedAnsiColorMagentaImpl._();
-  static const cyan = NamedAnsiColorCyanImpl._();
-  static const white = NamedAnsiColorWhiteImpl._();
+  static const NamedAnsiColorBlackImpl black = NamedAnsiColorBlackImpl._();
+  static const NamedAnsiColorRedImpl red = NamedAnsiColorRedImpl._();
+  static const NamedAnsiColorGreenImpl green = NamedAnsiColorGreenImpl._();
+  static const NamedAnsiColorYellowImpl yellow = NamedAnsiColorYellowImpl._();
+  static const NamedAnsiColorBlueImpl blue = NamedAnsiColorBlueImpl._();
+  static const NamedAnsiColorMagentaImpl magenta = NamedAnsiColorMagentaImpl._();
+  static const NamedAnsiColorCyanImpl cyan = NamedAnsiColorCyanImpl._();
+  static const NamedAnsiColorWhiteImpl white = NamedAnsiColorWhiteImpl._();
 }
 
 class NamedAnsiColorBlackImpl implements NamedAnsiBasicColor {
@@ -1562,7 +1653,7 @@ class NamedAnsiColorWhiteImpl implements NamedAnsiBasicColor {
 }
 
 abstract class NamedAnsiColorsMore {
-  static const allDark = [
+  static const List<DarkAnsiColorAdapter> allDark = [
     DarkAnsiColorAdapter(NamedAnsiColors.black),
     DarkAnsiColorAdapter(NamedAnsiColors.red),
     DarkAnsiColorAdapter(NamedAnsiColors.green),
@@ -1572,7 +1663,7 @@ abstract class NamedAnsiColorsMore {
     DarkAnsiColorAdapter(NamedAnsiColors.cyan),
     DarkAnsiColorAdapter(NamedAnsiColors.white),
   ];
-  static const allBright = [
+  static const List<BrightAnsiColorAdapter> allBright = [
     BrightAnsiColorAdapter(NamedAnsiColors.black),
     BrightAnsiColorAdapter(NamedAnsiColors.red),
     BrightAnsiColorAdapter(NamedAnsiColors.green),
@@ -1582,13 +1673,15 @@ abstract class NamedAnsiColorsMore {
     BrightAnsiColorAdapter(NamedAnsiColors.cyan),
     BrightAnsiColorAdapter(NamedAnsiColors.white),
   ];
-  static const allDarkAndBright = [...allDark, ...allBright];
+  static const List<NamedAnsiColor> allDarkAndBright = [...allDark, ...allBright];
 }
 
 class DarkAnsiColorAdapter implements NamedAnsiColor {
   final NamedAnsiBasicColor color;
 
-  const DarkAnsiColorAdapter(this.color);
+  const DarkAnsiColorAdapter(
+    final this.color,
+  );
 
   @override
   int get backgroundColorCode => 40 + color.paletteNumberTribit;
@@ -1606,7 +1699,9 @@ class DarkAnsiColorAdapter implements NamedAnsiColor {
 class BrightAnsiColorAdapter implements NamedAnsiColor {
   final NamedAnsiBasicColor color;
 
-  const BrightAnsiColorAdapter(this.color);
+  const BrightAnsiColorAdapter(
+    final this.color,
+  );
 
   @override
   int get backgroundColorCode => 100 + color.paletteNumberTribit;

@@ -8,13 +8,18 @@ import 'util/hot_reload.dart';
 void main() => runApp(MyApp().update);
 
 class MyApp {
-  final progressScaffoldState = ProgressScaffoldState();
+  final ProgressScaffoldState progressScaffoldState = ProgressScaffoldState(
+    title: "An optional title",
+  );
+
+  MyApp();
 
   void update() {
-    final console = SneathConsoleImpl(autodetectSneathTerminal());
-    const ProgressScaffold(
-      title: "An optional title",
-    ).run(progressScaffoldState, console);
+    final console = SneathConsoleImpl(autoSneathTerminal());
+    runProgressScaffold(
+      state: progressScaffoldState,
+      console: console,
+    );
     console.writeLine("... Searching ...", ConsoleTextAlignments.center);
     console.resetColorAttributes();
   }

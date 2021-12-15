@@ -9,8 +9,10 @@ void main() {
   final timer = DCTimeDisplay(console);
   console.rawConsole.write('Waiting 10 Seconds ');
   timer.start();
-  Future<dynamic>.delayed(const Duration(seconds: 10)).then((dynamic _) {
-    timer.stop();
-    print('');
-  });
+  Future<dynamic>.delayed(const Duration(seconds: 10)).then(
+    (final dynamic _) {
+      timer.stop();
+      print('');
+    },
+  );
 }

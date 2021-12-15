@@ -5,11 +5,13 @@ import 'package:dart_console/dc/prompt.dart';
 void main() {
   final console = DCConsole(DCStdioConsoleAdapter());
   final shell = DCShellPrompt(console);
-  shell.loop().listen((line) {
-    if (['stop', 'quit', 'exit'].contains(line.toLowerCase().trim())) {
-      shell.stop();
-      return;
-    }
-    print(line);
-  });
+  shell.loop().listen(
+    (final line) {
+      if (['stop', 'quit', 'exit'].contains(line.toLowerCase().trim())) {
+        shell.stop();
+        return;
+      }
+      print(line);
+    },
+  );
 }

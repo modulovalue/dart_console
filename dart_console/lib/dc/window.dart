@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import '../keyboard/impl/keyboard.dart';
+import '../keyboard/keyboard.dart';
 import 'base.dart';
 
 abstract class DCWindow {
@@ -10,8 +10,10 @@ abstract class DCWindow {
   final DCConsole console;
   final TerminalKeyboardImpl keyboard;
 
-  DCWindow(this.console, this.title)
-      : keyboard = TerminalKeyboardImpl(
+  DCWindow(
+    final this.console,
+    final this.title,
+  ) : keyboard = TerminalKeyboardImpl(
           byteStream: console.rawConsole.byteStream(),
           moveCursorBackByOne: () => console.moveCursorBack(1),
         ) {
@@ -49,9 +51,14 @@ abstract class DCWindow {
     draw();
   }
 
-  Timer? startUpdateLoop([Duration? wait]) {
+  Timer? startUpdateLoop([
+    Duration? wait,
+  ]) {
     wait ??= const Duration(seconds: 2);
-    return _updateTimer = Timer.periodic(wait, (timer) => draw());
+    return _updateTimer = Timer.periodic(
+      wait,
+      (final timer) => draw(),
+    );
   }
 
   void close() {
@@ -63,7 +70,9 @@ abstract class DCWindow {
     stdin.echoMode = true;
   }
 
-  void writeCentered(String text) {
+  void writeCentered(
+    final String text,
+  ) {
     final column = ((console.columns / 2) - (text.length / 2)).round();
     final row = (console.rows / 2).round();
     console.moveCursor(row: row, column: column);
@@ -71,7 +80,10 @@ abstract class DCWindow {
   }
 }
 
-void _repeatFunction(Function func, int times) {
+void _repeatFunction(
+  final Function func,
+  final int times,
+) {
   for (var i = 1; i <= times; i++) {
     // ignore: avoid_dynamic_calls
     func(i);

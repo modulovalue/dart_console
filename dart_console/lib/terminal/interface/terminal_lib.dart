@@ -21,5 +21,8 @@ abstract class SneathTerminal {
   void clearScreen();
 
   /// Positions the cursor at the given [column] and [row].
-  void setCursorPosition(int column, int row);
+  void setCursorPosition(
+    final int column,
+    final int row,
+  );
 }

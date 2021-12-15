@@ -1,4 +1,4 @@
-/// TODO have constant String chars for printable characters and use them everywhere instead of string literals.
+// TODO have constant String chars for printable characters and use them everywhere instead of using string literals.
 /// "Null character" control character.
 const int $nul = 0x00;
 

@@ -1,53 +1,53 @@
 /// Non-printable characters that can be entered from the keyboard.
-/// TODO collapse control characters into a subclass of key?
-// Unknown is not a control character and should be removed. These cases should be handled outside.
-// Or perhaps add a supertype where one child is unknown and the other represents all valid control characters.
+// TODO sum type.
+// TODO Unknown is not a control character and should be removed. These cases should be handled outside.
+// TODO Or perhaps add a supertype where one child is unknown and the other represent all valid control characters.
 abstract class ControlCharacters {
-  static const unknown = ControlCharacterUnknownImpl._();
-  static const ctrlA = ControlCharacterCtrlAImpl._();
-  static const ctrlB = ControlCharacterCtrlBImpl._();
-  static const ctrlC = ControlCharacterCtrlCImpl._(); // Break
-  static const ctrlD = ControlCharacterCtrlDImpl._(); // End of File
-  static const ctrlE = ControlCharacterCtrlEImpl._();
-  static const ctrlF = ControlCharacterCtrlFImpl._();
-  static const ctrlG = ControlCharacterCtrlGImpl._(); // Bell
-  static const ctrlH = ControlCharacterCtrlHImpl._(); // Backspace
-  static const tab = ControlCharacterTabImpl._();
-  static const ctrlJ = ControlCharacterCtrlJImpl._();
-  static const ctrlK = ControlCharacterCtrlKImpl._();
-  static const ctrlL = ControlCharacterCtrlLImpl._();
-  static const enter = ControlCharacterEnterImpl._();
-  static const ctrlN = ControlCharacterCtrlNImpl._();
-  static const ctrlO = ControlCharacterCtrlOImpl._();
-  static const ctrlP = ControlCharacterCtrlPImpl._();
-  static const ctrlQ = ControlCharacterCtrlQImpl._();
-  static const ctrlR = ControlCharacterCtrlRImpl._();
-  static const ctrlS = ControlCharacterCtrlSImpl._();
-  static const ctrlT = ControlCharacterCtrlTImpl._();
-  static const ctrlU = ControlCharacterCtrlUImpl._();
-  static const ctrlV = ControlCharacterCtrlVImpl._();
-  static const ctrlW = ControlCharacterCtrlWImpl._();
-  static const ctrlX = ControlCharacterCtrlXImpl._();
-  static const ctrlY = ControlCharacterCtrlYImpl._();
-  static const ctrlZ = ControlCharacterCtrlZImpl._(); // Suspend
-  static const arrowLeft = ControlCharacterArrowLeftImpl._();
-  static const arrowRight = ControlCharacterArrowRightImpl._();
-  static const arrowUp = ControlCharacterArrowUpImpl._();
-  static const arrowDown = ControlCharacterArrowDownImpl._();
-  static const pageUp = ControlCharacterPageUpImpl._();
-  static const pageDown = ControlCharacterPageDownImpl._();
-  static const wordLeft = ControlCharacterWordLeftImpl._();
-  static const wordRight = ControlCharacterWordRightImpl._();
-  static const home = ControlCharacterHomeImpl._();
-  static const end = ControlCharacterEndImpl._();
-  static const escape = ControlCharacterEscapeImpl._();
-  static const delete = ControlCharacterDeleteImpl._();
-  static const backspace = ControlCharacterBackspaceImpl._();
-  static const wordBackspace = ControlCharacterWordBackspaceImpl._();
-  static const F1 = ControlCharacterF1Impl._();
-  static const F2 = ControlCharacterF2Impl._();
-  static const F3 = ControlCharacterF3Impl._();
-  static const F4 = ControlCharacterF4Impl._();
+  static const ControlCharacterUnknownImpl unknown = ControlCharacterUnknownImpl._();
+  static const ControlCharacterCtrlAImpl ctrlA = ControlCharacterCtrlAImpl._();
+  static const ControlCharacterCtrlBImpl ctrlB = ControlCharacterCtrlBImpl._();
+  static const ControlCharacterCtrlCImpl ctrlC = ControlCharacterCtrlCImpl._(); // Break
+  static const ControlCharacterCtrlDImpl ctrlD = ControlCharacterCtrlDImpl._(); // End of File
+  static const ControlCharacterCtrlEImpl ctrlE = ControlCharacterCtrlEImpl._();
+  static const ControlCharacterCtrlFImpl ctrlF = ControlCharacterCtrlFImpl._();
+  static const ControlCharacterCtrlGImpl ctrlG = ControlCharacterCtrlGImpl._(); // Bell
+  static const ControlCharacterCtrlHImpl ctrlH = ControlCharacterCtrlHImpl._(); // Backspace
+  static const ControlCharacterTabImpl tab = ControlCharacterTabImpl._();
+  static const ControlCharacterCtrlJImpl ctrlJ = ControlCharacterCtrlJImpl._();
+  static const ControlCharacterCtrlKImpl ctrlK = ControlCharacterCtrlKImpl._();
+  static const ControlCharacterCtrlLImpl ctrlL = ControlCharacterCtrlLImpl._();
+  static const ControlCharacterEnterImpl enter = ControlCharacterEnterImpl._();
+  static const ControlCharacterCtrlNImpl ctrlN = ControlCharacterCtrlNImpl._();
+  static const ControlCharacterCtrlOImpl ctrlO = ControlCharacterCtrlOImpl._();
+  static const ControlCharacterCtrlPImpl ctrlP = ControlCharacterCtrlPImpl._();
+  static const ControlCharacterCtrlQImpl ctrlQ = ControlCharacterCtrlQImpl._();
+  static const ControlCharacterCtrlRImpl ctrlR = ControlCharacterCtrlRImpl._();
+  static const ControlCharacterCtrlSImpl ctrlS = ControlCharacterCtrlSImpl._();
+  static const ControlCharacterCtrlTImpl ctrlT = ControlCharacterCtrlTImpl._();
+  static const ControlCharacterCtrlUImpl ctrlU = ControlCharacterCtrlUImpl._();
+  static const ControlCharacterCtrlVImpl ctrlV = ControlCharacterCtrlVImpl._();
+  static const ControlCharacterCtrlWImpl ctrlW = ControlCharacterCtrlWImpl._();
+  static const ControlCharacterCtrlXImpl ctrlX = ControlCharacterCtrlXImpl._();
+  static const ControlCharacterCtrlYImpl ctrlY = ControlCharacterCtrlYImpl._();
+  static const ControlCharacterCtrlZImpl ctrlZ = ControlCharacterCtrlZImpl._(); // Suspend
+  static const ControlCharacterArrowLeftImpl arrowLeft = ControlCharacterArrowLeftImpl._();
+  static const ControlCharacterArrowRightImpl arrowRight = ControlCharacterArrowRightImpl._();
+  static const ControlCharacterArrowUpImpl arrowUp = ControlCharacterArrowUpImpl._();
+  static const ControlCharacterArrowDownImpl arrowDown = ControlCharacterArrowDownImpl._();
+  static const ControlCharacterPageUpImpl pageUp = ControlCharacterPageUpImpl._();
+  static const ControlCharacterPageDownImpl pageDown = ControlCharacterPageDownImpl._();
+  static const ControlCharacterWordLeftImpl wordLeft = ControlCharacterWordLeftImpl._();
+  static const ControlCharacterWordRightImpl wordRight = ControlCharacterWordRightImpl._();
+  static const ControlCharacterHomeImpl home = ControlCharacterHomeImpl._();
+  static const ControlCharacterEndImpl end = ControlCharacterEndImpl._();
+  static const ControlCharacterEscapeImpl escape = ControlCharacterEscapeImpl._();
+  static const ControlCharacterDeleteImpl delete = ControlCharacterDeleteImpl._();
+  static const ControlCharacterBackspaceImpl backspace = ControlCharacterBackspaceImpl._();
+  static const ControlCharacterWordBackspaceImpl wordBackspace = ControlCharacterWordBackspaceImpl._();
+  static const ControlCharacterF1Impl F1 = ControlCharacterF1Impl._();
+  static const ControlCharacterF2Impl F2 = ControlCharacterF2Impl._();
+  static const ControlCharacterF3Impl F3 = ControlCharacterF3Impl._();
+  static const ControlCharacterF4Impl F4 = ControlCharacterF4Impl._();
 }
 
 abstract class ControlCharacter {}

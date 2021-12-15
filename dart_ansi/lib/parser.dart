@@ -386,177 +386,176 @@ R ansiParserReadKey<R, CONTEXT>({
   }
 }
 
-/// Builds all keys that [ansiParserReadKey] supports.
 /// This decouples the parser from the representation of the keys.
 abstract class KeyDelegate<T, CONTEXT> {
-  T nil(CONTEXT context); //
-  T startOfHeader(CONTEXT context); //
-  T startOfText(CONTEXT context); //
-  T endOfText(CONTEXT context); //
-  T endOfTransmission(CONTEXT context); //
-  T enquiry(CONTEXT context); //
-  T acknowledgment(CONTEXT context); //
-  T bell(CONTEXT context); //
-  T backspace(CONTEXT context); //
-  T horizontalTab(CONTEXT context); //
-  T lineFeed(CONTEXT context); //
-  T verticalTab(CONTEXT context); //
-  T formFeed(CONTEXT context); //
-  T carriageReturn(CONTEXT context); //
-  T shiftOut(CONTEXT context); //
-  T shiftIn(CONTEXT context); //
-  T dataLinkEscape(CONTEXT context); //
-  T deviceControl1(CONTEXT context); //
-  T deviceControl2(CONTEXT context); //
-  T deviceControl3(CONTEXT context); //
-  T deviceControl4(CONTEXT context); //
-  T negativeAcknowledgment(CONTEXT context); //
-  T syncIdle(CONTEXT context); //
-  T endOfTransmissionBlock(CONTEXT context); //
-  T cancel(CONTEXT context); //
-  T endOfMedium(CONTEXT context); //
-  T substitute(CONTEXT context); //
-  T escapeEOF(CONTEXT context); //
-  T escapeDelete(CONTEXT context); //
-  T escapeAnsiBracketEOF(CONTEXT context); //
-  T escapeAnsiBracketUp(CONTEXT context); //
-  T escapeAnsiBracketDown(CONTEXT context); //
-  T escapeAnsiBracketForward(CONTEXT context); //
-  T escapeAnsiBracketBackward(CONTEXT context); //
-  T escapeAnsiBracketHome(CONTEXT context); //
-  T escapeAnsiBracketEnd(CONTEXT context); //
-  T escapeAnsiBracket1EOF(CONTEXT context); //
-  T escapeAnsiBracket1Tilde(CONTEXT context); //
-  T escapeAnsiBracket1Default(CONTEXT context); //
-  T escapeAnsiBracket3EOF(CONTEXT context); //
-  T escapeAnsiBracket3Tilde(CONTEXT context); //
-  T escapeAnsiBracket3Default(CONTEXT context); //
-  T escapeAnsiBracket4EOF(CONTEXT context); //
-  T escapeAnsiBracket4Tilde(CONTEXT context); //
-  T escapeAnsiBracket4Default(CONTEXT context); //
-  T escapeAnsiBracket5EOF(CONTEXT context); //
-  T escapeAnsiBracket5Tilde(CONTEXT context); //
-  T escapeAnsiBracket5Default(CONTEXT context); //
-  T escapeAnsiBracket6EOF(CONTEXT context); //
-  T escapeAnsiBracket6Tilde(CONTEXT context); //
-  T escapeAnsiBracket6Default(CONTEXT context); //
-  T escapeAnsiBracket7EOF(CONTEXT context); //
-  T escapeAnsiBracket7Tilde(CONTEXT context); //
-  T escapeAnsiBracket7Default(CONTEXT context); //
-  T escapeAnsiBracket8EOF(CONTEXT context); //
-  T escapeAnsiBracket8Tilde(CONTEXT context); //
-  T escapeAnsiBracket8Default(CONTEXT context); //
-  T escapeAnsiBracketDefault(CONTEXT context); //
-  T escapeAnsiOEOF(CONTEXT context); //
-  T escapeAnsiOHome(CONTEXT context); //
-  T escapeAnsiOEnd(CONTEXT context); //
-  T escapeAnsiOP(CONTEXT context); //
-  T escapeAnsiOQ(CONTEXT context); //
-  T escapeAnsiOR(CONTEXT context); //
-  T escapeAnsiOS(CONTEXT context); //
-  T escapeAnsiODefault(CONTEXT context); //
-  T escapeAnsib(CONTEXT context); //
-  T escapeAnsif(CONTEXT context); //
-  T escapeAnsiDefault(CONTEXT context); //
-  T fileSeparator(CONTEXT context); //
-  T groupSeparator(CONTEXT context); //
-  T recordSeparator(CONTEXT context); //
-  T unitSeparator(CONTEXT context); //
-  T space(CONTEXT context); //
-  T exclamation(CONTEXT context); //
-  T doubleQuote(CONTEXT context); //
-  T hash(CONTEXT context); //
-  T dollar(CONTEXT context); //
-  T percent(CONTEXT context); //
-  T ampersand(CONTEXT context); //
-  T singleQuote(CONTEXT context); //
-  T lparen(CONTEXT context); //
-  T rparen(CONTEXT context); //
-  T asterisk(CONTEXT context); //
-  T plus(CONTEXT context); //
-  T comma(CONTEXT context); //
-  T minus(CONTEXT context); //
-  T dot(CONTEXT context); //
-  T slash(CONTEXT context); //
-  T zero(CONTEXT context); //
-  T one(CONTEXT context); //
-  T two(CONTEXT context); //
-  T three(CONTEXT context); //
-  T four(CONTEXT context); //
-  T five(CONTEXT context); //
-  T six(CONTEXT context); //
-  T seven(CONTEXT context); //
-  T eight(CONTEXT context); //
-  T nine(CONTEXT context); //
-  T colon(CONTEXT context); //
-  T semicolon(CONTEXT context); //
-  T lt(CONTEXT context); //
-  T equal(CONTEXT context); //
-  T gt(CONTEXT context); //
-  T question(CONTEXT context); //
-  T at(CONTEXT context); //
-  T capA(CONTEXT context); //
-  T capB(CONTEXT context); //
-  T capC(CONTEXT context); //
-  T capD(CONTEXT context); //
-  T capE(CONTEXT context); //
-  T capF(CONTEXT context); //
-  T capG(CONTEXT context); //
-  T capH(CONTEXT context); //
-  T capI(CONTEXT context); //
-  T capJ(CONTEXT context); //
-  T capK(CONTEXT context); //
-  T capL(CONTEXT context); //
-  T capM(CONTEXT context); //
-  T capN(CONTEXT context); //
-  T capO(CONTEXT context); //
-  T capP(CONTEXT context); //
-  T capQ(CONTEXT context); //
-  T capR(CONTEXT context); //
-  T capS(CONTEXT context); //
-  T capT(CONTEXT context); //
-  T capU(CONTEXT context); //
-  T capV(CONTEXT context); //
-  T capW(CONTEXT context); //
-  T capX(CONTEXT context); //
-  T capY(CONTEXT context); //
-  T capZ(CONTEXT context); //
-  T lBra(CONTEXT context); //
-  T backslash(CONTEXT context); //
-  T rBra(CONTEXT context); //
-  T caret(CONTEXT context); //
-  T underscore(CONTEXT context); //
-  T backquote(CONTEXT context); //
-  T lowerA(CONTEXT context); //
-  T lowerB(CONTEXT context); //
-  T lowerC(CONTEXT context); //
-  T lowerD(CONTEXT context); //
-  T lowerE(CONTEXT context); //
-  T lowerF(CONTEXT context); //
-  T lowerG(CONTEXT context); //
-  T lowerH(CONTEXT context); //
-  T lowerI(CONTEXT context); //
-  T lowerJ(CONTEXT context); //
-  T lowerK(CONTEXT context); //
-  T lowerL(CONTEXT context); //
-  T lowerM(CONTEXT context); //
-  T lowerN(CONTEXT context); //
-  T lowerO(CONTEXT context); //
-  T lowerP(CONTEXT context); //
-  T lowerQ(CONTEXT context); //
-  T lowerR(CONTEXT context); //
-  T lowerS(CONTEXT context); //
-  T lowerT(CONTEXT context); //
-  T lowerU(CONTEXT context); //
-  T lowerV(CONTEXT context); //
-  T lowerW(CONTEXT context); //
-  T lowerX(CONTEXT context); //
-  T lowerY(CONTEXT context); //
-  T lowerZ(CONTEXT context); //
-  T lBrace(CONTEXT context); //
-  T bar(CONTEXT context); //
-  T rBrace(CONTEXT context); //
-  T tilde(CONTEXT context); //
-  T del(CONTEXT context); //
-  T extended(CONTEXT context); //
+  T nil(final CONTEXT context); //
+  T startOfHeader(final CONTEXT context); //
+  T startOfText(final CONTEXT context); //
+  T endOfText(final CONTEXT context); //
+  T endOfTransmission(final CONTEXT context); //
+  T enquiry(final CONTEXT context); //
+  T acknowledgment(final CONTEXT context); //
+  T bell(final CONTEXT context); //
+  T backspace(final CONTEXT context); //
+  T horizontalTab(final CONTEXT context); //
+  T lineFeed(final CONTEXT context); //
+  T verticalTab(final CONTEXT context); //
+  T formFeed(final CONTEXT context); //
+  T carriageReturn(final CONTEXT context); //
+  T shiftOut(final CONTEXT context); //
+  T shiftIn(final CONTEXT context); //
+  T dataLinkEscape(final CONTEXT context); //
+  T deviceControl1(final CONTEXT context); //
+  T deviceControl2(final CONTEXT context); //
+  T deviceControl3(final CONTEXT context); //
+  T deviceControl4(final CONTEXT context); //
+  T negativeAcknowledgment(final CONTEXT context); //
+  T syncIdle(final CONTEXT context); //
+  T endOfTransmissionBlock(final CONTEXT context); //
+  T cancel(final CONTEXT context); //
+  T endOfMedium(final CONTEXT context); //
+  T substitute(final CONTEXT context); //
+  T escapeEOF(final CONTEXT context); //
+  T escapeDelete(final CONTEXT context); //
+  T escapeAnsiBracketEOF(final CONTEXT context); //
+  T escapeAnsiBracketUp(final CONTEXT context); //
+  T escapeAnsiBracketDown(final CONTEXT context); //
+  T escapeAnsiBracketForward(final CONTEXT context); //
+  T escapeAnsiBracketBackward(final CONTEXT context); //
+  T escapeAnsiBracketHome(final CONTEXT context); //
+  T escapeAnsiBracketEnd(final CONTEXT context); //
+  T escapeAnsiBracket1EOF(final CONTEXT context); //
+  T escapeAnsiBracket1Tilde(final CONTEXT context); //
+  T escapeAnsiBracket1Default(final CONTEXT context); //
+  T escapeAnsiBracket3EOF(final CONTEXT context); //
+  T escapeAnsiBracket3Tilde(final CONTEXT context); //
+  T escapeAnsiBracket3Default(final CONTEXT context); //
+  T escapeAnsiBracket4EOF(final CONTEXT context); //
+  T escapeAnsiBracket4Tilde(final CONTEXT context); //
+  T escapeAnsiBracket4Default(final CONTEXT context); //
+  T escapeAnsiBracket5EOF(final CONTEXT context); //
+  T escapeAnsiBracket5Tilde(final CONTEXT context); //
+  T escapeAnsiBracket5Default(final CONTEXT context); //
+  T escapeAnsiBracket6EOF(final CONTEXT context); //
+  T escapeAnsiBracket6Tilde(final CONTEXT context); //
+  T escapeAnsiBracket6Default(final CONTEXT context); //
+  T escapeAnsiBracket7EOF(final CONTEXT context); //
+  T escapeAnsiBracket7Tilde(final CONTEXT context); //
+  T escapeAnsiBracket7Default(final CONTEXT context); //
+  T escapeAnsiBracket8EOF(final CONTEXT context); //
+  T escapeAnsiBracket8Tilde(final CONTEXT context); //
+  T escapeAnsiBracket8Default(final CONTEXT context); //
+  T escapeAnsiBracketDefault(final CONTEXT context); //
+  T escapeAnsiOEOF(final CONTEXT context); //
+  T escapeAnsiOHome(final CONTEXT context); //
+  T escapeAnsiOEnd(final CONTEXT context); //
+  T escapeAnsiOP(final CONTEXT context); //
+  T escapeAnsiOQ(final CONTEXT context); //
+  T escapeAnsiOR(final CONTEXT context); //
+  T escapeAnsiOS(final CONTEXT context); //
+  T escapeAnsiODefault(final CONTEXT context); //
+  T escapeAnsib(final CONTEXT context); //
+  T escapeAnsif(final CONTEXT context); //
+  T escapeAnsiDefault(final CONTEXT context); //
+  T fileSeparator(final CONTEXT context); //
+  T groupSeparator(final CONTEXT context); //
+  T recordSeparator(final CONTEXT context); //
+  T unitSeparator(final CONTEXT context); //
+  T space(final CONTEXT context); //
+  T exclamation(final CONTEXT context); //
+  T doubleQuote(final CONTEXT context); //
+  T hash(final CONTEXT context); //
+  T dollar(final CONTEXT context); //
+  T percent(final CONTEXT context); //
+  T ampersand(final CONTEXT context); //
+  T singleQuote(final CONTEXT context); //
+  T lparen(final CONTEXT context); //
+  T rparen(final CONTEXT context); //
+  T asterisk(final CONTEXT context); //
+  T plus(final CONTEXT context); //
+  T comma(final CONTEXT context); //
+  T minus(final CONTEXT context); //
+  T dot(final CONTEXT context); //
+  T slash(final CONTEXT context); //
+  T zero(final CONTEXT context); //
+  T one(final CONTEXT context); //
+  T two(final CONTEXT context); //
+  T three(final CONTEXT context); //
+  T four(final CONTEXT context); //
+  T five(final CONTEXT context); //
+  T six(final CONTEXT context); //
+  T seven(final CONTEXT context); //
+  T eight(final CONTEXT context); //
+  T nine(final CONTEXT context); //
+  T colon(final CONTEXT context); //
+  T semicolon(final CONTEXT context); //
+  T lt(final CONTEXT context); //
+  T equal(final CONTEXT context); //
+  T gt(final CONTEXT context); //
+  T question(final CONTEXT context); //
+  T at(final CONTEXT context); //
+  T capA(final CONTEXT context); //
+  T capB(final CONTEXT context); //
+  T capC(final CONTEXT context); //
+  T capD(final CONTEXT context); //
+  T capE(final CONTEXT context); //
+  T capF(final CONTEXT context); //
+  T capG(final CONTEXT context); //
+  T capH(final CONTEXT context); //
+  T capI(final CONTEXT context); //
+  T capJ(final CONTEXT context); //
+  T capK(final CONTEXT context); //
+  T capL(final CONTEXT context); //
+  T capM(final CONTEXT context); //
+  T capN(final CONTEXT context); //
+  T capO(final CONTEXT context); //
+  T capP(final CONTEXT context); //
+  T capQ(final CONTEXT context); //
+  T capR(final CONTEXT context); //
+  T capS(final CONTEXT context); //
+  T capT(final CONTEXT context); //
+  T capU(final CONTEXT context); //
+  T capV(final CONTEXT context); //
+  T capW(final CONTEXT context); //
+  T capX(final CONTEXT context); //
+  T capY(final CONTEXT context); //
+  T capZ(final CONTEXT context); //
+  T lBra(final CONTEXT context); //
+  T backslash(final CONTEXT context); //
+  T rBra(final CONTEXT context); //
+  T caret(final CONTEXT context); //
+  T underscore(final CONTEXT context); //
+  T backquote(final CONTEXT context); //
+  T lowerA(final CONTEXT context); //
+  T lowerB(final CONTEXT context); //
+  T lowerC(final CONTEXT context); //
+  T lowerD(final CONTEXT context); //
+  T lowerE(final CONTEXT context); //
+  T lowerF(final CONTEXT context); //
+  T lowerG(final CONTEXT context); //
+  T lowerH(final CONTEXT context); //
+  T lowerI(final CONTEXT context); //
+  T lowerJ(final CONTEXT context); //
+  T lowerK(final CONTEXT context); //
+  T lowerL(final CONTEXT context); //
+  T lowerM(final CONTEXT context); //
+  T lowerN(final CONTEXT context); //
+  T lowerO(final CONTEXT context); //
+  T lowerP(final CONTEXT context); //
+  T lowerQ(final CONTEXT context); //
+  T lowerR(final CONTEXT context); //
+  T lowerS(final CONTEXT context); //
+  T lowerT(final CONTEXT context); //
+  T lowerU(final CONTEXT context); //
+  T lowerV(final CONTEXT context); //
+  T lowerW(final CONTEXT context); //
+  T lowerX(final CONTEXT context); //
+  T lowerY(final CONTEXT context); //
+  T lowerZ(final CONTEXT context); //
+  T lBrace(final CONTEXT context); //
+  T bar(final CONTEXT context); //
+  T rBrace(final CONTEXT context); //
+  T tilde(final CONTEXT context); //
+  T del(final CONTEXT context); //
+  T extended(final CONTEXT context); //
 }

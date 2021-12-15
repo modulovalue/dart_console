@@ -12,10 +12,15 @@ class DCProgressBar {
   /// Creates a Progress Bar.
   ///
   /// [complete] is the number that is considered 100%.
-  DCProgressBar(this.console, {this.complete = 100});
+  DCProgressBar(
+    final this.console, {
+    final this.complete = 100,
+  });
 
   /// Updates the Progress Bar with a progress of [progress].
-  void update(int progress) {
+  void update(
+    final int progress,
+  ) {
     if (progress != current) {
       current = progress;
       final ratio = progress / complete;
@@ -54,19 +59,24 @@ class DCLoadingBar {
   final DCConsole console;
 
   /// Creates a loading bar.
-  DCLoadingBar(this.console);
+  DCLoadingBar(
+    final this.console,
+  );
 
   /// Starts the Loading Bar
   void start() {
     console.hideCursor();
-    _timer = Timer.periodic(const Duration(milliseconds: 75), (timer) {
-      nextPosition();
-      update();
-    });
+    _timer = Timer.periodic(
+      const Duration(milliseconds: 75),
+      (final timer) {
+        nextPosition();
+        update();
+      },
+    );
   }
 
   /// Stops the Loading Bar with the specified (and optional) [message].
-  void stop([String? message]) {
+  void stop([final String? message,]) {
     if (_timer != null) {
       _timer!.cancel();
     }
@@ -118,14 +128,14 @@ class DCWideLoadingBar {
   final DCConsole console;
 
   /// Creates a wide loading bar.
-  DCWideLoadingBar(this.console);
+  DCWideLoadingBar(final this.console,);
 
   /// Loops the loading bar.
   Timer loop() {
     final width = console.columns - 2;
     var goForward = true;
     var isDone = true;
-    return Timer.periodic(const Duration(milliseconds: 50), (timer) async {
+    return Timer.periodic(const Duration(milliseconds: 50), (final timer) async {
       if (isDone) {
         isDone = false;
         for (var i = 1; i <= width; i++) {
@@ -140,7 +150,7 @@ class DCWideLoadingBar {
         goForward = !goForward;
         isDone = true;
       }
-    });
+    },);
   }
 
   /// Moves the Bar Forward

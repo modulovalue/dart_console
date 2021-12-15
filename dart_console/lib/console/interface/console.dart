@@ -13,11 +13,14 @@ import 'key.dart';
 ///
 /// A comprehensive set of demos of using the Console class can be found in the
 /// `examples/` subdirectory.
-/// TODO detect mouse and hover events.
-/// TODO See https://stackoverflow.com/questions/51909557/mouse-events-in-terminal-emulator
-/// TODO See https://stackoverflow.com/questions/59864485/capturing-mouse-in-virtual-terminal-with-ansi-escape
-/// TODO input, output and info needs to be separated.
+// TODO detect mouse and hover events.
+// TODO See https://stackoverflow.com/questions/51909557/mouse-events-in-terminal-emulator
+// TODO See https://stackoverflow.com/questions/59864485/capturing-mouse-in-virtual-terminal-with-ansi-escape
+// TODO input, output and info needs to be separated.
+// TODO consider having a dsl that is interpreted later rather than interpreting the commands online.
 abstract class SneathConsole {
+  /// Setter:
+  ///
   /// Enables or disables raw mode.
   ///
   /// There are a series of flags applied to a UNIX-like terminal that together
@@ -40,15 +43,16 @@ abstract class SneathConsole {
   /// a carriage return (`\r`). You can use the [newLine] property or the
   /// [writeLine] function instead of explicitly using `\n` to ensure the
   /// correct results.
-  set rawMode(bool value);
-
+  ///
+  /// Getter:
+  ///
   /// Returns whether the terminal is in raw mode.
   ///
   /// There are a series of flags applied to a UNIX-like terminal that together
   /// constitute 'raw mode'. These flags turn off echoing of character input,
   /// processing of input signals like Ctrl+C, and output processing, as well as
   /// buffering of input until a full line is entered.
-  bool get rawMode;
+  abstract bool rawMode;
 
   /// Contains information about the width and height of the window.
   SneathConsoleDimensions get dimensions;
@@ -95,14 +99,18 @@ abstract class SneathConsole {
   /// There are 16 named ANSI colors, as defined in the [NamedAnsiColor]
   /// enumeration. Depending on the console theme and background color,
   /// some colors may not offer a legible contrast against the background.
-  void setForegroundColor(NamedAnsiColor foreground);
+  void setForegroundColor(
+    final NamedAnsiColor foreground,
+  );
 
   /// Sets the console background color to a named ANSI color.
   ///
   /// There are 16 named ANSI colors, as defined in the [NamedAnsiColor]
   /// enumeration. Depending on the console theme and background color,
   /// some colors may not offer a legible contrast against the background.
-  void setBackgroundColor(NamedAnsiColor background);
+  void setBackgroundColor(
+    final NamedAnsiColor background,
+  );
 
   /// Sets the foreground to one of 256 extended ANSI colors.
   ///
@@ -116,16 +124,18 @@ abstract class SneathConsole {
   /// See https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit for
   /// the full set of colors. You may also run `examples/demo.dart` for this
   /// package, which provides a sample of each color in this list.
-  void setBackgroundExtendedColor(AnsiExtendedColorPalette color);
+  void setBackgroundExtendedColor(
+    final AnsiExtendedColorPalette color,
+  );
 
   /// Sets the text style.
   ///
   /// Note that not all styles may be supported by all terminals.
   void setTextStyle({
-    bool bold,
-    bool underscore,
-    bool blink,
-    bool inverted,
+    final bool bold,
+    final bool underscore,
+    final bool blink,
+    final bool inverted,
   });
 
   /// Resets all color attributes and text styles to the default terminal
@@ -133,14 +143,18 @@ abstract class SneathConsole {
   void resetColorAttributes();
 
   /// Writes the text to the console.
-  void write(String text);
+  void write(
+    final String text,
+  );
 
   /// Returns the current newline string.
   String get newLine;
 
   /// Writes an error message to the console, with newline automatically
   /// appended.
-  void writeErrorLine(String text);
+  void writeErrorLine(
+    final String text,
+  );
 
   /// Writes a line to the console, optionally with alignment provided by the
   /// [ConsoleTextAlignment] enumeration.
@@ -151,18 +165,22 @@ abstract class SneathConsole {
   /// Text alignment operates based off the current window width, and pads
   /// the remaining characters with a space character.
   void writeLine([
-    String? text,
-    ConsoleTextAlignment alignment,
+    final String? text,
+    final ConsoleTextAlignment alignment,
   ]);
 
-  void writeLineCentered(String? text);
-
-  void writeLines(
-    Iterable<String> lines,
-    ConsoleTextAlignment alignment,
+  void writeLineCentered(
+    final String? text,
   );
 
-  void writeLinesCentered(Iterable<String> lines);
+  void writeLines(
+    final Iterable<String> lines,
+    final ConsoleTextAlignment alignment,
+  );
+
+  void writeLinesCentered(
+    final Iterable<String> lines,
+  );
 
   /// Reads a single key from the input, including a variety of control
   /// characters.
@@ -200,9 +218,9 @@ abstract class SneathConsole {
   /// entered. This is intended for scenarios like auto-complete, where the
   /// text field is coupled with some other content.
   String? readLine({
-    bool cancelOnBreak,
-    bool cancelOnEscape,
-    bool cancelOnEOF,
-    void Function(String text, Key lastPressed)? callback,
+    final bool cancelOnBreak,
+    final bool cancelOnEscape,
+    final bool cancelOnEOF,
+    final void Function(String text, Key lastPressed)? callback,
   });
 }

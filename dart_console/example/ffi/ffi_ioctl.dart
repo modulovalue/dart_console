@@ -4,7 +4,13 @@ import 'dart:io';
 import 'package:ffi/ffi.dart';
 
 void main() {
-  final libc = Platform.isMacOS ? DynamicLibrary.open('/usr/lib/libSystem.dylib') : DynamicLibrary.open('libc-2.28.so');
+  final libc = () {
+    if (Platform.isMacOS) {
+      return DynamicLibrary.open('/usr/lib/libSystem.dylib');
+    } else {
+      return DynamicLibrary.open('libc-2.28.so');
+    }
+  }();
   final ioctl = libc.lookupFunction<ioctlVoidNative, ioctlVoidDart>('ioctl');
   final winSizePointer = calloc<WinSize>();
   final result = ioctl(STDOUT_FILENO, TIOCGWINSZ, winSizePointer.cast());
@@ -19,7 +25,13 @@ void main() {
 typedef ioctlVoidNative = Int32 Function(Int32, Int64, Pointer<Void>);
 typedef ioctlVoidDart = int Function(int, int, Pointer<Void>);
 
-final TIOCGWINSZ = Platform.isMacOS ? 0x40087468 : 0x5413;
+final TIOCGWINSZ = () {
+  if (Platform.isMacOS) {
+    return 0x40087468;
+  } else {
+    return 0x5413;
+  }
+}();
 const STDIN_FILENO = 0;
 const STDOUT_FILENO = 1;
 const STDERR_FILENO = 2;
@@ -32,14 +44,13 @@ const STDERR_FILENO = 2;
 // };
 class WinSize extends Struct {
   @Int16()
-  int ws_row;
-
+  external int ws_row;
   @Int16()
-  int ws_col;
-
+  external int ws_col;
   @Int16()
-  int ws_xpixel;
-
+  external int ws_xpixel;
   @Int16()
-  int ws_ypixel;
+  external int ws_ypixel;
+
+  WinSize();
 }

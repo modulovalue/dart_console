@@ -8,11 +8,14 @@ void main() {
   final console = DCConsole(DCStdioConsoleAdapter());
   final progress = DCProgressBar(console);
   var i = 0;
-  Timer.periodic(const Duration(milliseconds: 300), (timer) {
-    i++;
-    progress.update(i);
-    if (i == 100) {
-      timer.cancel();
-    }
-  });
+  Timer.periodic(
+    const Duration(milliseconds: 300),
+    (final timer) {
+      i++;
+      progress.update(i);
+      if (i == 100) {
+        timer.cancel();
+      }
+    },
+  );
 }

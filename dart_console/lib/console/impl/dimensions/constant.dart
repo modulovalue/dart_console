@@ -15,7 +15,10 @@ class SneathConsoleDimensionsCachedImpl implements SneathConsoleDimensions {
   int? _width;
   int? _height;
 
-  SneathConsoleDimensionsCachedImpl(this._terminal, this.cursorPosition);
+  SneathConsoleDimensionsCachedImpl(
+    final this._terminal,
+    final this.cursorPosition,
+  );
 
   @override
   int get width {
@@ -35,7 +38,9 @@ class SneathConsoleDimensionsCachedImpl implements SneathConsoleDimensions {
           _width = newCursor.col;
         } else {
           // we've run out of options; terminal is unsupported
-          throw const SneathConsoleDimensionsExceptionImpl("Couldn't retrieve window width");
+          throw const SneathConsoleDimensionsExceptionImpl(
+            "Couldn't retrieve window width.",
+          );
         }
       }
       return _width!;
@@ -76,8 +81,10 @@ class SneathConsoleDimensionsExceptionImpl implements SneathConsoleDimensionsExc
   @override
   final String message;
 
-  const SneathConsoleDimensionsExceptionImpl(this.message);
+  const SneathConsoleDimensionsExceptionImpl(
+    final this.message,
+  );
 
   @override
-  String toString() => 'SneathConsoleDimensionsExceptionImpl{message: $message}';
+  String toString() => 'SneathConsoleDimensionsExceptionImpl{message: ' + message + '}';
 }

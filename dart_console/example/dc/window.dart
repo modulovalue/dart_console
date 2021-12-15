@@ -17,7 +17,12 @@ class DemoWindow extends DCWindow {
   bool showWelcomeMessage = true;
   Timer? loaderTimer;
 
-  DemoWindow(DCConsole console) : super(console, 'Hello');
+  DemoWindow(
+    final DCConsole console,
+  ) : super(
+          console,
+          'Hello',
+        );
 
   @override
   void draw() {
@@ -37,25 +42,37 @@ class DemoWindow extends DCWindow {
 
   @override
   void initialize() {
-    keyboard.bindKeys(['q', 'Q']).listen((_) {
-      close();
-      console.resetAll();
-      console.eraseDisplay();
-      exit(0);
-    });
-    keyboard.bindKey('x').listen((_) {
-      title = title == 'Hello' ? 'Goodbye' : 'Hello';
-      draw();
-    });
-    keyboard.bindKey(ansiSpace).listen((_) {
-      showWelcomeMessage = false;
-      draw();
-    });
-    keyboard.bindKey('p').listen((_) {
-      if (loaderTimer != null) {
-        loaderTimer!.cancel();
-        loaderTimer = null;
-      }
-    });
+    keyboard.bindKeys(['q', 'Q']).listen(
+      (final _) {
+        close();
+        console.resetAll();
+        console.eraseDisplay();
+        exit(0);
+      },
+    );
+    keyboard.bindKey('x').listen(
+      (final _) {
+        if (title == 'Hello') {
+          title = 'Goodbye';
+        } else {
+          title = 'Hello';
+        }
+        draw();
+      },
+    );
+    keyboard.bindKey(ansiSpace).listen(
+      (final _) {
+        showWelcomeMessage = false;
+        draw();
+      },
+    );
+    keyboard.bindKey('p').listen(
+      (final _) {
+        if (loaderTimer != null) {
+          loaderTimer!.cancel();
+          loaderTimer = null;
+        }
+      },
+    );
   }
 }

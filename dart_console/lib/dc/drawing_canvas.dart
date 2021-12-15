@@ -5,11 +5,20 @@ abstract class DrawingCanvas {
 
   void clear();
 
-  void set(int x, int y);
+  void set(
+    final int x,
+    final int y,
+  );
 
-  void unset(int x, int y);
+  void unset(
+    final int x,
+    final int y,
+  );
 
-  void toggle(int x, int y);
+  void toggle(
+    final int x,
+    final int y,
+  );
 
   String frame();
 }
@@ -27,17 +36,27 @@ class DrawingCanvasImpl implements DrawingCanvas {
   final int height;
   late List<int> content;
 
-  DrawingCanvasImpl(this.width, this.height) {
+  DrawingCanvasImpl(
+    final this.width,
+    final this.height,
+  ) {
     if (width % 2 != 0) {
       throw Exception('Width must be a multiple of 2!');
     } else if (height % 4 != 0) {
       throw Exception('Height must be a multiple of 4!');
     } else {
-      content = List<int>.filled(width * height ~/ 8, 0);
+      content = List<int>.filled(
+        width * height ~/ 8,
+        0,
+      );
     }
   }
 
-  void _doIt(int x, int y, void Function(int coord, int mask) func) {
+  void _doIt(
+    final int x,
+    final int y,
+    final void Function(int coord, int mask) func,
+  ) {
     if (x >= 0 && x < width && y >= 0 && y < height) {
       // ignore: parameter_assignments
       final _x = x.floor();
@@ -61,13 +80,33 @@ class DrawingCanvasImpl implements DrawingCanvas {
   void clear() => _clearContent();
 
   @override
-  void set(int x, int y) => _doIt(x, y, (coord, mask) => content[coord] |= mask);
+  void set(
+    final int x,
+    final int y,
+  ) =>
+      _doIt(
+        x,
+        y,
+        (final coord, final mask) => content[coord] |= mask,
+      );
 
   @override
-  void unset(int x, int y) => _doIt(x, y, (coord, mask) => content[coord] &= mask);
+  void unset(
+    final int x,
+    final int y,
+  ) =>
+      _doIt(
+        x,
+        y,
+        (final coord, final mask) => content[coord] &= mask,
+      );
 
   @override
-  void toggle(int x, int y) => _doIt(x, y, (coord, mask) => content[coord] ^= mask);
+  void toggle(final int x, final int y) => _doIt(
+        x,
+        y,
+        (final coord, final mask) => content[coord] ^= mask,
+      );
 
   @override
   String frame() {

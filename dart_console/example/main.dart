@@ -4,17 +4,39 @@ import 'package:dart_console/console/impl/console.dart';
 import 'package:dart_console/terminal/impl/auto/terminal_lib.dart';
 
 void main() {
-  final console = SneathConsoleImpl(autodetectSneathTerminal());
-  console.setBackgroundColor(const DarkAnsiColorAdapter(NamedAnsiColors.blue));
-  console.setForegroundColor(const DarkAnsiColorAdapter(NamedAnsiColors.white));
-  console.writeLine('Simple Demo', ConsoleTextAlignments.center);
+  final console = SneathConsoleImpl(autoSneathTerminal());
+  console.setBackgroundColor(
+    const DarkAnsiColorAdapter(
+      NamedAnsiColors.blue,
+    ),
+  );
+  console.setForegroundColor(
+    const DarkAnsiColorAdapter(
+      NamedAnsiColors.white,
+    ),
+  );
+  console.writeLine(
+    'Simple Demo',
+    ConsoleTextAlignments.center,
+  );
   console.resetColorAttributes();
   console.writeLine();
-  console.writeLine('This console window has ${console.dimensions.width} cols and ${console.dimensions.height} rows.');
+  console.writeLine(
+    'This console window has ${console.dimensions.width} cols and ${console.dimensions.height} rows.',
+  );
   console.writeLine();
-  console.writeLine('This text is left aligned.', ConsoleTextAlignments.left);
-  console.writeLine('This text is center aligned.', ConsoleTextAlignments.center);
-  console.writeLine('This text is right aligned.', ConsoleTextAlignments.right);
+  console.writeLine(
+    'This text is left aligned.',
+    ConsoleTextAlignments.left,
+  );
+  console.writeLine(
+    'This text is center aligned.',
+    ConsoleTextAlignments.center,
+  );
+  console.writeLine(
+    'This text is right aligned.',
+    ConsoleTextAlignments.right,
+  );
   for (final color in NamedAnsiColorsMore.allDarkAndBright) {
     console.setForegroundColor(color);
     console.writeLine(color.name);

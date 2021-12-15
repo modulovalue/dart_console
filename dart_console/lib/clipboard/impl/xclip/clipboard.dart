@@ -9,9 +9,12 @@ class SystemClipboardXClipImpl implements SystemClipboard {
 
   @override
   String getContent() {
-    final result = Process.runSync(xclipLocation, ['-selection', 'clipboard', '-o']);
+    final result = Process.runSync(
+      xclipLocation,
+      ['-selection', 'clipboard', '-o'],
+    );
     if (result.exitCode != 0) {
-      throw Exception('Failed to get clipboard content. ${result.exitCode}');
+      throw Exception('Failed to get clipboard content. ' + result.exitCode.toString());
     } else {
       return result.stdout.toString();
     }
@@ -19,9 +22,11 @@ class SystemClipboardXClipImpl implements SystemClipboard {
 
   @override
   void setContent(String content) {
-    Process.start(xclipLocation, ['-selection', 'clipboard']).then((process) {
-      process.stdin.write(content);
-      process.stdin.close();
-    });
+    Process.start(xclipLocation, ['-selection', 'clipboard']).then(
+      (final process) {
+        process.stdin.write(content);
+        process.stdin.close();
+      },
+    );
   }
 }

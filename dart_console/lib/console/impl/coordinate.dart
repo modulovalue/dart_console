@@ -6,5 +6,8 @@ class SneathCoordinateImpl implements SneathCoordinate {
   @override
   final int col;
 
-  const SneathCoordinateImpl(this.row, this.col);
+  const SneathCoordinateImpl(
+    final this.row,
+    final this.col,
+  );
 }

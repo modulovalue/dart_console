@@ -5,7 +5,11 @@ abstract class DCCanvas {
 
   int get height;
 
-  void setPixel(int x, int y, DCPixelSpec spec);
+  void setPixel(
+    final int x,
+    final int y,
+    final DCPixelSpec spec,
+  );
 }
 
 class DCConsoleCanvas extends DCCanvas {
@@ -20,22 +24,29 @@ class DCConsoleCanvas extends DCCanvas {
   final DCConsole console;
 
   DCConsoleCanvas(
-    this.console, {
-    DCPixelSpec defaultSpec = DCPixelSpec.EMPTY,
+    final this.console, {
+    final DCPixelSpec defaultSpec = DCPixelSpec.EMPTY,
   }) {
     pixels = List.generate(
       width,
-      (i) => List.filled(height, defaultSpec),
+      (final i) => List.filled(height, defaultSpec),
     );
   }
 
   @override
-  void setPixel(int x, int y, DCPixelSpec spec) {
+  void setPixel(
+    final int x,
+    final int y,
+    final DCPixelSpec spec,
+  ) {
     pixels[x][y] = spec;
   }
 
   void flush() {
-    console.moveCursor(column: 0, row: 0);
+    console.moveCursor(
+      column: 0,
+      row: 0,
+    );
     for (var y = 0; y < height; y++) {
       for (var x = 0; x < width; x++) {
         final pixel = pixels[x][y];
@@ -51,5 +62,7 @@ class DCPixelSpec {
 
   final int color;
 
-  const DCPixelSpec(this.color);
+  const DCPixelSpec(
+    final this.color,
+  );
 }

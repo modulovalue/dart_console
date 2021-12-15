@@ -21,7 +21,9 @@ class SneathConsoleImpl implements SneathConsole {
   final SneathTerminal _terminal;
   final _ScrollbackBuffer? _scrollbackBuffer;
 
-  SneathConsoleImpl(this._terminal) : _scrollbackBuffer = null;
+  SneathConsoleImpl(
+    final this._terminal,
+  ) : _scrollbackBuffer = null;
 
   @override
   late final SneathConsoleDimensions dimensions = SneathConsoleDimensionsCachedImpl(
@@ -32,19 +34,21 @@ class SneathConsoleImpl implements SneathConsole {
   @override
   late final SneathCursorPositionDelegate cursorPosition = SneathCursorPositionDelegateImpl(
     _terminal,
-    (newRawMode) => rawMode = newRawMode,
+    (final newRawMode) => rawMode = newRawMode,
   );
 
   /// Create a named constructor specifically for scrolling consoles
   /// Use `Console.scrolling(recordBlanks: false)` to omit blank lines
   /// from console history
   SneathConsoleImpl.scrolling(
-    this._terminal, {
-    bool recordBlanks = true,
+    final this._terminal, {
+    final bool recordBlanks = true,
   }) : _scrollbackBuffer = _ScrollbackBufferImpl(recordBlanks: recordBlanks);
 
   @override
-  set rawMode(bool value) {
+  set rawMode(
+    final bool value,
+  ) {
     _isRawMode = value;
     if (value) {
       _terminal.enableRawMode();
@@ -84,19 +88,30 @@ class SneathConsoleImpl implements SneathConsole {
   void cursorDown() => stdout.write(ansiCursorDown);
 
   @override
-  void resetCursorPosition() => //
-      stdout.write(ansiCursorPositionTo(1, 1));
+  void resetCursorPosition() => stdout.write(
+        ansiCursorPositionTo(1, 1),
+      );
 
   @override
-  void setForegroundColor(NamedAnsiColor foreground) => //
-      stdout.write(ansiSetTextColor(foreground));
+  void setForegroundColor(
+    final NamedAnsiColor foreground,
+  ) =>
+      stdout.write(
+        ansiSetTextColor(foreground),
+      );
 
   @override
-  void setBackgroundColor(NamedAnsiColor background) => //
-      stdout.write(ansiSetBackgroundColor(background));
+  void setBackgroundColor(
+    final NamedAnsiColor background,
+  ) =>
+      stdout.write(
+        ansiSetBackgroundColor(background),
+      );
 
   @override
-  void setForegroundExtendedColor(AnsiExtendedColorPalette color) {
+  void setForegroundExtendedColor(
+    final AnsiExtendedColorPalette color,
+  ) {
     stdout.write(
       ansiSetExtendedForegroundColor(
         color,
@@ -105,7 +120,9 @@ class SneathConsoleImpl implements SneathConsole {
   }
 
   @override
-  void setBackgroundExtendedColor(AnsiExtendedColorPalette color) {
+  void setBackgroundExtendedColor(
+    final AnsiExtendedColorPalette color,
+  ) {
     stdout.write(
       ansiSetExtendedBackgroundColor(
         color,
@@ -115,30 +132,45 @@ class SneathConsoleImpl implements SneathConsole {
 
   @override
   void setTextStyle({
-    bool bold = false,
-    bool underscore = false,
-    bool blink = false,
-    bool inverted = false,
+    final bool bold = false,
+    final bool underscore = false,
+    final bool blink = false,
+    final bool inverted = false,
   }) =>
-      stdout.write(ansiSetTextStyles(
-        bold: bold,
-        underscore: underscore,
-        blink: blink,
-        inverted: inverted,
-      ));
+      stdout.write(
+        ansiSetTextStyles(
+          bold: bold,
+          underscore: underscore,
+          blink: blink,
+          inverted: inverted,
+        ),
+      );
 
   @override
-  void resetColorAttributes() => stdout.write(ansiResetColor);
+  void resetColorAttributes() => stdout.write(
+        ansiResetColor,
+      );
 
   @override
-  void write(String text) => stdout.write(text);
+  void write(
+    final String text,
+  ) =>
+      stdout.write(text);
 
-  /// TODO extract constants.
+  // TODO extract constants.
   @override
-  String get newLine => _isRawMode ? '\r\n' : '\n';
+  String get newLine {
+    if (_isRawMode) {
+      return '\r\n';
+    } else {
+      return '\n';
+    }
+  }
 
   @override
-  void writeErrorLine(String text) {
+  void writeErrorLine(
+    final String text,
+  ) {
     stderr.write(text);
     // Even if we're in raw mode, we write '\n', since raw mode only applies
     // to stdout
@@ -148,8 +180,8 @@ class SneathConsoleImpl implements SneathConsole {
 
   @override
   void writeLine([
-    String? text,
-    ConsoleTextAlignment alignment = ConsoleTextAlignments.left,
+    final String? text,
+    final ConsoleTextAlignment alignment = ConsoleTextAlignments.left,
   ]) {
     if (text != null) {
       stdout.write(alignment.align(text, dimensions.width));
@@ -167,10 +199,10 @@ class SneathConsoleImpl implements SneathConsole {
 
   @override
   String? readLine({
-    bool cancelOnBreak = false,
-    bool cancelOnEscape = false,
-    bool cancelOnEOF = false,
-    void Function(String text, Key lastPressed)? callback,
+    final bool cancelOnBreak = false,
+    final bool cancelOnEscape = false,
+    final bool cancelOnEOF = false,
+    final void Function(String text, Key lastPressed)? callback,
   }) {
     var buffer = '';
     var index = 0; // cursor position relative to buffer, not screen
@@ -201,10 +233,14 @@ class SneathConsoleImpl implements SneathConsole {
               writeLine();
               return buffer;
             case ControlCharacters.ctrlC:
-              if (cancelOnBreak) return null;
+              if (cancelOnBreak) {
+                return null;
+              }
               break;
             case ControlCharacters.escape:
-              if (cancelOnEscape) return null;
+              if (cancelOnEscape) {
+                return null;
+              }
               break;
             case ControlCharacters.backspace:
             case ControlCharacters.ctrlH:
@@ -230,7 +266,13 @@ class SneathConsoleImpl implements SneathConsole {
               break;
             case ControlCharacters.arrowLeft:
             case ControlCharacters.ctrlB:
-              index = index > 0 ? index - 1 : index;
+              index = (){
+                if (index > 0) {
+                  return index - 1;
+                } else {
+                  return index;
+                }
+              }();
               break;
             case ControlCharacters.arrowUp:
               if (_scrollbackBuffer != null) {
@@ -249,20 +291,36 @@ class SneathConsoleImpl implements SneathConsole {
               break;
             case ControlCharacters.arrowRight:
             case ControlCharacters.ctrlF:
-              index = index < buffer.length ? index + 1 : index;
+              index = () {
+                if (index < buffer.length) {
+                  return index + 1;
+                } else {
+                  return index;
+                }
+              }();
               break;
             case ControlCharacters.wordLeft:
               if (index > 0) {
                 final bufferLeftOfCursor = buffer.substring(0, index - 1);
                 final lastSpace = bufferLeftOfCursor.lastIndexOf(' ');
-                index = lastSpace != -1 ? lastSpace + 1 : 0;
+                index = () {
+                  if (lastSpace != -1) {
+                    return lastSpace + 1;
+                  } else {
+                    return 0;
+                  }
+                }();
               }
               break;
             case ControlCharacters.wordRight:
               if (index < buffer.length) {
                 final bufferRightOfCursor = buffer.substring(index + 1);
                 final nextSpace = bufferRightOfCursor.indexOf(' ');
-                index = nextSpace != -1 ? min(index + nextSpace + 2, buffer.length) : buffer.length;
+                if (nextSpace != -1) {
+                  index = min(index + nextSpace + 2, buffer.length);
+                } else {
+                  index = buffer.length;
+                }
               }
               break;
             case ControlCharacters.home:
@@ -302,11 +360,23 @@ class SneathConsoleImpl implements SneathConsole {
           }
         },
       );
-      cursorPosition.update(SneathCoordinateImpl(screenRow, screenColOffset));
+      cursorPosition.update(
+        SneathCoordinateImpl(
+          screenRow,
+          screenColOffset,
+        ),
+      );
       eraseCursorToEnd();
       write(buffer); // allow for backspace condition
-      cursorPosition.update(SneathCoordinateImpl(screenRow, screenColOffset + index));
-      if (callback != null) callback(buffer, key);
+      cursorPosition.update(
+        SneathCoordinateImpl(
+          screenRow,
+          screenColOffset + index,
+        ),
+      );
+      if (callback != null) {
+        callback(buffer, key);
+      }
     }
   }
 
@@ -324,7 +394,10 @@ class SneathConsoleImpl implements SneathConsole {
   }
 
   @override
-  void writeLinesCentered(Iterable<String> lines) => lines.forEach(writeLineCentered);
+  void writeLinesCentered(
+    final Iterable<String> lines,
+  ) =>
+      lines.forEach(writeLineCentered);
 }
 
 class AnsiParserInputBufferStdinImpl implements AnsiParserInputBuffer {
@@ -341,14 +414,18 @@ abstract class _ScrollbackBuffer {
   /// Add a new line to the scrollback buffer. This would normally happen
   /// when the user finishes typing/editing the line and taps the 'enter'
   /// key.
-  void add(String buffer);
+  void add(
+    final String buffer,
+  );
 
   /// Scroll 'up' -- Replace the user-input buffer with the contents of the
   /// previous line. ScrollbackBuffer tracks which lines are the 'current'
   /// and 'previous' lines. The up() method stores the current line buffer
   /// so that the contents will not be lost in the event the user starts
   /// typing/editing the line and then wants to review a previous line.
-  String up(String buffer);
+  String up(
+    final String buffer,
+  );
 
   /// Scroll 'down' -- Replace the user-input buffer with the contents of
   /// the next line. The final 'next line' is the original contents of the
@@ -362,10 +439,14 @@ class _ScrollbackBufferImpl implements _ScrollbackBuffer {
   int? lineIndex;
   String? currentLineBuffer;
 
-  _ScrollbackBufferImpl({required this.recordBlanks});
+  _ScrollbackBufferImpl({
+    required final this.recordBlanks,
+  });
 
   @override
-  void add(String buffer) {
+  void add(
+    final String buffer,
+  ) {
     if (recordBlanks) {
       _add(buffer);
     } else {
@@ -377,14 +458,18 @@ class _ScrollbackBufferImpl implements _ScrollbackBuffer {
     }
   }
 
-  void _add(String buffer) {
+  void _add(
+    final String buffer,
+  ) {
     lineList.add(buffer);
     lineIndex = lineList.length;
     currentLineBuffer = null;
   }
 
   @override
-  String up(String buffer) {
+  String up(
+    final String buffer,
+  ) {
     final _lineIndex = lineIndex;
     // Handle the case of the user tapping 'up' before there is a
     // scrollback buffer to scroll through.

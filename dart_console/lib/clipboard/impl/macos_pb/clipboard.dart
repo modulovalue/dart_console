@@ -10,19 +10,28 @@ class SystemClipboardMacosPbpaste implements SystemClipboard {
 
   @override
   String getContent() {
-    final result = Process.runSync(pbpasteLocation, []);
+    final result = Process.runSync(
+      pbpasteLocation,
+      [],
+    );
     if (result.exitCode != 0) {
-      throw Exception('Failed to get clipboard content. ${result.exitCode}');
+      throw Exception(
+        'Failed to get clipboard content. ' + result.exitCode.toString(),
+      );
     } else {
       return result.stdout.toString();
     }
   }
 
   @override
-  void setContent(String content) {
-    Process.start(pbpasteLocation, []).then((process) {
-      process.stdin.write(content);
-      process.stdin.close();
-    });
+  void setContent(
+    final String content,
+  ) {
+    Process.start(pbpasteLocation, []).then(
+      (final process) {
+        process.stdin.write(content);
+        process.stdin.close();
+      },
+    );
   }
 }

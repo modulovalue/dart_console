@@ -8,16 +8,58 @@ import 'package:dart_console/console/interface/control_character.dart';
 import 'package:dart_console/console/interface/key.dart';
 import 'package:dart_console/terminal/impl/auto/terminal_lib.dart';
 
-final console = SneathConsoleImpl(autodetectSneathTerminal());
-final random = Random();
-final rows = console.dimensions.height;
-final cols = console.dimensions.width;
-final size = rows * cols;
-final temp = List<bool>.filled(size, false, growable: false);
-final data = List<bool>.generate(size, (i) => random.nextBool(), growable: false);
-final buffer = StringBuffer();
+void main(
+  final List<String> arguments,
+) {
+  try {
+    console.rawMode = false;
+    console.hideCursor();
+    Timer.periodic(
+      const Duration(milliseconds: 200),
+      (final t) {
+        draw();
+        update();
+        //input(); // TODO: need async input
+        if (done) {
+          quit();
+        }
+      },
+    );
+    // ignore: avoid_catches_without_on_clauses
+  } catch (exception) {
+    crash(exception.toString());
+    rethrow;
+  }
+}
+
+final SneathConsoleImpl console = SneathConsoleImpl(
+  autoSneathTerminal(),
+);
+
+final Random random = Random();
+
+final int rows = console.dimensions.height;
+
+final int cols = console.dimensions.width;
+
+final int size = rows * cols;
+
+final List<bool> temp = List<bool>.filled(
+  size,
+  false,
+  growable: false,
+);
+
+final List<bool> data = List<bool>.generate(
+  size,
+  (final i) => random.nextBool(),
+  growable: false,
+);
+final StringBuffer buffer = StringBuffer();
+
 bool done = false;
-final neighbors = [
+
+final List<List<int>> neighbors = [
   [-1, -1],
   [0, -1],
   [1, -1],
@@ -29,28 +71,51 @@ final neighbors = [
 ];
 
 void draw() {
-  console.setBackgroundColor(const DarkAnsiColorAdapter(NamedAnsiColors.black));
-  console.setForegroundColor(const DarkAnsiColorAdapter(NamedAnsiColors.blue));
+  console.setBackgroundColor(
+    const DarkAnsiColorAdapter(NamedAnsiColors.black),
+  );
+  console.setForegroundColor(
+    const DarkAnsiColorAdapter(NamedAnsiColors.blue),
+  );
   console.clearScreen();
   buffer.clear();
   for (var row = 0; row < rows; row++) {
     for (var col = 0; col < cols; col++) {
       final index = row * rows + col;
-      buffer.write(data[index] ? '#' : ' ');
+      buffer.write(() {
+        if (data[index]) {
+          return '#';
+        } else {
+          return ' ';
+        }
+      }());
     }
     buffer.write(console.newLine);
   }
   console.write(buffer.toString());
 }
 
-int numLiveNeighbors(int row, int col) {
+int numLiveNeighbors(
+  final int row,
+  final int col,
+) {
   var sum = 0;
   for (var i = 0; i < 8; i++) {
     final x = col + neighbors[i][0];
-    if (x < 0 || x >= cols) continue;
+    if (x < 0 || x >= cols) {
+      continue;
+    }
     final y = row + neighbors[i][1];
-    if (y < 0 || y >= rows) continue;
-    sum += data[y * rows + x] ? 1 : 0;
+    if (y < 0 || y >= rows) {
+      continue;
+    }
+    sum += () {
+      if (data[y * rows + x]) {
+        return 1;
+      } else {
+        return 0;
+      }
+    }();
   }
   return sum;
 }
@@ -93,7 +158,9 @@ void resetConsole() {
   console.rawMode = false;
 }
 
-void crash(String message) {
+void crash(
+  final String message,
+) {
   resetConsole();
   console.write(message);
   exit(1);
@@ -102,21 +169,4 @@ void crash(String message) {
 void quit() {
   resetConsole();
   exit(0);
-}
-
-void main(List<String> arguments) {
-  try {
-    console.rawMode = false;
-    console.hideCursor();
-    Timer.periodic(const Duration(milliseconds: 200), (t) {
-      draw();
-      update();
-      //input(); // TODO: need async input
-      if (done) quit();
-    });
-    // ignore: avoid_catches_without_on_clauses
-  } catch (exception) {
-    crash(exception.toString());
-    rethrow;
-  }
 }

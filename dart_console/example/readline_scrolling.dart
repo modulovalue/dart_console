@@ -11,7 +11,7 @@ import 'package:dart_console/terminal/impl/auto/terminal_lib.dart';
 // Demonstrates a simple command-line interface that does not require line
 // editing services from the shell.
 void main() {
-  final console = SneathConsoleImpl.scrolling(autodetectSneathTerminal());
+  final console = SneathConsoleImpl.scrolling(autoSneathTerminal());
   const prompt = '>>> ';
   console.write('The ');
   console.setForegroundColor(const BrightAnsiColorAdapter(NamedAnsiColors.yellow));
@@ -26,8 +26,7 @@ void main() {
   console.writeLine('In this demo, you can use the up-arrow key to scroll back to previous entries');
   console.writeLine('and the down-arrow key to scroll forward after scrolling back.');
   console.writeLine();
-  console.writeLine('As a demo, this command-line reader "shouts" all text '
-      'back in upper case.');
+  console.writeLine('As a demo, this command-line reader "shouts" all text back in upper case.');
   console.writeLine('Enter a blank line or press Ctrl+C to exit.');
   for (;;) {
     console.write(prompt);

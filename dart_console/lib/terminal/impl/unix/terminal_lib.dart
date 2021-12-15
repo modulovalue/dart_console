@@ -6,6 +6,29 @@ import 'package:ffi/ffi.dart';
 
 import '../../interface/terminal_lib.dart';
 
+SneathTerminalUnixImpl makeSneathTerminalUnix(
+  final DynamicLibrary stdlib,
+  final int IOCTL_TIOCGWINSZ,
+) {
+  final _tcgetattr = stdlib.lookupFunction<TERMIOS_tcgetattrNative, TERMIOS_tcgetattrDart>(
+    'tcgetattr',
+  );
+  final _origTermIOSPointer = calloc<TermIOS>();
+  _tcgetattr(UnistdConstants.STDIN_FILENO, _origTermIOSPointer);
+  return SneathTerminalUnixImpl._(
+    stdlib: stdlib,
+    origTermIOSPointer: _origTermIOSPointer,
+    ioctl: stdlib.lookupFunction<IOCTL_Native, IOCTL_Dart>(
+      'ioctl',
+    ),
+    tcgetattr: _tcgetattr,
+    tcsetattr: stdlib.lookupFunction<TERMIOS_tcsetattrNative, TERMIOS_tcsetattrDart>(
+      'tcsetattr',
+    ),
+    IOCTL_TIOCGWINSZ: IOCTL_TIOCGWINSZ,
+  );
+}
+
 /// glibc-dependent library for interrogating and manipulating the console.
 ///
 /// This class provides raw wrappers for the underlying terminal system calls
@@ -18,27 +41,15 @@ class SneathTerminalUnixImpl implements SneathTerminal {
   final IOCTL_Dart ioctl;
   final TERMIOS_tcgetattrDart tcgetattr;
   final TERMIOS_tcsetattrDart tcsetattr;
-
-  factory SneathTerminalUnixImpl() {
-    final _stdlib = Platform.isMacOS ? DynamicLibrary.open('/usr/lib/libSystem.dylib') : DynamicLibrary.open('libc.so.6');
-    final _tcgetattr = _stdlib.lookupFunction<TERMIOS_tcgetattrNative, TERMIOS_tcgetattrDart>('tcgetattr');
-    final _origTermIOSPointer = calloc<TermIOS>();
-    _tcgetattr(UnistdConstants.STDIN_FILENO, _origTermIOSPointer);
-    return SneathTerminalUnixImpl._(
-      stdlib: _stdlib,
-      origTermIOSPointer: _origTermIOSPointer,
-      ioctl: _stdlib.lookupFunction<IOCTL_Native, IOCTL_Dart>('ioctl'),
-      tcgetattr: _tcgetattr,
-      tcsetattr: _stdlib.lookupFunction<TERMIOS_tcsetattrNative, TERMIOS_tcsetattrDart>('tcsetattr'),
-    );
-  }
+  final int IOCTL_TIOCGWINSZ;
 
   const SneathTerminalUnixImpl._({
-    required this.stdlib,
-    required this.origTermIOSPointer,
-    required this.ioctl,
-    required this.tcgetattr,
-    required this.tcsetattr,
+    required final this.stdlib,
+    required final this.origTermIOSPointer,
+    required final this.ioctl,
+    required final this.tcgetattr,
+    required final this.tcsetattr,
+    required final this.IOCTL_TIOCGWINSZ,
   });
 
   @override
@@ -83,11 +94,15 @@ class SneathTerminalUnixImpl implements SneathTerminal {
     final newTermIOSPointer = calloc<TermIOS>();
     final newTermIOS = newTermIOSPointer.ref;
     newTermIOS.c_iflag = _origTermIOS.c_iflag &
-        ~(TermiosConstants.BRKINT | TermiosConstants.ICRNL | TermiosConstants.INPCK | TermiosConstants.ISTRIP | TermiosConstants.IXON);
+        ~(TermiosConstants.BRKINT |
+            TermiosConstants.ICRNL |
+            TermiosConstants.INPCK |
+            TermiosConstants.ISTRIP |
+            TermiosConstants.IXON);
     newTermIOS.c_oflag = _origTermIOS.c_oflag & ~TermiosConstants.OPOST;
     newTermIOS.c_cflag = _origTermIOS.c_cflag | TermiosConstants.CS8;
-    newTermIOS.c_lflag =
-        _origTermIOS.c_lflag & ~(TermiosConstants.ECHO | TermiosConstants.ICANON | TermiosConstants.IEXTEN | TermiosConstants.ISIG);
+    newTermIOS.c_lflag = _origTermIOS.c_lflag &
+        ~(TermiosConstants.ECHO | TermiosConstants.ICANON | TermiosConstants.IEXTEN | TermiosConstants.ISIG);
     newTermIOS.c_cc0 = _origTermIOS.c_cc0;
     newTermIOS.c_cc1 = _origTermIOS.c_cc1;
     newTermIOS.c_cc2 = _origTermIOS.c_cc2;
@@ -125,10 +140,12 @@ class SneathTerminalUnixImpl implements SneathTerminal {
   void clearScreen() => stdout.write(ansiEraseInDisplayAll + ansiResetCursorPosition);
 
   @override
-  void setCursorPosition(int col, int row) => stdout.write(ansiCursorPositionTo(row + 1, col + 1));
+  void setCursorPosition(
+    final int col,
+    final int row,
+  ) =>
+      stdout.write(ansiCursorPositionTo(row + 1, col + 1));
 }
-
-final IOCTL_TIOCGWINSZ = Platform.isMacOS ? 0x40087468 : 0x5413;
 
 // struct winsize {
 // 	unsigned short  ws_row;         /* rows, in characters */
@@ -137,15 +154,14 @@ final IOCTL_TIOCGWINSZ = Platform.isMacOS ? 0x40087468 : 0x5413;
 // 	unsigned short  ws_ypixel;      /* vertical size, pixels */
 // };
 class IOCTL_WinSize extends Struct {
+  IOCTL_WinSize();
+
   @Int16()
   external int ws_row;
-
   @Int16()
   external int ws_col;
-
   @Int16()
   external int ws_xpixel;
-
   @Int16()
   external int ws_ypixel;
 }
@@ -222,6 +238,8 @@ abstract class TermiosConstants {
 // 	speed_t         c_ospeed;       /* output speed */
 // };
 class TermIOS extends Struct {
+  TermIOS();
+
   @Int64()
   external int c_iflag;
   @Int64()
@@ -287,7 +305,7 @@ typedef TERMIOS_tcsetattrNative = Int32 Function(Int32 fildes, Int32 optional_ac
 typedef TERMIOS_tcsetattrDart = int Function(int fildes, int optional_actions, Pointer<TermIOS> termios);
 
 abstract class UnistdConstants {
-  static const STDIN_FILENO = 0;
-  static const STDOUT_FILENO = 1;
-  static const STDERR_FILENO = 2;
+  static const int STDIN_FILENO = 0;
+  static const int STDOUT_FILENO = 1;
+  static const int STDERR_FILENO = 2;
 }

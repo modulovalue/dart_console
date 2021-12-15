@@ -1,15 +1,16 @@
-// import 'dart:convert';
-// import 'dart:io';
-
-import 'package:dart_console/keyboard/impl/keyboard.dart';
+import 'package:dart_console/keyboard/keyboard.dart';
 
 // Traps up and down arrow and echos to console.
 void main() {
-  final keyboard = TerminalKeyboardImpl.stdin();
-  keyboard.bindKey('up').listen((_) {
-    print('Up.');
-  });
-  keyboard.bindKey('down').listen((_) {
-    print('Down.');
-  });
+  final keyboard = makeStdinTerminalKeyboard();
+  keyboard.bindKey('up').listen(
+    (final _) {
+      print('Up.');
+    },
+  );
+  keyboard.bindKey('down').listen(
+    (final _) {
+      print('Down.');
+    },
+  );
 }

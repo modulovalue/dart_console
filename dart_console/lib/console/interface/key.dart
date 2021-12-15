@@ -3,8 +3,8 @@ import 'control_character.dart';
 /// A representation of a key character.
 abstract class Key {
   Z match<Z>({
-    required Z Function(KeyPrintable) printable,
-    required Z Function(KeyControl) control,
+    required final Z Function(KeyPrintable) printable,
+    required final Z Function(KeyControl) control,
   });
 }
 

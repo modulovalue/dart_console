@@ -4,7 +4,30 @@ import 'dart:io';
 
 import 'package:dart_ansi/ansi.dart';
 
-import '../interface/keyboard.dart';
+/// API for the keyboard.
+abstract class TerminalKeyboard {
+  void handleKey(
+    final List<int>? bytes,
+    final String? name,
+  );
+
+  Stream<String> bindKey(
+    final String code,
+  );
+
+  Stream<String> bindKeys(
+    final List<String> codes,
+  );
+
+  void destroy();
+}
+
+final _stdin = stdin.asBroadcastStream();
+
+TerminalKeyboardImpl makeStdinTerminalKeyboard() => TerminalKeyboardImpl(
+      byteStream: _stdin,
+      moveCursorBackByOne: () => stdout.write(controlSequenceIdentifier + '1D'),
+    );
 
 class TerminalKeyboardImpl implements TerminalKeyboard {
   final Stream<List<int>> byteStream;
@@ -18,32 +41,27 @@ class TerminalKeyboardImpl implements TerminalKeyboard {
   bool echoUnhandledKeys = true;
 
   TerminalKeyboardImpl({
-    required this.byteStream,
-    required this.moveCursorBackByOne,
+    required final this.byteStream,
+    required final this.moveCursorBackByOne,
   }) {
     stdin.echoMode = false;
     stdin.lineMode = false;
-    _subscription = byteStream.asBroadcastStream().listen((bytes) {
-      final it = ascii.decode(bytes);
-      final original = bytes;
-      var code = it.replaceAll(ansiEscape, '');
-      if (code.isNotEmpty) {
-        code = code.substring(1);
-      }
-      if (inputSequences[code] != null) {
-        return handleKey(original, inputSequences[code]);
-      } else {
-        return handleKey(original, it);
-      }
-    });
+    _subscription = byteStream.asBroadcastStream().listen(
+      (final bytes) {
+        final it = ascii.decode(bytes);
+        final original = bytes;
+        var code = it.replaceAll(ansiEscape, '');
+        if (code.isNotEmpty) {
+          code = code.substring(1);
+        }
+        if (inputSequences[code] != null) {
+          return handleKey(original, inputSequences[code]);
+        } else {
+          return handleKey(original, it);
+        }
+      },
+    );
   }
-
-  static final _stdin = stdin.asBroadcastStream();
-
-  factory TerminalKeyboardImpl.stdin() => TerminalKeyboardImpl(
-        byteStream: _stdin,
-        moveCursorBackByOne: () => stdout.write(controlSequenceIdentifier + '1D'),
-      );
 
   @override
   void destroy() {
@@ -59,7 +77,10 @@ class TerminalKeyboardImpl implements TerminalKeyboard {
   }
 
   @override
-  void handleKey(List<int>? bytes, String? name) {
+  void handleKey(
+    final List<int>? bytes,
+    final String? name,
+  ) {
     if (name != null) {
       if (_handlers.containsKey(name)) {
         _handlers[name]!.add(name);
@@ -85,7 +106,9 @@ class TerminalKeyboardImpl implements TerminalKeyboard {
   }
 
   @override
-  Stream<String> bindKey(String code) {
+  Stream<String> bindKey(
+    final String code,
+  ) {
     if (_handlers.containsKey(code)) {
       return _handlers[code]!.stream;
     } else {
@@ -94,7 +117,9 @@ class TerminalKeyboardImpl implements TerminalKeyboard {
   }
 
   @override
-  Stream<String> bindKeys(List<String> codes) {
+  Stream<String> bindKeys(
+    final List<String> codes,
+  ) {
     final controller = StreamController<String>.broadcast();
     bound.add(controller);
     for (final key in codes) {

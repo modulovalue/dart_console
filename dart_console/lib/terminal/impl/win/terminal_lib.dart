@@ -47,7 +47,11 @@ class SneathTerminalWindowsImpl implements SneathTerminal {
 
   @override
   void enableRawMode() {
-    final dwMode = (~ENABLE_ECHO_INPUT) & (~ENABLE_ECHO_INPUT) & (~ENABLE_PROCESSED_INPUT) & (~ENABLE_LINE_INPUT) & (~ENABLE_WINDOW_INPUT);
+    final dwMode = (~ENABLE_ECHO_INPUT) &
+        (~ENABLE_ECHO_INPUT) &
+        (~ENABLE_PROCESSED_INPUT) &
+        (~ENABLE_LINE_INPUT) &
+        (~ENABLE_WINDOW_INPUT);
     SetConsoleMode(inputHandle, dwMode);
   }
 
@@ -83,12 +87,33 @@ class SneathTerminalWindowsImpl implements SneathTerminal {
     final origin = calloc<COORD>();
     try {
       final bufferInfo = pBufferInfo.ref;
-      GetConsoleScreenBufferInfo(outputHandle, pBufferInfo);
+      GetConsoleScreenBufferInfo(
+        outputHandle,
+        pBufferInfo,
+      );
       final consoleSize = bufferInfo.dwSize.X * bufferInfo.dwSize.Y;
-      FillConsoleOutputCharacter(outputHandle, ' '.codeUnitAt(0), consoleSize, origin.ref, pCharsWritten);
-      GetConsoleScreenBufferInfo(outputHandle, pBufferInfo);
-      FillConsoleOutputAttribute(outputHandle, bufferInfo.wAttributes, consoleSize, origin.ref, pCharsWritten);
-      SetConsoleCursorPosition(outputHandle, origin.ref);
+      FillConsoleOutputCharacter(
+        outputHandle,
+        ' '.codeUnitAt(0),
+        consoleSize,
+        origin.ref,
+        pCharsWritten,
+      );
+      GetConsoleScreenBufferInfo(
+        outputHandle,
+        pBufferInfo,
+      );
+      FillConsoleOutputAttribute(
+        outputHandle,
+        bufferInfo.wAttributes,
+        consoleSize,
+        origin.ref,
+        pCharsWritten,
+      );
+      SetConsoleCursorPosition(
+        outputHandle,
+        origin.ref,
+      );
     } finally {
       calloc.free(origin);
       calloc.free(pCharsWritten);
@@ -97,7 +122,10 @@ class SneathTerminalWindowsImpl implements SneathTerminal {
   }
 
   @override
-  void setCursorPosition(int x, int y) {
+  void setCursorPosition(
+    final int x,
+    final int y,
+  ) {
     final coord = calloc<COORD>()
       ..ref.X = x
       ..ref.Y = y;

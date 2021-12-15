@@ -12,9 +12,11 @@ import 'package:dart_console/console/interface/control_character.dart';
 import 'package:dart_console/console/interface/coordinate.dart';
 import 'package:dart_console/terminal/impl/auto/terminal_lib.dart';
 
-void main(List<String> arguments) {
+void main(
+  final List<String> arguments,
+) {
   final allDemos = Demo.allDemos();
-  final console = SneathConsoleImpl(autodetectSneathTerminal());
+  final console = SneathConsoleImpl(autoSneathTerminal());
   for (int i = 0; i < allDemos.length; i++) {
     console.clearScreen();
     allDemos[i](console);
@@ -42,7 +44,9 @@ abstract class Demo {
         twinklingStartsDemo,
       ];
 
-  static void whimsicalLoadingScreen(SneathConsole console) {
+  static void whimsicalLoadingScreen(
+    final SneathConsole console,
+  ) {
     console.setBackgroundColor(const DarkAnsiColorAdapter(NamedAnsiColors.blue));
     console.setForegroundColor(const DarkAnsiColorAdapter(NamedAnsiColors.white));
     console.clearScreen();
@@ -64,7 +68,9 @@ abstract class Demo {
     console.cursorPosition.update(SneathCoordinateImpl(console.dimensions.height - 3, 0));
   }
 
-  static void colorSetAndAlignmentDemonstration(SneathConsole console) {
+  static void colorSetAndAlignmentDemonstration(
+    final SneathConsole console,
+  ) {
     console.setBackgroundColor(const DarkAnsiColorAdapter(NamedAnsiColors.blue));
     console.setForegroundColor(const DarkAnsiColorAdapter(NamedAnsiColors.white));
     console.writeLine('Simple Demo', ConsoleTextAlignments.center);
@@ -83,7 +89,9 @@ abstract class Demo {
     console.resetColorAttributes();
   }
 
-  static void extendedForegroundColorsDemonstration(SneathConsole console) {
+  static void extendedForegroundColorsDemonstration(
+    final SneathConsole console,
+  ) {
     console.setBackgroundColor(const DarkAnsiColorAdapter(NamedAnsiColors.red));
     console.setForegroundColor(const DarkAnsiColorAdapter(NamedAnsiColors.white));
     console.writeLine('ANSI Extended 256-Color Foreground Test', ConsoleTextAlignments.center);
@@ -100,7 +108,9 @@ abstract class Demo {
     console.resetColorAttributes();
   }
 
-  static void extendedBackgroundColorsDemonstration(SneathConsole console) {
+  static void extendedBackgroundColorsDemonstration(
+    final SneathConsole console,
+  ) {
     console.setBackgroundColor(const DarkAnsiColorAdapter(NamedAnsiColors.green));
     console.setForegroundColor(const DarkAnsiColorAdapter(NamedAnsiColors.white));
     console.writeLine('ANSI Extended 256-Color Background Test', ConsoleTextAlignments.center);
@@ -117,13 +127,16 @@ abstract class Demo {
     console.resetColorAttributes();
   }
 
-  static void twinklingStartsDemo(SneathConsole console) {
+  static void twinklingStartsDemo(
+    final SneathConsole console,
+  ) {
     final stars = Queue<SneathCoordinate>();
     final rng = Random();
     const numStars = 750;
     const maxStarsOnScreen = 250;
     void addStar() {
-      final star = SneathCoordinateImpl(rng.nextInt(console.dimensions.height - 1) + 1, rng.nextInt(console.dimensions.width));
+      final star =
+          SneathCoordinateImpl(rng.nextInt(console.dimensions.height - 1) + 1, rng.nextInt(console.dimensions.width));
       console.cursorPosition.update(star);
       console.write('*');
       stars.addLast(star);

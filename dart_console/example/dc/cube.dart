@@ -7,9 +7,7 @@ import 'package:dart_console/dc/drawing_canvas.dart';
 import 'package:dart_console/util/bresenham.dart';
 import 'package:vector_math/vector_math.dart';
 
-final console = DCConsole(DCStdioConsoleAdapter());
-
-// Draws a 3D cube with DrawingCanvas. |
+// Draws a 3D cube with DrawingCanvas.
 void main() {
   const points = [
     [-1.0, -1.0, -1.0],
@@ -31,9 +29,9 @@ void main() {
   ];
   final cube = quads
       .map(
-        (quad) => quad
+        (final quad) => quad
             .map(
-              (v) => Vector3.array(
+              (final v) => Vector3.array(
                 points[v],
               ),
             )
@@ -54,24 +52,42 @@ void main() {
     modelView.rotateX(pi * 2 * now / 9000);
     modelView.scale(Vector3(sin(now / 1000 * pi) / 2 + 1, 1.0, 1.0));
     canvas.clear();
-    final transformed = cube.map((quad) {
-      return quad.map((v) {
-        Matrix4 m;
-        var out = Vector3.zero();
-        m = projection * modelView as Matrix4;
-        out = m.transform3(v);
-        return {
-          'x': (out[0] * 40 + 80).floor(),
-          'y': (out[1] * 40 + 80).floor(),
-        };
-      });
-    });
+    final transformed = cube.map(
+      (final quad) {
+        return quad.map(
+          (final v) {
+            Matrix4 m;
+            var out = Vector3.zero();
+            m = projection * modelView as Matrix4;
+            out = m.transform3(v);
+            return {
+              'x': (out[0] * 40 + 80).floor(),
+              'y': (out[1] * 40 + 80).floor(),
+            };
+          },
+        );
+      },
+    );
     transformed.forEach((quadIterable) {
       var i = 0;
       final quad = quadIterable.toList();
       quad.forEach((v) {
-        final n = quad[((i.isNegative ? i.abs() : -i) + 1) % 4];
-        bresenham(v['x']!, v['y']!, n['x']!, n['y']!, canvas.set);
+        final n = quad[((() {
+                  if (i.isNegative) {
+                    return i.abs();
+                  } else {
+                    return -i;
+                  }
+                }()) +
+                1) %
+            4];
+        bresenham(
+          v['x']!,
+          v['y']!,
+          n['x']!,
+          n['y']!,
+          canvas.set,
+        );
         i++;
       });
     });
@@ -80,6 +96,10 @@ void main() {
 
   Timer.periodic(
     const Duration(milliseconds: 1000 ~/ 24),
-    (_) => draw(),
+    (final _) => draw(),
   );
 }
+
+final DCConsole console = DCConsole(
+  DCStdioConsoleAdapter(),
+);

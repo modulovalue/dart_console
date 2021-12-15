@@ -1,20 +1,40 @@
 /// https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
 void bresenham(
-  num x0,
-  num y0,
-  num x1,
-  num y1,
-  void Function(int, int) passPoint,
+  final num x0,
+  final num y0,
+  final num x1,
+  final num y1,
+  final void Function(int, int) passPoint,
 ) {
   final dx = x1 - x0;
   final dy = y1 - y0;
   final adx = dx.abs();
   final ady = dy.abs();
   var eps = 0;
-  final sx = dx > 0 ? 1 : -1;
-  final sy = dy > 0 ? 1 : -1;
+  final sx = () {
+    if (dx > 0) {
+      return 1;
+    } else {
+      return -1;
+    }
+  }();
+  final sy = () {
+    if (dy > 0) {
+      return 1;
+    } else {
+      return -1;
+    }
+  }();
   if (adx > ady) {
-    for (var x = x0, y = y0; sx < 0 ? x >= x1 : x <= x1; x += sx) {
+    for (var x = x0, y = y0;
+        () {
+      if (sx < 0) {
+        return x >= x1;
+      } else {
+        return x <= x1;
+      }
+    }();
+        x += sx) {
       passPoint(x.round(), y.round());
       eps += ady.toInt();
       if ((eps << 1) >= adx) {
@@ -23,7 +43,15 @@ void bresenham(
       }
     }
   } else {
-    for (var x = x0, y = y0; sy < 0 ? y >= y1 : y <= y1; y += sy) {
+    for (var x = x0, y = y0;
+        () {
+      if (sy < 0) {
+        return y >= y1;
+      } else {
+        return y <= y1;
+      }
+    }();
+        y += sy) {
       passPoint(x.round(), y.round());
       eps += adx.toInt();
       if ((eps << 1) >= ady) {
