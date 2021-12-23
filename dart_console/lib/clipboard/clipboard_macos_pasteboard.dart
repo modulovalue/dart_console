@@ -1,17 +1,17 @@
 import 'dart:io';
 
-import '../../interface/clipboard.dart';
+import 'clipboard.dart';
 
 class SystemClipboardMacosPbpaste implements SystemClipboard {
-  static const String pbpasteLocation = "/usr/bin/pbpaste";
-  static const String pbcopyLocation = "/usr/bin/pbcopy";
+  static const String _pbpasteLocation = "/usr/bin/pbpaste";
+  // static const String _pbcopyLocation = "/usr/bin/pbcopy";
 
   const SystemClipboardMacosPbpaste();
 
   @override
-  String getContent() {
+  String getClipboardContent() {
     final result = Process.runSync(
-      pbpasteLocation,
+      _pbpasteLocation,
       [],
     );
     if (result.exitCode != 0) {
@@ -24,10 +24,10 @@ class SystemClipboardMacosPbpaste implements SystemClipboard {
   }
 
   @override
-  void setContent(
+  void setClipboardContent(
     final String content,
   ) {
-    Process.start(pbpasteLocation, []).then(
+    Process.start(_pbpasteLocation, []).then(
       (final process) {
         process.stdin.write(content);
         process.stdin.close();

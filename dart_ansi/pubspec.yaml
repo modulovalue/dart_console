@@ -1,7 +1,0 @@
-name: dart_ansi
-
-environment:
-  sdk: '>=2.12.0-0 <3.0.0'
-
-dev_dependencies:
-  extra_pedantic: ^1.5.0

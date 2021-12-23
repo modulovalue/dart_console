@@ -1,8 +1,7 @@
 import 'dart:io';
 
-import 'package:dart_ansi/ansi.dart';
-
-import '../../../terminal/interface/terminal_lib.dart';
+import '../../../ansi/ansi.dart';
+import '../../../terminal/terminal_lib.dart';
 import '../../interface/cursor_position.dart';
 import '../../interface/dimensions.dart';
 
@@ -31,7 +30,7 @@ class SneathConsoleDimensionsCachedImpl implements SneathConsoleDimensions {
         // otherwise, fall back to the approach of setting the cursor to beyond
         // the edge of the screen and then reading back its actual position
         final originalCursor = cursorPosition.get();
-        stdout.write(ansiMoveCursorToScreenEdge);
+        stdout.write(controlSequenceIdentifier + '999C' + controlSequenceIdentifier + '999B');
         final newCursor = cursorPosition.get();
         cursorPosition.update(originalCursor);
         if (newCursor != null) {
@@ -60,14 +59,16 @@ class SneathConsoleDimensionsCachedImpl implements SneathConsoleDimensions {
         // otherwise, fall back to the approach of setting the cursor to beyond
         // the edge of the screen and then reading back its actual position
         final originalCursor = cursorPosition.get();
-        stdout.write(ansiMoveCursorToScreenEdge);
+        stdout.write(controlSequenceIdentifier + '999C' + controlSequenceIdentifier + '999B');
         final newCursor = cursorPosition.get();
         cursorPosition.update(originalCursor);
         if (newCursor != null) {
           _height = newCursor.row;
         } else {
           // we've run out of options; terminal is unsupported
-          throw const SneathConsoleDimensionsExceptionImpl("Couldn't retrieve window height");
+          throw const SneathConsoleDimensionsExceptionImpl(
+            "Couldn't retrieve window height",
+          );
         }
       }
       return _height!;

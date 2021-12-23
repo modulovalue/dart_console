@@ -44,7 +44,10 @@ class ConsoleTextAlignmentCenterImpl implements ConsoleTextAlignment {
       text
           .split("\n")
           .map(
-            (final line) => alignSingleLine(line, windowWidth),
+            (final line) => alignSingleLine(
+              line,
+              windowWidth,
+            ),
           )
           .join("\n");
 }

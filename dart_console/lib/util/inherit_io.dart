@@ -7,7 +7,8 @@ void inheritIO(
   final bool lineBased = true,
 }) {
   if (lineBased) {
-    final stdoutLines = process.stdout.transform(utf8.decoder).transform(const LineSplitter());
+    final utf8Stdout = process.stdout.transform(utf8.decoder);
+    final stdoutLines = utf8Stdout.transform(const LineSplitter());
     stdoutLines.listen(
       (final data) {
         if (prefix != null) {
@@ -16,7 +17,8 @@ void inheritIO(
         stdout.writeln(data);
       },
     );
-    final stderrLines = process.stderr.transform(utf8.decoder).transform(const LineSplitter());
+    final utf8stderr = process.stderr.transform(utf8.decoder);
+    final stderrLines = utf8stderr.transform(const LineSplitter());
     stderrLines.listen(
       (final data) {
         if (prefix != null) {

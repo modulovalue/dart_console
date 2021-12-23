@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:dart_ansi/ansi.dart';
+import '../ansi/ansi.dart';
 
 /// The root of the console API
 class DCConsole {
@@ -8,7 +8,9 @@ class DCConsole {
   static bool _buffCTRLC = false;
   final DCConsoleAdapter rawConsole;
 
-  const DCConsole(this.rawConsole);
+  const DCConsole(
+    final this.rawConsole,
+  );
 
   static Stream<dynamic> get onResize => ProcessSignal.sigwinch.watch();
 
@@ -207,7 +209,7 @@ class DCConsole {
     rawConsole.echoMode = em;
     var str = String.fromCharCodes(bytes);
     str = str.substring(
-      str.lastIndexOf(ansiBracket) + 1,
+      str.lastIndexOf("[") + 1,
       str.length - 1,
     );
     final parts = List<int>.from(

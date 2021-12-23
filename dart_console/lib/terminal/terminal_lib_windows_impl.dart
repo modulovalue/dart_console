@@ -3,7 +3,7 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:win32/win32.dart';
 
-import '../../interface/terminal_lib.dart';
+import 'terminal_lib.dart';
 
 /// Win32-dependent library for interrogating and manipulating the console.
 ///
@@ -12,19 +12,22 @@ import '../../interface/terminal_lib.dart';
 /// designed to be called directly. Package consumers should normally use the
 /// `Console` class to call these methods.
 class SneathTerminalWindowsImpl implements SneathTerminal {
-  late final int inputHandle;
-  final int outputHandle;
+  final int _inputHandle;
+  final int _outputHandle;
 
   SneathTerminalWindowsImpl()
-      : outputHandle = GetStdHandle(STD_OUTPUT_HANDLE),
-        inputHandle = GetStdHandle(STD_INPUT_HANDLE);
+      : _outputHandle = GetStdHandle(STD_OUTPUT_HANDLE),
+        _inputHandle = GetStdHandle(STD_INPUT_HANDLE);
 
   @override
   int getWindowHeight() {
     final pBufferInfo = calloc<CONSOLE_SCREEN_BUFFER_INFO>();
     try {
       final bufferInfo = pBufferInfo.ref;
-      GetConsoleScreenBufferInfo(outputHandle, pBufferInfo);
+      GetConsoleScreenBufferInfo(
+        _outputHandle,
+        pBufferInfo,
+      );
       final windowHeight = bufferInfo.srWindow.Bottom - bufferInfo.srWindow.Top + 1;
       return windowHeight;
     } finally {
@@ -37,7 +40,10 @@ class SneathTerminalWindowsImpl implements SneathTerminal {
     final pBufferInfo = calloc<CONSOLE_SCREEN_BUFFER_INFO>();
     try {
       final bufferInfo = pBufferInfo.ref;
-      GetConsoleScreenBufferInfo(outputHandle, pBufferInfo);
+      GetConsoleScreenBufferInfo(
+        _outputHandle,
+        pBufferInfo,
+      );
       final windowWidth = bufferInfo.srWindow.Right - bufferInfo.srWindow.Left + 1;
       return windowWidth;
     } finally {
@@ -52,7 +58,10 @@ class SneathTerminalWindowsImpl implements SneathTerminal {
         (~ENABLE_PROCESSED_INPUT) &
         (~ENABLE_LINE_INPUT) &
         (~ENABLE_WINDOW_INPUT);
-    SetConsoleMode(inputHandle, dwMode);
+    SetConsoleMode(
+      _inputHandle,
+      dwMode,
+    );
   }
 
   @override
@@ -65,18 +74,27 @@ class SneathTerminalWindowsImpl implements SneathTerminal {
         ENABLE_PROCESSED_INPUT &
         ENABLE_QUICK_EDIT_MODE &
         ENABLE_VIRTUAL_TERMINAL_INPUT;
-    SetConsoleMode(inputHandle, dwMode);
+    SetConsoleMode(
+      _inputHandle,
+      dwMode,
+    );
   }
 
   void hideCursor() {
     final lpConsoleCursorInfo = calloc<CONSOLE_CURSOR_INFO>()..ref.bVisible = 0;
-    SetConsoleCursorInfo(outputHandle, lpConsoleCursorInfo);
+    SetConsoleCursorInfo(
+      _outputHandle,
+      lpConsoleCursorInfo,
+    );
     calloc.free(lpConsoleCursorInfo);
   }
 
   void showCursor() {
     final lpConsoleCursorInfo = calloc<CONSOLE_CURSOR_INFO>()..ref.bVisible = 1;
-    SetConsoleCursorInfo(outputHandle, lpConsoleCursorInfo);
+    SetConsoleCursorInfo(
+      _outputHandle,
+      lpConsoleCursorInfo,
+    );
     calloc.free(lpConsoleCursorInfo);
   }
 
@@ -88,30 +106,30 @@ class SneathTerminalWindowsImpl implements SneathTerminal {
     try {
       final bufferInfo = pBufferInfo.ref;
       GetConsoleScreenBufferInfo(
-        outputHandle,
+        _outputHandle,
         pBufferInfo,
       );
       final consoleSize = bufferInfo.dwSize.X * bufferInfo.dwSize.Y;
       FillConsoleOutputCharacter(
-        outputHandle,
+        _outputHandle,
         ' '.codeUnitAt(0),
         consoleSize,
         origin.ref,
         pCharsWritten,
       );
       GetConsoleScreenBufferInfo(
-        outputHandle,
+        _outputHandle,
         pBufferInfo,
       );
       FillConsoleOutputAttribute(
-        outputHandle,
+        _outputHandle,
         bufferInfo.wAttributes,
         consoleSize,
         origin.ref,
         pCharsWritten,
       );
       SetConsoleCursorPosition(
-        outputHandle,
+        _outputHandle,
         origin.ref,
       );
     } finally {
@@ -129,7 +147,10 @@ class SneathTerminalWindowsImpl implements SneathTerminal {
     final coord = calloc<COORD>()
       ..ref.X = x
       ..ref.Y = y;
-    SetConsoleCursorPosition(outputHandle, coord.ref);
+    SetConsoleCursorPosition(
+      _outputHandle,
+      coord.ref,
+    );
     calloc.free(coord);
   }
 }

@@ -1,9 +1,11 @@
 import 'package:dart_console/console/alignment.dart';
 import 'package:dart_console/console/impl/console.dart';
-import 'package:dart_console/terminal/impl/auto/terminal_lib.dart';
+import 'package:dart_console/terminal/terminal_lib_auto.dart';
 
 void main() {
-  final console = SneathConsoleImpl(autoSneathTerminal());
+  final console = SneathConsoleImpl(
+    terminal: autoSneathTerminal(),
+  );
   console.clearScreen();
   console.resetCursorPosition();
   console.writeLine(

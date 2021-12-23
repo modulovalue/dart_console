@@ -1,5 +1,4 @@
-import 'package:dart_ansi/ansi.dart';
-
+import '../ansi/ansi.dart';
 import '../console/alignment.dart';
 import '../console/interface/console.dart';
 
@@ -8,12 +7,23 @@ void runProgressScaffold({
   required final SneathConsole console,
 }) {
   console.hideCursor();
-  console.setBackgroundColor(const DarkAnsiColorAdapter(NamedAnsiColors.blue));
-  console.setForegroundColor(const BrightAnsiColorAdapter(NamedAnsiColors.white));
+  console.setBackgroundColor(
+    const DarkAnsiBackgroundColorAdapter(
+      NamedAnsiColorBlueImpl(),
+    ),
+  );
+  console.setForegroundColor(
+    const BrightAnsiForegroundColorAdapter(
+      NamedAnsiColorWhiteImpl(),
+    ),
+  );
   console.clearScreen();
   final title = state.title;
   if (title != null) {
-    console.writeLine(title, ConsoleTextAlignments.center);
+    console.writeLine(
+      title,
+      ConsoleTextAlignments.center,
+    );
   }
   console.writeLine(
     '=== ' + DateTime.now().difference(state.startedAt).toString().split(".").first + ' ===',
@@ -29,13 +39,24 @@ void runProgressScaffold({
   console.showCursor();
 }
 
+ProgressScaffoldState progressScaffoldStateNow({
+  final String? title,
+  final String? subtitle,
+}) =>
+    ProgressScaffoldState(
+      title: title,
+      subtitle: subtitle,
+      startedAt: DateTime.now(),
+    );
+
 class ProgressScaffoldState {
   final DateTime startedAt;
   final String? title;
   final String? subtitle;
 
-  ProgressScaffoldState({
+  const ProgressScaffoldState({
+    required final this.startedAt,
     final this.title,
     final this.subtitle,
-  }) : startedAt = DateTime.now();
+  });
 }

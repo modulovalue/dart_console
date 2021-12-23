@@ -1,15 +1,19 @@
 import 'dart:io';
 
-import '../../interface/clipboard.dart';
-import '../macos_pb/clipboard.dart';
-import '../xclip/clipboard.dart';
+import 'clipboard.dart';
+import 'clipboard_macos_pasteboard.dart';
+import 'clipboard_unix_xclip.dart';
 
 AutoClipboardResult autoGetClipboard() {
   if (Platform.isMacOS) {
-    return const AutoClipboardResultSuccess(SystemClipboardMacosPbpaste());
+    return const AutoClipboardResultSuccess(
+      SystemClipboardMacosPbpaste(),
+    );
   } else if (Platform.isLinux) {
     if (File(SystemClipboardXClipImpl.xclipLocation).existsSync()) {
-      return const AutoClipboardResultSuccess(SystemClipboardXClipImpl());
+      return const AutoClipboardResultSuccess(
+        SystemClipboardXClipImpl(),
+      );
     } else {
       return const AutoClipboardResultLinuxXClipNotFoundSystem();
     }
@@ -29,7 +33,9 @@ abstract class AutoClipboardResult {
 class AutoClipboardResultSuccess implements AutoClipboardResult {
   final SystemClipboard clipboard;
 
-  const AutoClipboardResultSuccess(this.clipboard);
+  const AutoClipboardResultSuccess(
+    final this.clipboard,
+  );
 
   @override
   Z match<Z>({

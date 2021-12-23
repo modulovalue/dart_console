@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:dart_console/console/impl/console.dart';
 import 'package:dart_console/console/interface/control_character.dart';
-import 'package:dart_console/terminal/impl/auto/terminal_lib.dart';
+import 'package:dart_console/terminal/terminal_lib_auto.dart';
 
 void main() {
   console.writeLine('This sample demonstrates keyboard input. Press any key including control keys');
@@ -27,4 +27,6 @@ void main() {
   }
 }
 
-final SneathConsoleImpl console = SneathConsoleImpl(autoSneathTerminal());
+final SneathConsoleImpl console = SneathConsoleImpl(
+  terminal: autoSneathTerminal(),
+);

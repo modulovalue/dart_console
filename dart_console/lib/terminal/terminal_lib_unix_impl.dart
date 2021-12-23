@@ -1,28 +1,32 @@
+// ignore_for_file: avoid_private_typedef_functions
+
 import 'dart:ffi';
 import 'dart:io';
 
-import 'package:dart_ansi/ansi.dart';
 import 'package:ffi/ffi.dart';
 
-import '../../interface/terminal_lib.dart';
+import 'terminal_lib.dart';
 
-SneathTerminalUnixImpl makeSneathTerminalUnix(
-  final DynamicLibrary stdlib,
-  final int IOCTL_TIOCGWINSZ,
-) {
-  final _tcgetattr = stdlib.lookupFunction<TERMIOS_tcgetattrNative, TERMIOS_tcgetattrDart>(
+SneathTerminalUnixImpl makeSneathTerminalUnix({
+  required final DynamicLibrary stdlib,
+  required final int IOCTL_TIOCGWINSZ,
+}) {
+  final _tcgetattr = stdlib.lookupFunction<_TERMIOS_tcgetattrNative, _TERMIOS_tcgetattrDart>(
     'tcgetattr',
   );
-  final _origTermIOSPointer = calloc<TermIOS>();
-  _tcgetattr(UnistdConstants.STDIN_FILENO, _origTermIOSPointer);
+  final _origTermIOSPointer = calloc<_TermIOS>();
+  _tcgetattr(
+    _UnistdConstants.STDIN_FILENO,
+    _origTermIOSPointer,
+  );
   return SneathTerminalUnixImpl._(
     stdlib: stdlib,
     origTermIOSPointer: _origTermIOSPointer,
-    ioctl: stdlib.lookupFunction<IOCTL_Native, IOCTL_Dart>(
+    ioctl: stdlib.lookupFunction<_IOCTL_Native, _IOCTL_Dart>(
       'ioctl',
     ),
     tcgetattr: _tcgetattr,
-    tcsetattr: stdlib.lookupFunction<TERMIOS_tcsetattrNative, TERMIOS_tcsetattrDart>(
+    tcsetattr: stdlib.lookupFunction<_TERMIOS_tcsetattrNative, _TERMIOS_tcsetattrDart>(
       'tcsetattr',
     ),
     IOCTL_TIOCGWINSZ: IOCTL_TIOCGWINSZ,
@@ -37,10 +41,10 @@ SneathTerminalUnixImpl makeSneathTerminalUnix(
 /// `Console` class to call these methods.
 class SneathTerminalUnixImpl implements SneathTerminal {
   final DynamicLibrary stdlib;
-  final Pointer<TermIOS> origTermIOSPointer;
-  final IOCTL_Dart ioctl;
-  final TERMIOS_tcgetattrDart tcgetattr;
-  final TERMIOS_tcsetattrDart tcsetattr;
+  final Pointer<_TermIOS> origTermIOSPointer;
+  final _IOCTL_Dart ioctl;
+  final _TERMIOS_tcgetattrDart tcgetattr;
+  final _TERMIOS_tcsetattrDart tcsetattr;
   final int IOCTL_TIOCGWINSZ;
 
   const SneathTerminalUnixImpl._({
@@ -54,8 +58,12 @@ class SneathTerminalUnixImpl implements SneathTerminal {
 
   @override
   int getWindowHeight() {
-    final winSizePointer = calloc<IOCTL_WinSize>();
-    final result = ioctl(UnistdConstants.STDOUT_FILENO, IOCTL_TIOCGWINSZ, winSizePointer.cast());
+    final winSizePointer = calloc<_IOCTL_WinSize>();
+    final result = ioctl(
+      _UnistdConstants.STDOUT_FILENO,
+      IOCTL_TIOCGWINSZ,
+      winSizePointer.cast(),
+    );
     if (result == -1) {
       return -1;
     } else {
@@ -72,8 +80,12 @@ class SneathTerminalUnixImpl implements SneathTerminal {
 
   @override
   int getWindowWidth() {
-    final winSizePointer = calloc<IOCTL_WinSize>();
-    final result = ioctl(UnistdConstants.STDOUT_FILENO, IOCTL_TIOCGWINSZ, winSizePointer.cast());
+    final winSizePointer = calloc<_IOCTL_WinSize>();
+    final result = ioctl(
+      _UnistdConstants.STDOUT_FILENO,
+      IOCTL_TIOCGWINSZ,
+      winSizePointer.cast(),
+    );
     if (result == -1) {
       return -1;
     } else {
@@ -91,18 +103,18 @@ class SneathTerminalUnixImpl implements SneathTerminal {
   @override
   void enableRawMode() {
     final _origTermIOS = origTermIOSPointer.ref;
-    final newTermIOSPointer = calloc<TermIOS>();
+    final newTermIOSPointer = calloc<_TermIOS>();
     final newTermIOS = newTermIOSPointer.ref;
     newTermIOS.c_iflag = _origTermIOS.c_iflag &
-        ~(TermiosConstants.BRKINT |
-            TermiosConstants.ICRNL |
-            TermiosConstants.INPCK |
-            TermiosConstants.ISTRIP |
-            TermiosConstants.IXON);
-    newTermIOS.c_oflag = _origTermIOS.c_oflag & ~TermiosConstants.OPOST;
-    newTermIOS.c_cflag = _origTermIOS.c_cflag | TermiosConstants.CS8;
+        ~(_TermiosConstants.BRKINT |
+            _TermiosConstants.ICRNL |
+            _TermiosConstants.INPCK |
+            _TermiosConstants.ISTRIP |
+            _TermiosConstants.IXON);
+    newTermIOS.c_oflag = _origTermIOS.c_oflag & ~_TermiosConstants.OPOST;
+    newTermIOS.c_cflag = _origTermIOS.c_cflag | _TermiosConstants.CS8;
     newTermIOS.c_lflag = _origTermIOS.c_lflag &
-        ~(TermiosConstants.ECHO | TermiosConstants.ICANON | TermiosConstants.IEXTEN | TermiosConstants.ISIG);
+        ~(_TermiosConstants.ECHO | _TermiosConstants.ICANON | _TermiosConstants.IEXTEN | _TermiosConstants.ISIG);
     newTermIOS.c_cc0 = _origTermIOS.c_cc0;
     newTermIOS.c_cc1 = _origTermIOS.c_cc1;
     newTermIOS.c_cc2 = _origTermIOS.c_cc2;
@@ -125,26 +137,38 @@ class SneathTerminalUnixImpl implements SneathTerminal {
     newTermIOS.c_cc19 = _origTermIOS.c_cc19;
     newTermIOS.c_ispeed = _origTermIOS.c_ispeed;
     newTermIOS.c_oflag = _origTermIOS.c_ospeed;
-    tcsetattr(UnistdConstants.STDIN_FILENO, TermiosConstants.TCSAFLUSH, newTermIOSPointer);
+    tcsetattr(
+      _UnistdConstants.STDIN_FILENO,
+      _TermiosConstants.TCSAFLUSH,
+      newTermIOSPointer,
+    );
     calloc.free(newTermIOSPointer);
   }
 
   @override
   void disableRawMode() {
     if (nullptr != origTermIOSPointer.cast()) {
-      tcsetattr(UnistdConstants.STDIN_FILENO, TermiosConstants.TCSAFLUSH, origTermIOSPointer);
+      tcsetattr(
+        _UnistdConstants.STDIN_FILENO,
+        _TermiosConstants.TCSAFLUSH,
+        origTermIOSPointer,
+      );
     }
   }
 
   @override
-  void clearScreen() => stdout.write(ansiEraseInDisplayAll + ansiResetCursorPosition);
+  void clearScreen() => stdout.write(
+        '\x1b' + "[" + '2J' + '\x1b' + "[" + 'H',
+      );
 
   @override
   void setCursorPosition(
     final int col,
     final int row,
   ) =>
-      stdout.write(ansiCursorPositionTo(row + 1, col + 1));
+      stdout.write(
+        '\x1b' + "[" + (row + 1).toString() + ";" + (col + 1).toString() + "H",
+      );
 }
 
 // struct winsize {
@@ -153,8 +177,8 @@ class SneathTerminalUnixImpl implements SneathTerminal {
 // 	unsigned short  ws_xpixel;      /* horizontal size, pixels */
 // 	unsigned short  ws_ypixel;      /* vertical size, pixels */
 // };
-class IOCTL_WinSize extends Struct {
-  IOCTL_WinSize();
+class _IOCTL_WinSize extends Struct {
+  _IOCTL_WinSize();
 
   @Int16()
   external int ws_row;
@@ -167,60 +191,60 @@ class IOCTL_WinSize extends Struct {
 }
 
 // int ioctl(int, unsigned long, ...);
-typedef IOCTL_Native = Int32 Function(Int32, Int64, Pointer<Void>);
-typedef IOCTL_Dart = int Function(int, int, Pointer<Void>);
+typedef _IOCTL_Native = Int32 Function(Int32, Int64, Pointer<Void>);
+typedef _IOCTL_Dart = int Function(int, int, Pointer<Void>);
 
-abstract class TermiosConstants {
+abstract class _TermiosConstants {
   // INPUT FLAGS
-  static const int IGNBRK = 0x00000001; // ignore BREAK condition
+  // static const int IGNBRK = 0x00000001; // ignore BREAK condition
   static const int BRKINT = 0x00000002; // map BREAK to SIGINTR
-  static const int IGNPAR = 0x00000004; // ignore (discard) parity errors
-  static const int PARMRK = 0x00000008; // mark parity and framing errors
+  // static const int IGNPAR = 0x00000004; // ignore (discard) parity errors
+  // static const int PARMRK = 0x00000008; // mark parity and framing errors
   static const int INPCK = 0x00000010; // enable checking of parity errors
   static const int ISTRIP = 0x00000020; // strip 8th bit off chars
-  static const int INLCR = 0x00000040; // map NL into CR
-  static const int IGNCR = 0x00000080; // ignore CR
+  // static const int INLCR = 0x00000040; // map NL into CR
+  // static const int IGNCR = 0x00000080; // ignore CR
   static const int ICRNL = 0x00000100; // map CR to NL (ala CRMOD)
   static const int IXON = 0x00000200; // enable output flow control
-  static const int IXOFF = 0x00000400; // enable input flow control
-  static const int IXANY = 0x00000800; // any char will restart after stop
-  static const int IMAXBEL = 0x00002000; // ring bell on input queue full
-  static const int IUTF8 = 0x00004000; // maintain state for UTF-8 VERASE
+  // static const int IXOFF = 0x00000400; // enable input flow control
+  // static const int IXANY = 0x00000800; // any char will restart after stop
+  // static const int IMAXBEL = 0x00002000; // ring bell on input queue full
+  // static const int IUTF8 = 0x00004000; // maintain state for UTF-8 VERASE
   // OUTPUT FLAGS
   static const int OPOST = 0x00000001; // enable following output processing
-  static const int ONLCR = 0x00000002; // map NL to CR-NL (ala CRMOD)
-  static const int OXTABS = 0x00000004; // expand tabs to spaces
-  static const int ONOEOT = 0x00000008; // discard EOT's (^D) on output)
+  // static const int ONLCR = 0x00000002; // map NL to CR-NL (ala CRMOD)
+  // static const int OXTABS = 0x00000004; // expand tabs to spaces
+  // static const int ONOEOT = 0x00000008; // discard EOT's (^D) on output)
   // CONTROL FLAGS
-  static const int CIGNORE = 0x00000001; // ignore control flags
-  static const int CSIZE = 0x00000300; // character size mask
-  static const int CS5 = 0x00000000; // 5 bits (pseudo)
-  static const int CS6 = 0x00000100; // 6 bits
-  static const int CS7 = 0x00000200; // 7 bits
+  // static const int CIGNORE = 0x00000001; // ignore control flags
+  // static const int CSIZE = 0x00000300; // character size mask
+  // static const int CS5 = 0x00000000; // 5 bits (pseudo)
+  // static const int CS6 = 0x00000100; // 6 bits
+  // static const int CS7 = 0x00000200; // 7 bits
   static const int CS8 = 0x00000300; // 8 bits
   // LOCAL FLAGS
-  static const int ECHOKE = 0x00000001; // visual erase for line kill
-  static const int ECHOE = 0x00000002; // visually erase chars
-  static const int ECHOK = 0x00000004; // echo NL after line kill
+  // static const int ECHOKE = 0x00000001; // visual erase for line kill
+  // static const int ECHOE = 0x00000002; // visually erase chars
+  // static const int ECHOK = 0x00000004; // echo NL after line kill
   static const int ECHO = 0x00000008; // enable echoing
-  static const int ECHONL = 0x00000010; // echo NL even if ECHO is off
-  static const int ECHOPRT = 0x00000020; // visual erase mode for hardcopy
-  static const int ECHOCTL = 0x00000040; // echo control chars as ^(Char)
+  // static const int ECHONL = 0x00000010; // echo NL even if ECHO is off
+  // static const int ECHOPRT = 0x00000020; // visual erase mode for hardcopy
+  // static const int ECHOCTL = 0x00000040; // echo control chars as ^(Char)
   static const int ISIG = 0x00000080; // enable signals INTR, QUIT, [D]SUSP
   static const int ICANON = 0x00000100; // canonicalize input lines
-  static const int ALTWERASE = 0x00000200; // use alternate WERASE algorithm
+  // static const int ALTWERASE = 0x00000200; // use alternate WERASE algorithm
   static const int IEXTEN = 0x00000400; // enable DISCARD and LNEXT
-  static const int EXTPROC = 0x00000800; // external processing
-  static const int TOSTOP = 0x00400000; // stop background jobs from output
-  static const int FLUSHO = 0x00800000; // output being flushed (state)
-  static const int NOKERNINFO = 0x02000000; // no kernel output from VSTATUS
-  static const int PENDIN = 0x20000000; // XXX retype pending input (state)
-  static const int NOFLSH = 0x80000000; // don't flush after interrupt
-  static const int TCSANOW = 0; // make change immediate
-  static const int TCSADRAIN = 1; // drain output, then change
+  // static const int EXTPROC = 0x00000800; // external processing
+  // static const int TOSTOP = 0x00400000; // stop background jobs from output
+  // static const int FLUSHO = 0x00800000; // output being flushed (state)
+  // static const int NOKERNINFO = 0x02000000; // no kernel output from VSTATUS
+  // static const int PENDIN = 0x20000000; // XXX retype pending input (state)
+  // static const int NOFLSH = 0x80000000; // don't flush after interrupt
+  // static const int TCSANOW = 0; // make change immediate
+  // static const int TCSADRAIN = 1; // drain output, then change
   static const int TCSAFLUSH = 2; // drain output, flush input
-  static const int VMIN = 16; // minimum number of characters to receive
-  static const int VTIME = 17; // time in 1/10s before returning
+// static const int VMIN = 16; // minimum number of characters to receive
+// static const int VTIME = 17; // time in 1/10s before returning
 }
 
 // typedef unsigned long   tcflag_t;
@@ -237,8 +261,8 @@ abstract class TermiosConstants {
 // 	speed_t         c_ispeed;       /* input speed */
 // 	speed_t         c_ospeed;       /* output speed */
 // };
-class TermIOS extends Struct {
-  TermIOS();
+class _TermIOS extends Struct {
+  _TermIOS();
 
   @Int64()
   external int c_iflag;
@@ -297,15 +321,15 @@ class TermIOS extends Struct {
 }
 
 // int tcgetattr(int, struct termios *);
-typedef TERMIOS_tcgetattrNative = Int32 Function(Int32 fildes, Pointer<TermIOS> termios);
-typedef TERMIOS_tcgetattrDart = int Function(int fildes, Pointer<TermIOS> termios);
+typedef _TERMIOS_tcgetattrNative = Int32 Function(Int32 fildes, Pointer<_TermIOS> termios);
+typedef _TERMIOS_tcgetattrDart = int Function(int fildes, Pointer<_TermIOS> termios);
 
 // int tcsetattr(int, int, const struct termios *);
-typedef TERMIOS_tcsetattrNative = Int32 Function(Int32 fildes, Int32 optional_actions, Pointer<TermIOS> termios);
-typedef TERMIOS_tcsetattrDart = int Function(int fildes, int optional_actions, Pointer<TermIOS> termios);
+typedef _TERMIOS_tcsetattrNative = Int32 Function(Int32 fildes, Int32 optional_actions, Pointer<_TermIOS> termios);
+typedef _TERMIOS_tcsetattrDart = int Function(int fildes, int optional_actions, Pointer<_TermIOS> termios);
 
-abstract class UnistdConstants {
+abstract class _UnistdConstants {
   static const int STDIN_FILENO = 0;
   static const int STDOUT_FILENO = 1;
-  static const int STDERR_FILENO = 2;
+// static const int STDERR_FILENO = 2;
 }

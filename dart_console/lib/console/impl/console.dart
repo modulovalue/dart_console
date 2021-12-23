@@ -1,10 +1,9 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:dart_ansi/ansi.dart';
-
-import '../../parser.dart';
-import '../../terminal/interface/terminal_lib.dart';
+import '../../ansi/ansi.dart';
+import '../../ansi/parser.dart';
+import '../../terminal/terminal_lib.dart';
 import '../alignment.dart';
 import '../interface/console.dart';
 import '../interface/control_character.dart';
@@ -14,26 +13,27 @@ import '../interface/key.dart';
 import 'coordinate.dart';
 import 'cursor_position.dart';
 import 'dimensions/constant.dart';
+import 'key.dart';
 
-/// TODO have a mixin and separate impls. for scrolling and non scrolling.
+// TODO have a mixin and separate impls. for scrolling and non scrolling.
 class SneathConsoleImpl implements SneathConsole {
   bool _isRawMode = false;
-  final SneathTerminal _terminal;
+  final SneathTerminal terminal;
   final _ScrollbackBuffer? _scrollbackBuffer;
 
-  SneathConsoleImpl(
-    final this._terminal,
-  ) : _scrollbackBuffer = null;
+  SneathConsoleImpl({
+    required final this.terminal,
+  }) : _scrollbackBuffer = null;
 
   @override
   late final SneathConsoleDimensions dimensions = SneathConsoleDimensionsCachedImpl(
-    _terminal,
+    terminal,
     cursorPosition,
   );
 
   @override
   late final SneathCursorPositionDelegate cursorPosition = SneathCursorPositionDelegateImpl(
-    _terminal,
+    terminal,
     (final newRawMode) => rawMode = newRawMode,
   );
 
@@ -41,9 +41,11 @@ class SneathConsoleImpl implements SneathConsole {
   /// Use `Console.scrolling(recordBlanks: false)` to omit blank lines
   /// from console history
   SneathConsoleImpl.scrolling(
-    final this._terminal, {
+    final this.terminal, {
     final bool recordBlanks = true,
-  }) : _scrollbackBuffer = _ScrollbackBufferImpl(recordBlanks: recordBlanks);
+  }) : _scrollbackBuffer = _ScrollbackBufferImpl(
+          recordBlanks: recordBlanks,
+        );
 
   @override
   set rawMode(
@@ -51,9 +53,9 @@ class SneathConsoleImpl implements SneathConsole {
   ) {
     _isRawMode = value;
     if (value) {
-      _terminal.enableRawMode();
+      terminal.enableRawMode();
     } else {
-      _terminal.disableRawMode();
+      terminal.disableRawMode();
     }
   }
 
@@ -61,40 +63,40 @@ class SneathConsoleImpl implements SneathConsole {
   bool get rawMode => _isRawMode;
 
   @override
-  void clearScreen() => _terminal.clearScreen();
+  void clearScreen() => terminal.clearScreen();
 
   @override
-  void eraseLine() => stdout.write(ansiEraseInLineAll);
+  void eraseLine() => stdout.write(controlSequenceIdentifier + '2K');
 
   @override
-  void eraseCursorToEnd() => stdout.write(ansiEraseCursorToEnd);
+  void eraseCursorToEnd() => stdout.write(controlSequenceIdentifier + 'K');
 
   @override
-  void hideCursor() => stdout.write(ansiHideCursor);
+  void hideCursor() => stdout.write(controlSequenceIdentifier + "?25l");
 
   @override
-  void showCursor() => stdout.write(ansiShowCursor);
+  void showCursor() => stdout.write(controlSequenceIdentifier + "?25h");
 
   @override
-  void cursorLeft() => stdout.write(ansiCursorLeft);
+  void cursorLeft() => stdout.write(controlSequenceIdentifier + 'D');
 
   @override
-  void cursorRight() => stdout.write(ansiCursorRight);
+  void cursorRight() => stdout.write(controlSequenceIdentifier + 'C');
 
   @override
-  void cursorUp() => stdout.write(ansiCursorUp);
+  void cursorUp() => stdout.write(controlSequenceIdentifier + 'A');
 
   @override
-  void cursorDown() => stdout.write(ansiCursorDown);
+  void cursorDown() => stdout.write(controlSequenceIdentifier + 'B');
 
   @override
   void resetCursorPosition() => stdout.write(
-        ansiCursorPositionTo(1, 1),
+        controlSequenceIdentifier + "1;1H",
       );
 
   @override
   void setForegroundColor(
-    final NamedAnsiColor foreground,
+    final AnsiForegroundColor foreground,
   ) =>
       stdout.write(
         ansiSetTextColor(foreground),
@@ -102,7 +104,7 @@ class SneathConsoleImpl implements SneathConsole {
 
   @override
   void setBackgroundColor(
-    final NamedAnsiColor background,
+    final AnsiBackgroundColor background,
   ) =>
       stdout.write(
         ansiSetBackgroundColor(background),
@@ -148,7 +150,7 @@ class SneathConsoleImpl implements SneathConsole {
 
   @override
   void resetColorAttributes() => stdout.write(
-        ansiResetColor,
+        controlSequenceIdentifier + 'm',
       );
 
   @override
@@ -157,7 +159,6 @@ class SneathConsoleImpl implements SneathConsole {
   ) =>
       stdout.write(text);
 
-  // TODO extract constants.
   @override
   String get newLine {
     if (_isRawMode) {
@@ -174,7 +175,6 @@ class SneathConsoleImpl implements SneathConsole {
     stderr.write(text);
     // Even if we're in raw mode, we write '\n', since raw mode only applies
     // to stdout
-    /// TODO extract constants.
     stderr.write('\n');
   }
 
@@ -192,7 +192,10 @@ class SneathConsoleImpl implements SneathConsole {
   @override
   Key readKey() {
     rawMode = true;
-    final key = parseKey(const AnsiParserInputBufferStdinImpl());
+    final key = parseKey(
+      buffer: const AnsiParserInputBufferStdinImpl(),
+      delegate: const KeyDelegateKeyBindingsImpl(),
+    );
     rawMode = false;
     return key;
   }
@@ -266,7 +269,7 @@ class SneathConsoleImpl implements SneathConsole {
               break;
             case ControlCharacters.arrowLeft:
             case ControlCharacters.ctrlB:
-              index = (){
+              index = () {
                 if (index > 0) {
                   return index - 1;
                 } else {
@@ -362,16 +365,16 @@ class SneathConsoleImpl implements SneathConsole {
       );
       cursorPosition.update(
         SneathCoordinateImpl(
-          screenRow,
-          screenColOffset,
+          row: screenRow,
+          col: screenColOffset,
         ),
       );
       eraseCursorToEnd();
       write(buffer); // allow for backspace condition
       cursorPosition.update(
         SneathCoordinateImpl(
-          screenRow,
-          screenColOffset + index,
+          row: screenRow,
+          col: screenColOffset + index,
         ),
       );
       if (callback != null) {
@@ -514,4 +517,518 @@ class _ScrollbackBufferImpl implements _ScrollbackBuffer {
       }
     }
   }
+}
+
+class KeyDelegateKeyBindingsImpl implements KeyDelegate<Key, int> {
+  const KeyDelegateKeyBindingsImpl();
+
+  @override
+  KeyControlImpl nil(final int context) => const KeyControlImpl(ControlCharacters.unknown);
+
+  @override
+  KeyControlImpl startOfHeader(final int context) => const KeyControlImpl(ControlCharacters.ctrlA);
+
+  @override
+  KeyControlImpl startOfText(final int context) => const KeyControlImpl(ControlCharacters.ctrlB);
+
+  @override
+  KeyControlImpl endOfText(final int context) => const KeyControlImpl(ControlCharacters.ctrlC);
+
+  @override
+  KeyControlImpl endOfTransmission(final int context) => const KeyControlImpl(ControlCharacters.ctrlD);
+
+  @override
+  KeyControlImpl enquiry(final int context) => const KeyControlImpl(ControlCharacters.ctrlE);
+
+  @override
+  KeyControlImpl acknowledgment(final int context) => const KeyControlImpl(ControlCharacters.ctrlF);
+
+  @override
+  KeyControlImpl bell(final int context) => const KeyControlImpl(ControlCharacters.ctrlG);
+
+  @override
+  KeyControlImpl backspace(final int context) => const KeyControlImpl(ControlCharacters.ctrlH);
+
+  @override
+  KeyControlImpl horizontalTab(final int context) => const KeyControlImpl(ControlCharacters.tab);
+
+  @override
+  KeyControlImpl lineFeed(final int context) => const KeyControlImpl(ControlCharacters.ctrlJ);
+
+  @override
+  KeyControlImpl verticalTab(final int context) => const KeyControlImpl(ControlCharacters.ctrlK);
+
+  @override
+  KeyControlImpl formFeed(final int context) => const KeyControlImpl(ControlCharacters.ctrlL);
+
+  @override
+  KeyControlImpl carriageReturn(final int context) => const KeyControlImpl(ControlCharacters.enter);
+
+  @override
+  KeyControlImpl shiftOut(final int context) => const KeyControlImpl(ControlCharacters.ctrlN);
+
+  @override
+  KeyControlImpl shiftIn(final int context) => const KeyControlImpl(ControlCharacters.ctrlO);
+
+  @override
+  KeyControlImpl dataLinkEscape(final int context) => const KeyControlImpl(ControlCharacters.ctrlP);
+
+  @override
+  KeyControlImpl deviceControl1(final int context) => const KeyControlImpl(ControlCharacters.ctrlQ);
+
+  @override
+  KeyControlImpl deviceControl2(final int context) => const KeyControlImpl(ControlCharacters.ctrlR);
+
+  @override
+  KeyControlImpl deviceControl3(final int context) => const KeyControlImpl(ControlCharacters.ctrlS);
+
+  @override
+  KeyControlImpl deviceControl4(final int context) => const KeyControlImpl(ControlCharacters.ctrlT);
+
+  @override
+  KeyControlImpl negativeAcknowledgment(final int context) => const KeyControlImpl(ControlCharacters.ctrlU);
+
+  @override
+  KeyControlImpl syncIdle(final int context) => const KeyControlImpl(ControlCharacters.ctrlV);
+
+  @override
+  KeyControlImpl endOfTransmissionBlock(final int context) => const KeyControlImpl(ControlCharacters.ctrlW);
+
+  @override
+  KeyControlImpl cancel(final int context) => const KeyControlImpl(ControlCharacters.ctrlX);
+
+  @override
+  KeyControlImpl endOfMedium(final int context) => const KeyControlImpl(ControlCharacters.ctrlY);
+
+  @override
+  KeyControlImpl substitute(final int context) => const KeyControlImpl(ControlCharacters.ctrlZ);
+
+  @override
+  KeyControlImpl escapeEOF(final int context) => const KeyControlImpl(ControlCharacters.escape);
+
+  @override
+  KeyControlImpl escapeDelete(final int context) => const KeyControlImpl(ControlCharacters.wordBackspace);
+
+  @override
+  KeyControlImpl escapeAnsiBracketEOF(final int context) => const KeyControlImpl(ControlCharacters.escape);
+
+  @override
+  KeyControlImpl escapeAnsiBracketUp(final int context) => const KeyControlImpl(ControlCharacters.arrowUp);
+
+  @override
+  KeyControlImpl escapeAnsiBracketDown(final int context) => const KeyControlImpl(ControlCharacters.arrowDown);
+
+  @override
+  KeyControlImpl escapeAnsiBracketForward(final int context) => const KeyControlImpl(ControlCharacters.arrowRight);
+
+  @override
+  KeyControlImpl escapeAnsiBracketBackward(final int context) => const KeyControlImpl(ControlCharacters.arrowLeft);
+
+  @override
+  KeyControlImpl escapeAnsiBracketHome(final int context) => const KeyControlImpl(ControlCharacters.home);
+
+  @override
+  KeyControlImpl escapeAnsiBracketEnd(final int context) => const KeyControlImpl(ControlCharacters.end);
+
+  @override
+  KeyControlImpl escapeAnsiBracket1EOF(final int context) => const KeyControlImpl(ControlCharacters.escape);
+
+  @override
+  KeyControlImpl escapeAnsiBracket1Tilde(final int context) => const KeyControlImpl(ControlCharacters.home);
+
+  @override
+  KeyControlImpl escapeAnsiBracket1Default(final int context) => const KeyControlImpl(ControlCharacters.unknown);
+
+  @override
+  KeyControlImpl escapeAnsiBracket3EOF(final int context) => const KeyControlImpl(ControlCharacters.escape);
+
+  @override
+  KeyControlImpl escapeAnsiBracket3Tilde(final int context) => const KeyControlImpl(ControlCharacters.delete);
+
+  @override
+  KeyControlImpl escapeAnsiBracket3Default(final int context) => const KeyControlImpl(ControlCharacters.unknown);
+
+  @override
+  KeyControlImpl escapeAnsiBracket4EOF(final int context) => const KeyControlImpl(ControlCharacters.escape);
+
+  @override
+  KeyControlImpl escapeAnsiBracket4Tilde(final int context) => const KeyControlImpl(ControlCharacters.end);
+
+  @override
+  KeyControlImpl escapeAnsiBracket4Default(final int context) => const KeyControlImpl(ControlCharacters.unknown);
+
+  @override
+  KeyControlImpl escapeAnsiBracket5EOF(final int context) => const KeyControlImpl(ControlCharacters.escape);
+
+  @override
+  KeyControlImpl escapeAnsiBracket5Tilde(final int context) => const KeyControlImpl(ControlCharacters.pageUp);
+
+  @override
+  KeyControlImpl escapeAnsiBracket5Default(final int context) => const KeyControlImpl(ControlCharacters.unknown);
+
+  @override
+  KeyControlImpl escapeAnsiBracket6EOF(final int context) => const KeyControlImpl(ControlCharacters.escape);
+
+  @override
+  KeyControlImpl escapeAnsiBracket6Tilde(final int context) => const KeyControlImpl(ControlCharacters.pageDown);
+
+  @override
+  KeyControlImpl escapeAnsiBracket6Default(final int context) => const KeyControlImpl(ControlCharacters.unknown);
+
+  @override
+  KeyControlImpl escapeAnsiBracket7EOF(final int context) => const KeyControlImpl(ControlCharacters.escape);
+
+  @override
+  KeyControlImpl escapeAnsiBracket7Tilde(final int context) => const KeyControlImpl(ControlCharacters.home);
+
+  @override
+  KeyControlImpl escapeAnsiBracket7Default(final int context) => const KeyControlImpl(ControlCharacters.unknown);
+
+  @override
+  KeyControlImpl escapeAnsiBracket8EOF(final int context) => const KeyControlImpl(ControlCharacters.escape);
+
+  @override
+  KeyControlImpl escapeAnsiBracket8Tilde(final int context) => const KeyControlImpl(ControlCharacters.end);
+
+  @override
+  KeyControlImpl escapeAnsiBracket8Default(final int context) => const KeyControlImpl(ControlCharacters.unknown);
+
+  @override
+  KeyControlImpl escapeAnsiBracketDefault(final int context) => const KeyControlImpl(ControlCharacters.unknown);
+
+  @override
+  KeyControlImpl escapeAnsiOEOF(final int context) => const KeyControlImpl(ControlCharacters.escape);
+
+  @override
+  KeyControlImpl escapeAnsiOHome(final int context) => const KeyControlImpl(ControlCharacters.home);
+
+  @override
+  KeyControlImpl escapeAnsiOEnd(final int context) => const KeyControlImpl(ControlCharacters.end);
+
+  @override
+  KeyControlImpl escapeAnsiOP(final int context) => const KeyControlImpl(ControlCharacters.F1);
+
+  @override
+  KeyControlImpl escapeAnsiOQ(final int context) => const KeyControlImpl(ControlCharacters.F2);
+
+  @override
+  KeyControlImpl escapeAnsiOR(final int context) => const KeyControlImpl(ControlCharacters.F3);
+
+  @override
+  KeyControlImpl escapeAnsiOS(final int context) => const KeyControlImpl(ControlCharacters.F4);
+
+  @override
+  KeyControlImpl escapeAnsiODefault(final int context) => throw Exception("Unexpected O command");
+
+  @override
+  KeyControlImpl escapeAnsib(final int context) => const KeyControlImpl(ControlCharacters.wordLeft);
+
+  @override
+  KeyControlImpl escapeAnsif(final int context) => const KeyControlImpl(ControlCharacters.wordRight);
+
+  @override
+  KeyControlImpl escapeAnsiDefault(final int context) => const KeyControlImpl(ControlCharacters.unknown);
+
+  @override
+  KeyControlImpl fileSeparator(final int context) => const KeyControlImpl(ControlCharacters.unknown);
+
+  @override
+  KeyControlImpl groupSeparator(final int context) => const KeyControlImpl(ControlCharacters.unknown);
+
+  @override
+  KeyControlImpl recordSeparator(final int context) => const KeyControlImpl(ControlCharacters.unknown);
+
+  @override
+  KeyControlImpl unitSeparator(final int context) => const KeyControlImpl(ControlCharacters.unknown);
+
+  @override
+  KeyPrintableImpl space(final int context) => const KeyPrintableImpl(' ');
+
+  @override
+  KeyPrintableImpl exclamation(final int context) => const KeyPrintableImpl('!');
+
+  @override
+  KeyPrintableImpl doubleQuote(final int context) => const KeyPrintableImpl('"');
+
+  @override
+  KeyPrintableImpl hash(final int context) => const KeyPrintableImpl("#");
+
+  @override
+  KeyPrintableImpl dollar(final int context) => const KeyPrintableImpl(r"$");
+
+  @override
+  KeyPrintableImpl percent(final int context) => const KeyPrintableImpl("%");
+
+  @override
+  KeyPrintableImpl ampersand(final int context) => const KeyPrintableImpl("&");
+
+  @override
+  KeyPrintableImpl singleQuote(final int context) => const KeyPrintableImpl("'");
+
+  @override
+  KeyPrintableImpl lparen(final int context) => const KeyPrintableImpl("(");
+
+  @override
+  KeyPrintableImpl rparen(final int context) => const KeyPrintableImpl(")");
+
+  @override
+  KeyPrintableImpl asterisk(final int context) => const KeyPrintableImpl("*");
+
+  @override
+  KeyPrintableImpl plus(final int context) => const KeyPrintableImpl("+");
+
+  @override
+  KeyPrintableImpl comma(final int context) => const KeyPrintableImpl(",");
+
+  @override
+  KeyPrintableImpl minus(final int context) => const KeyPrintableImpl("-");
+
+  @override
+  KeyPrintableImpl dot(final int context) => const KeyPrintableImpl(".");
+
+  @override
+  KeyPrintableImpl slash(final int context) => const KeyPrintableImpl("/");
+
+  @override
+  KeyPrintableImpl zero(final int context) => const KeyPrintableImpl("0");
+
+  @override
+  KeyPrintableImpl one(final int context) => const KeyPrintableImpl("1");
+
+  @override
+  KeyPrintableImpl two(final int context) => const KeyPrintableImpl("2");
+
+  @override
+  KeyPrintableImpl three(final int context) => const KeyPrintableImpl("3");
+
+  @override
+  KeyPrintableImpl four(final int context) => const KeyPrintableImpl("4");
+
+  @override
+  KeyPrintableImpl five(final int context) => const KeyPrintableImpl("5");
+
+  @override
+  KeyPrintableImpl six(final int context) => const KeyPrintableImpl("6");
+
+  @override
+  KeyPrintableImpl seven(final int context) => const KeyPrintableImpl("7");
+
+  @override
+  KeyPrintableImpl eight(final int context) => const KeyPrintableImpl("8");
+
+  @override
+  KeyPrintableImpl nine(final int context) => const KeyPrintableImpl("9");
+
+  @override
+  KeyPrintableImpl colon(final int context) => const KeyPrintableImpl(":");
+
+  @override
+  KeyPrintableImpl semicolon(final int context) => const KeyPrintableImpl(";");
+
+  @override
+  KeyPrintableImpl lt(final int context) => const KeyPrintableImpl("<");
+
+  @override
+  KeyPrintableImpl equal(final int context) => const KeyPrintableImpl("=");
+
+  @override
+  KeyPrintableImpl gt(final int context) => const KeyPrintableImpl(">");
+
+  @override
+  KeyPrintableImpl question(final int context) => const KeyPrintableImpl("?");
+
+  @override
+  KeyPrintableImpl at(final int context) => const KeyPrintableImpl("@");
+
+  @override
+  KeyPrintableImpl capA(final int context) => const KeyPrintableImpl("A");
+
+  @override
+  KeyPrintableImpl capB(final int context) => const KeyPrintableImpl("B");
+
+  @override
+  KeyPrintableImpl capC(final int context) => const KeyPrintableImpl("C");
+
+  @override
+  KeyPrintableImpl capD(final int context) => const KeyPrintableImpl("D");
+
+  @override
+  KeyPrintableImpl capE(final int context) => const KeyPrintableImpl("E");
+
+  @override
+  KeyPrintableImpl capF(final int context) => const KeyPrintableImpl("F");
+
+  @override
+  KeyPrintableImpl capG(final int context) => const KeyPrintableImpl("G");
+
+  @override
+  KeyPrintableImpl capH(final int context) => const KeyPrintableImpl("H");
+
+  @override
+  KeyPrintableImpl capI(final int context) => const KeyPrintableImpl("I");
+
+  @override
+  KeyPrintableImpl capJ(final int context) => const KeyPrintableImpl("J");
+
+  @override
+  KeyPrintableImpl capK(final int context) => const KeyPrintableImpl("K");
+
+  @override
+  KeyPrintableImpl capL(final int context) => const KeyPrintableImpl("L");
+
+  @override
+  KeyPrintableImpl capM(final int context) => const KeyPrintableImpl("M");
+
+  @override
+  KeyPrintableImpl capN(final int context) => const KeyPrintableImpl("N");
+
+  @override
+  KeyPrintableImpl capO(final int context) => const KeyPrintableImpl("O");
+
+  @override
+  KeyPrintableImpl capP(final int context) => const KeyPrintableImpl("P");
+
+  @override
+  KeyPrintableImpl capQ(final int context) => const KeyPrintableImpl("Q");
+
+  @override
+  KeyPrintableImpl capR(final int context) => const KeyPrintableImpl("R");
+
+  @override
+  KeyPrintableImpl capS(final int context) => const KeyPrintableImpl("S");
+
+  @override
+  KeyPrintableImpl capT(final int context) => const KeyPrintableImpl("T");
+
+  @override
+  KeyPrintableImpl capU(final int context) => const KeyPrintableImpl("U");
+
+  @override
+  KeyPrintableImpl capV(final int context) => const KeyPrintableImpl("V");
+
+  @override
+  KeyPrintableImpl capW(final int context) => const KeyPrintableImpl("W");
+
+  @override
+  KeyPrintableImpl capX(final int context) => const KeyPrintableImpl("X");
+
+  @override
+  KeyPrintableImpl capY(final int context) => const KeyPrintableImpl("Y");
+
+  @override
+  KeyPrintableImpl capZ(final int context) => const KeyPrintableImpl("Z");
+
+  @override
+  KeyPrintableImpl lBra(final int context) => const KeyPrintableImpl("[");
+
+  @override
+  KeyPrintableImpl backslash(final int context) => const KeyPrintableImpl(r"\");
+
+  @override
+  KeyPrintableImpl rBra(final int context) => const KeyPrintableImpl("]");
+
+  @override
+  KeyPrintableImpl caret(final int context) => const KeyPrintableImpl("^");
+
+  @override
+  KeyPrintableImpl underscore(final int context) => const KeyPrintableImpl("_");
+
+  @override
+  KeyPrintableImpl backquote(final int context) => const KeyPrintableImpl("`");
+
+  @override
+  KeyPrintableImpl lowerA(final int context) => const KeyPrintableImpl("a");
+
+  @override
+  KeyPrintableImpl lowerB(final int context) => const KeyPrintableImpl("b");
+
+  @override
+  KeyPrintableImpl lowerC(final int context) => const KeyPrintableImpl("c");
+
+  @override
+  KeyPrintableImpl lowerD(final int context) => const KeyPrintableImpl("d");
+
+  @override
+  KeyPrintableImpl lowerE(final int context) => const KeyPrintableImpl("e");
+
+  @override
+  KeyPrintableImpl lowerF(final int context) => const KeyPrintableImpl("f");
+
+  @override
+  KeyPrintableImpl lowerG(final int context) => const KeyPrintableImpl("g");
+
+  @override
+  KeyPrintableImpl lowerH(final int context) => const KeyPrintableImpl("h");
+
+  @override
+  KeyPrintableImpl lowerI(final int context) => const KeyPrintableImpl("i");
+
+  @override
+  KeyPrintableImpl lowerJ(final int context) => const KeyPrintableImpl("j");
+
+  @override
+  KeyPrintableImpl lowerK(final int context) => const KeyPrintableImpl("k");
+
+  @override
+  KeyPrintableImpl lowerL(final int context) => const KeyPrintableImpl("l");
+
+  @override
+  KeyPrintableImpl lowerM(final int context) => const KeyPrintableImpl("m");
+
+  @override
+  KeyPrintableImpl lowerN(final int context) => const KeyPrintableImpl("n");
+
+  @override
+  KeyPrintableImpl lowerO(final int context) => const KeyPrintableImpl("o");
+
+  @override
+  KeyPrintableImpl lowerP(final int context) => const KeyPrintableImpl("p");
+
+  @override
+  KeyPrintableImpl lowerQ(final int context) => const KeyPrintableImpl("q");
+
+  @override
+  KeyPrintableImpl lowerR(final int context) => const KeyPrintableImpl("r");
+
+  @override
+  KeyPrintableImpl lowerS(final int context) => const KeyPrintableImpl("s");
+
+  @override
+  KeyPrintableImpl lowerT(final int context) => const KeyPrintableImpl("t");
+
+  @override
+  KeyPrintableImpl lowerU(final int context) => const KeyPrintableImpl("u");
+
+  @override
+  KeyPrintableImpl lowerV(final int context) => const KeyPrintableImpl("v");
+
+  @override
+  KeyPrintableImpl lowerW(final int context) => const KeyPrintableImpl("w");
+
+  @override
+  KeyPrintableImpl lowerX(final int context) => const KeyPrintableImpl("x");
+
+  @override
+  KeyPrintableImpl lowerY(final int context) => const KeyPrintableImpl("y");
+
+  @override
+  KeyPrintableImpl lowerZ(final int context) => const KeyPrintableImpl("z");
+
+  @override
+  KeyPrintableImpl lBrace(final int context) => const KeyPrintableImpl("{");
+
+  @override
+  KeyPrintableImpl bar(final int context) => const KeyPrintableImpl("|");
+
+  @override
+  KeyPrintableImpl rBrace(final int context) => const KeyPrintableImpl("}");
+
+  @override
+  KeyPrintableImpl tilde(final int context) => const KeyPrintableImpl("~");
+
+  @override
+  KeyControlImpl del(final int context) => const KeyControlImpl(ControlCharacters.backspace);
+
+  @override
+  KeyPrintableImpl extended(final int context) => KeyPrintableImpl(String.fromCharCode(context));
 }

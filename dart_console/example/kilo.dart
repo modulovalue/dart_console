@@ -5,7 +5,7 @@ import 'package:dart_console/console/impl/console.dart';
 import 'package:dart_console/console/impl/coordinate.dart';
 import 'package:dart_console/console/interface/control_character.dart';
 import 'package:dart_console/console/interface/key.dart';
-import 'package:dart_console/terminal/impl/auto/terminal_lib.dart';
+import 'package:dart_console/terminal/terminal_lib_auto.dart';
 
 void main(
   final List<String> arguments,
@@ -33,7 +33,9 @@ void main(
 const kiloVersion = '0.0.3';
 const kiloTabStopLength = 4;
 
-final console = SneathConsoleImpl(autoSneathTerminal());
+final console = SneathConsoleImpl(
+  terminal: autoSneathTerminal(),
+);
 
 String editedFilename = '';
 bool isFileDirty = false;
@@ -463,8 +465,8 @@ void editorRefreshScreen() {
   editorDrawMessageBar();
   console.cursorPosition.update(
     SneathCoordinateImpl(
-      cursorRow - screenFileRowOffset,
-      cursorRenderCol - screenRowColOffset,
+      row: cursorRow - screenFileRowOffset,
+      col: cursorRenderCol - screenRowColOffset,
     ),
   );
   console.showCursor();
@@ -484,8 +486,8 @@ String? editorPrompt(
   editorRefreshScreen();
   console.cursorPosition.update(
     SneathCoordinateImpl(
-      console.dimensions.height - 1,
-      message.length,
+      row: console.dimensions.height - 1,
+      col: message.length,
     ),
   );
   final response = console.readLine(cancelOnEscape: true, callback: callback);

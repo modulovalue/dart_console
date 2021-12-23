@@ -1,8 +1,7 @@
 import 'dart:io';
 
-import 'package:dart_ansi/ansi.dart';
-
-import '../../terminal/interface/terminal_lib.dart';
+import '../../ansi/ansi.dart';
+import '../../terminal/terminal_lib.dart';
 import '../interface/coordinate.dart';
 import '../interface/cursor_position.dart';
 import 'coordinate.dart';
@@ -19,9 +18,9 @@ class SneathCursorPositionDelegateImpl implements SneathCursorPositionDelegate {
   @override
   SneathCoordinate? get() {
     setRawModeDelegate(true);
-    stdout.write(ansiDeviceStatusReportCursorPosition);
+    stdout.write(controlSequenceIdentifier + '6n');
     // returns a Cursor Position Report result in the form <ESC>[24;80R
-    // which we have to parse apart, unfortunately
+    // which we have to parse apart.
     var result = '';
     var i = 0;
     // avoid infinite loop if we're getting a bad result
@@ -34,7 +33,7 @@ class SneathCursorPositionDelegateImpl implements SneathCursorPositionDelegate {
       i++;
     }
     setRawModeDelegate(false);
-    if (result[0] != ansiEscape) {
+    if (result[0] != "\x1b") {
       print(' result: $result  result.length: ${result.length}');
       return null;
     } else {
@@ -47,7 +46,7 @@ class SneathCursorPositionDelegateImpl implements SneathCursorPositionDelegate {
         final parsedX = int.tryParse(coords[0]);
         final parsedY = int.tryParse(coords[1]);
         if ((parsedX != null) && (parsedY != null)) {
-          return SneathCoordinateImpl(parsedX - 1, parsedY - 1);
+          return SneathCoordinateImpl(row: parsedX - 1, col: parsedY - 1);
         } else {
           print(' coords[0]: ${coords[0]}   coords[1]: ${coords[1]}');
           return null;

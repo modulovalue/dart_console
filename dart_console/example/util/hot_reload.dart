@@ -17,12 +17,17 @@ class HotReloadFactoryImpl {
   void call(
     final void Function() onChange,
   ) =>
-      simple(onChange);
+      simple(
+        onChange,
+      );
 
   void simple(
     final void Function() onChange,
   ) =>
-      debounced(Duration.zero, onChange);
+      debounced(
+        Duration.zero,
+        onChange,
+      );
 
   void debounced(
     final Duration d,
@@ -32,11 +37,11 @@ class HotReloadFactoryImpl {
     HotReloader.create(
       debounceInterval: d,
       onBeforeReload: (final _) {
-        print("Reloading... ${DateTime.now()}");
+        print("Reloading... " + DateTime.now().toString());
         return true;
       },
       onAfterReload: (final _) {
-        print("Reloaded! ${DateTime.now()}");
+        print("Reloaded! " + DateTime.now().toString());
         onChange();
       },
     );

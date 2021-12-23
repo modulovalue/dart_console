@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:dart_ansi/ansi.dart';
 import 'package:dart_console/dc/base.dart';
 import 'package:dart_console/dc/progress.dart';
 import 'package:dart_console/dc/window.dart';
@@ -60,7 +59,7 @@ class DemoWindow extends DCWindow {
         draw();
       },
     );
-    keyboard.bindKey(ansiSpace).listen(
+    keyboard.bindKey(" ").listen(
       (final _) {
         showWelcomeMessage = false;
         draw();

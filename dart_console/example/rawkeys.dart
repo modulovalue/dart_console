@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:dart_console/console/impl/console.dart';
-import 'package:dart_console/terminal/impl/auto/terminal_lib.dart';
+import 'package:dart_console/terminal/terminal_lib_auto.dart';
 
 // Diagnostic test for tracking down differences in raw key input from different
 // platforms.
@@ -28,4 +28,6 @@ void main() {
   }
 }
 
-final console = SneathConsoleImpl(autoSneathTerminal());
+final console = SneathConsoleImpl(
+  terminal: autoSneathTerminal(),
+);

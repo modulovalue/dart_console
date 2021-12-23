@@ -1,5 +1,4 @@
-import 'package:dart_ansi/ansi.dart';
-
+import '../../ansi/ansi.dart';
 import '../alignment.dart';
 import 'control_character.dart';
 import 'cursor_position.dart';
@@ -96,20 +95,20 @@ abstract class SneathConsole {
 
   /// Sets the console foreground color to a named ANSI color.
   ///
-  /// There are 16 named ANSI colors, as defined in the [NamedAnsiColor]
+  /// There are 16 named ANSI colors, as defined in the [AnsiForegroundColor]
   /// enumeration. Depending on the console theme and background color,
   /// some colors may not offer a legible contrast against the background.
   void setForegroundColor(
-    final NamedAnsiColor foreground,
+    final AnsiForegroundColor foreground,
   );
 
   /// Sets the console background color to a named ANSI color.
   ///
-  /// There are 16 named ANSI colors, as defined in the [NamedAnsiColor]
+  /// There are 16 named ANSI colors, as defined in the [AnsiBackgroundColor]
   /// enumeration. Depending on the console theme and background color,
   /// some colors may not offer a legible contrast against the background.
   void setBackgroundColor(
-    final NamedAnsiColor background,
+    final AnsiBackgroundColor background,
   );
 
   /// Sets the foreground to one of 256 extended ANSI colors.
@@ -117,7 +116,9 @@ abstract class SneathConsole {
   /// See https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit for
   /// the full set of colors. You may also run `examples/demo.dart` for this
   /// package, which provides a sample of each color in this list.
-  void setForegroundExtendedColor(AnsiExtendedColorPalette color);
+  void setForegroundExtendedColor(
+    final AnsiExtendedColorPalette color,
+  );
 
   /// Sets the background to one of 256 extended ANSI colors.
   ///

@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:dart_ansi/ansi.dart';
+import 'package:dart_console/ansi/ansi.dart';
 import 'package:dart_console/console/impl/console.dart';
 import 'package:dart_console/console/interface/control_character.dart';
 import 'package:dart_console/console/interface/key.dart';
-import 'package:dart_console/terminal/impl/auto/terminal_lib.dart';
+import 'package:dart_console/terminal/terminal_lib_auto.dart';
 
 void main(
   final List<String> arguments,
@@ -33,7 +33,7 @@ void main(
 }
 
 final SneathConsoleImpl console = SneathConsoleImpl(
-  autoSneathTerminal(),
+  terminal: autoSneathTerminal(),
 );
 
 final Random random = Random();
@@ -72,10 +72,10 @@ final List<List<int>> neighbors = [
 
 void draw() {
   console.setBackgroundColor(
-    const DarkAnsiColorAdapter(NamedAnsiColors.black),
+    const DarkAnsiBackgroundColorAdapter(NamedAnsiColorBlackImpl()),
   );
   console.setForegroundColor(
-    const DarkAnsiColorAdapter(NamedAnsiColors.blue),
+    const DarkAnsiForegroundColorAdapter(NamedAnsiColorBlueImpl()),
   );
   console.clearScreen();
   buffer.clear();
