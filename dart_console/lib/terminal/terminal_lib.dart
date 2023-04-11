@@ -2,26 +2,25 @@
 ///
 /// This class provides raw wrappers for the underlying terminal system calls
 /// that are not available through ANSI mode control sequences, and is not
-/// designed to be called directly. Package consumers should normally use the
-/// `Console` class to call these methods.
+/// designed to be called directly.
 abstract class SneathTerminal {
   /// Returns the height of the terminal window.
-  int getWindowHeight();
+  int get_window_height();
 
   /// Returns the width of the terminal window.
-  int getWindowWidth();
+  int get_window_width();
 
   /// See console 'set rawmode' for an explanation of raw mode.
-  void enableRawMode();
+  void enable_raw_mode();
 
   /// See console 'set rawmode' for an explanation of raw mode.
-  void disableRawMode();
+  void disable_raw_mode();
 
   /// Clears the terminal screen.
-  void clearScreen();
+  void clear_screen();
 
   /// Positions the cursor at the given [column] and [row].
-  void setCursorPosition(
+  void set_cursor_position(
     final int column,
     final int row,
   );

@@ -12,13 +12,13 @@ void main() {
     }
   }();
   final ioctl = libc.lookupFunction<ioctlVoidNative, ioctlVoidDart>('ioctl');
-  final winSizePointer = calloc<WinSize>();
-  final result = ioctl(STDOUT_FILENO, TIOCGWINSZ, winSizePointer.cast());
+  final win_size_pointer = calloc<WinSize>();
+  final result = ioctl(STDOUT_FILENO, TIOCGWINSZ, win_size_pointer.cast());
   print('result is $result');
-  final winSize = winSizePointer.ref;
+  final winSize = win_size_pointer.ref;
   print('Per ioctl, this console window has ${winSize.ws_col} cols and '
       '${winSize.ws_row} rows.');
-  calloc.free(winSizePointer);
+  calloc.free(win_size_pointer);
 }
 
 // int ioctl(int, unsigned long, ...);

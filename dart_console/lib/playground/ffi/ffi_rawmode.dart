@@ -14,7 +14,7 @@ void main() {
   final tcgetattr = libc.lookupFunction<tcgetattrNative, tcgetattrDart>('tcgetattr');
   final tcsetattr = libc.lookupFunction<tcsetattrNative, tcsetattrDart>('tcsetattr');
   final origTermIOS = calloc<TermIOS>();
-  var result = tcgetattr(STDIN_FILENO, origTermIOS);
+  int result = tcgetattr(STDIN_FILENO, origTermIOS);
   print('result is $result');
   print('origTermIOS.c_iflag: 0b${origTermIOS.ref.c_iflag.toRadixString(2)}');
   print('Copying and modifying...');

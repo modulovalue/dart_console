@@ -1,22 +1,23 @@
 import 'dart:async';
 
 /// Calls the given [routine] every [period].
-void callPeriodically({
+void call_periodically({
   required final void Function() routine,
   final Duration period = const Duration(
     milliseconds: 1000,
   ),
-}) =>
-    callPeriodicallyWithHotReload(
-      routine: routine,
-      wrapper: (final a) => a(),
-      period: period,
-    );
+}) {
+  call_periodically_with_hot_reload(
+    routine: routine,
+    wrapper: (final a) => a(),
+    period: period,
+  );
+}
 
-/// Same as [callPeriodically], but meant to be
+/// Same as [call_periodically], but meant to be
 /// used with hot reload. Inject your hot
 /// reload implementation via [wrapper].
-void callPeriodicallyWithHotReload({
+void call_periodically_with_hot_reload({
   required final void Function() routine,
   required final void Function(void Function()) wrapper,
   final Duration period = const Duration(
@@ -30,7 +31,7 @@ void callPeriodicallyWithHotReload({
       _subscription = Stream<dynamic>.periodic(
         period,
       ).listen(
-        (dynamic _) => routine(),
+        (final dynamic _) => routine(),
       );
     },
   );

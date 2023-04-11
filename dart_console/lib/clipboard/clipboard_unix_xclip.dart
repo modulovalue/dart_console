@@ -2,15 +2,26 @@ import 'dart:io';
 
 import 'clipboard.dart';
 
-class SystemClipboardXClipImpl implements SystemClipboard {
-  static const String xclipLocation = '/usr/bin/xclip';
+// region public
+SystemClipboard? clipboard_xclip() {
+  if (File(_SystemClipboardXClipImpl.xclip_location).existsSync()) {
+    return const _SystemClipboardXClipImpl();
+  } else {
+    return null;
+  }
+}
+// endregion
 
-  const SystemClipboardXClipImpl();
+// region internal
+class _SystemClipboardXClipImpl implements SystemClipboard {
+  static const String xclip_location = '/usr/bin/xclip';
+
+  const _SystemClipboardXClipImpl();
 
   @override
-  String getClipboardContent() {
+  String get_clipboard_content() {
     final result = Process.runSync(
-      xclipLocation,
+      xclip_location,
       [
         '-selection',
         'clipboard',
@@ -27,13 +38,15 @@ class SystemClipboardXClipImpl implements SystemClipboard {
   }
 
   @override
-  void setClipboardContent(
+  void set_clipboard_content(
     final String content,
-  ) =>
-      Process.start(xclipLocation, ['-selection', 'clipboard']).then(
-        (final process) {
-          process.stdin.write(content);
-          process.stdin.close();
-        },
-      );
+  ) {
+    Process.start(xclip_location, ['-selection', 'clipboard']).then(
+      (final process) {
+        process.stdin.write(content);
+        process.stdin.close();
+      },
+    );
+  }
 }
+// endregion

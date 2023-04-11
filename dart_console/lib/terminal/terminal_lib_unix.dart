@@ -7,49 +7,79 @@ import 'package:ffi/ffi.dart';
 
 import 'terminal_lib.dart';
 
-SneathTerminalUnixImpl makeSneathTerminalUnix({
+// region public
+SneathTerminal auto_unix_sneath_terminal() {
+  // This assumes that all other platforms that dart
+  // can run on are unix based and have the libs needed
+  // by the unix implementation, which may not always
+  // be the case.
+  if (Platform.isMacOS) {
+    return auto_unix_macos_sneath_terminal();
+  } else {
+    return auto_unix_generic_sneath_terminal();
+  }
+}
+
+SneathTerminal auto_unix_generic_sneath_terminal() {
+  return make_sneath_terminal_unix(
+    stdlib: DynamicLibrary.open('libc.so.6'),
+    IOCTL_TIOCGWINSZ: 0x5413,
+  );
+}
+
+SneathTerminal auto_unix_macos_sneath_terminal() {
+  return make_sneath_terminal_unix(
+    stdlib: DynamicLibrary.open('/usr/lib/libSystem.dylib'),
+    IOCTL_TIOCGWINSZ: 0x40087468,
+  );
+}
+
+_SneathTerminalUnixImpl make_sneath_terminal_unix({
   required final DynamicLibrary stdlib,
   required final int IOCTL_TIOCGWINSZ,
 }) {
-  final _tcgetattr = stdlib.lookupFunction<_TERMIOS_tcgetattrNative, _TERMIOS_tcgetattrDart>(
+  final _tcgetattr =
+      stdlib.lookupFunction<_TERMIOS_tcgetattrNative, _TERMIOS_tcgetattrDart>(
     'tcgetattr',
   );
-  final _origTermIOSPointer = calloc<_TermIOS>();
+  final _orig_term_ios_pointer = calloc<_TermIOS>();
   _tcgetattr(
     _UnistdConstants.STDIN_FILENO,
-    _origTermIOSPointer,
+    _orig_term_ios_pointer,
   );
-  return SneathTerminalUnixImpl._(
+  return _SneathTerminalUnixImpl._(
     stdlib: stdlib,
-    origTermIOSPointer: _origTermIOSPointer,
+    orig_term_ios_pointer: _orig_term_ios_pointer,
     ioctl: stdlib.lookupFunction<_IOCTL_Native, _IOCTL_Dart>(
       'ioctl',
     ),
     tcgetattr: _tcgetattr,
-    tcsetattr: stdlib.lookupFunction<_TERMIOS_tcsetattrNative, _TERMIOS_tcsetattrDart>(
+    tcsetattr:
+        stdlib.lookupFunction<_TERMIOS_tcsetattrNative, _TERMIOS_tcsetattrDart>(
       'tcsetattr',
     ),
     IOCTL_TIOCGWINSZ: IOCTL_TIOCGWINSZ,
   );
 }
+// endregion
 
+// region internal
 /// glibc-dependent library for interrogating and manipulating the console.
 ///
 /// This class provides raw wrappers for the underlying terminal system calls
 /// that are not available through ANSI mode control sequences, and is not
-/// designed to be called directly. Package consumers should normally use the
-/// `Console` class to call these methods.
-class SneathTerminalUnixImpl implements SneathTerminal {
+/// designed to be called directly.
+class _SneathTerminalUnixImpl implements SneathTerminal {
   final DynamicLibrary stdlib;
-  final Pointer<_TermIOS> origTermIOSPointer;
+  final Pointer<_TermIOS> orig_term_ios_pointer;
   final _IOCTL_Dart ioctl;
   final _TERMIOS_tcgetattrDart tcgetattr;
   final _TERMIOS_tcsetattrDart tcsetattr;
   final int IOCTL_TIOCGWINSZ;
 
-  const SneathTerminalUnixImpl._({
+  const _SneathTerminalUnixImpl._({
     required final this.stdlib,
-    required final this.origTermIOSPointer,
+    required final this.orig_term_ios_pointer,
     required final this.ioctl,
     required final this.tcgetattr,
     required final this.tcsetattr,
@@ -57,118 +87,124 @@ class SneathTerminalUnixImpl implements SneathTerminal {
   });
 
   @override
-  int getWindowHeight() {
-    final winSizePointer = calloc<_IOCTL_WinSize>();
+  int get_window_height() {
+    final win_size_pointer = calloc<_IOCTL_WinSize>();
     final result = ioctl(
       _UnistdConstants.STDOUT_FILENO,
       IOCTL_TIOCGWINSZ,
-      winSizePointer.cast(),
+      win_size_pointer.cast(),
     );
     if (result == -1) {
       return -1;
     } else {
-      final winSize = winSizePointer.ref;
-      if (winSize.ws_row == 0) {
+      final win_size = win_size_pointer.ref;
+      if (win_size.ws_row == 0) {
         return -1;
       } else {
-        final result = winSize.ws_row;
-        calloc.free(winSizePointer);
+        final result = win_size.ws_row;
+        calloc.free(win_size_pointer);
         return result;
       }
     }
   }
 
   @override
-  int getWindowWidth() {
-    final winSizePointer = calloc<_IOCTL_WinSize>();
+  int get_window_width() {
+    final win_size_pointer = calloc<_IOCTL_WinSize>();
     final result = ioctl(
       _UnistdConstants.STDOUT_FILENO,
       IOCTL_TIOCGWINSZ,
-      winSizePointer.cast(),
+      win_size_pointer.cast(),
     );
     if (result == -1) {
       return -1;
     } else {
-      final winSize = winSizePointer.ref;
-      if (winSize.ws_col == 0) {
+      final win_size = win_size_pointer.ref;
+      if (win_size.ws_col == 0) {
         return -1;
       } else {
-        final result = winSize.ws_col;
-        calloc.free(winSizePointer);
+        final result = win_size.ws_col;
+        calloc.free(win_size_pointer);
         return result;
       }
     }
   }
 
   @override
-  void enableRawMode() {
-    final _origTermIOS = origTermIOSPointer.ref;
-    final newTermIOSPointer = calloc<_TermIOS>();
-    final newTermIOS = newTermIOSPointer.ref;
-    newTermIOS.c_iflag = _origTermIOS.c_iflag &
+  void enable_raw_mode() {
+    final _orig_term_ios = orig_term_ios_pointer.ref;
+    final new_term_ios_pointer = calloc<_TermIOS>();
+    final new_term_ios = new_term_ios_pointer.ref;
+    new_term_ios.c_iflag = _orig_term_ios.c_iflag &
         ~(_TermiosConstants.BRKINT |
             _TermiosConstants.ICRNL |
             _TermiosConstants.INPCK |
             _TermiosConstants.ISTRIP |
             _TermiosConstants.IXON);
-    newTermIOS.c_oflag = _origTermIOS.c_oflag & ~_TermiosConstants.OPOST;
-    newTermIOS.c_cflag = _origTermIOS.c_cflag | _TermiosConstants.CS8;
-    newTermIOS.c_lflag = _origTermIOS.c_lflag &
-        ~(_TermiosConstants.ECHO | _TermiosConstants.ICANON | _TermiosConstants.IEXTEN | _TermiosConstants.ISIG);
-    newTermIOS.c_cc0 = _origTermIOS.c_cc0;
-    newTermIOS.c_cc1 = _origTermIOS.c_cc1;
-    newTermIOS.c_cc2 = _origTermIOS.c_cc2;
-    newTermIOS.c_cc3 = _origTermIOS.c_cc3;
-    newTermIOS.c_cc4 = _origTermIOS.c_cc4;
-    newTermIOS.c_cc5 = _origTermIOS.c_cc5;
-    newTermIOS.c_cc6 = _origTermIOS.c_cc6;
-    newTermIOS.c_cc7 = _origTermIOS.c_cc7;
-    newTermIOS.c_cc8 = _origTermIOS.c_cc8;
-    newTermIOS.c_cc9 = _origTermIOS.c_cc9;
-    newTermIOS.c_cc10 = _origTermIOS.c_cc10;
-    newTermIOS.c_cc11 = _origTermIOS.c_cc11;
-    newTermIOS.c_cc12 = _origTermIOS.c_cc12;
-    newTermIOS.c_cc13 = _origTermIOS.c_cc13;
-    newTermIOS.c_cc14 = _origTermIOS.c_cc14;
-    newTermIOS.c_cc15 = _origTermIOS.c_cc15;
-    newTermIOS.c_cc16 = 0; // VMIN -- return each byte, or 0 for timeout
-    newTermIOS.c_cc17 = 1; // VTIME -- 100ms timeout (unit is 1/10s)
-    newTermIOS.c_cc18 = _origTermIOS.c_cc18;
-    newTermIOS.c_cc19 = _origTermIOS.c_cc19;
-    newTermIOS.c_ispeed = _origTermIOS.c_ispeed;
-    newTermIOS.c_oflag = _origTermIOS.c_ospeed;
+    new_term_ios.c_oflag = _orig_term_ios.c_oflag & ~_TermiosConstants.OPOST;
+    new_term_ios.c_cflag = _orig_term_ios.c_cflag | _TermiosConstants.CS8;
+    new_term_ios.c_lflag = _orig_term_ios.c_lflag &
+        ~(_TermiosConstants.ECHO |
+            _TermiosConstants.ICANON |
+            _TermiosConstants.IEXTEN |
+            _TermiosConstants.ISIG);
+    new_term_ios.c_cc0 = _orig_term_ios.c_cc0;
+    new_term_ios.c_cc1 = _orig_term_ios.c_cc1;
+    new_term_ios.c_cc2 = _orig_term_ios.c_cc2;
+    new_term_ios.c_cc3 = _orig_term_ios.c_cc3;
+    new_term_ios.c_cc4 = _orig_term_ios.c_cc4;
+    new_term_ios.c_cc5 = _orig_term_ios.c_cc5;
+    new_term_ios.c_cc6 = _orig_term_ios.c_cc6;
+    new_term_ios.c_cc7 = _orig_term_ios.c_cc7;
+    new_term_ios.c_cc8 = _orig_term_ios.c_cc8;
+    new_term_ios.c_cc9 = _orig_term_ios.c_cc9;
+    new_term_ios.c_cc10 = _orig_term_ios.c_cc10;
+    new_term_ios.c_cc11 = _orig_term_ios.c_cc11;
+    new_term_ios.c_cc12 = _orig_term_ios.c_cc12;
+    new_term_ios.c_cc13 = _orig_term_ios.c_cc13;
+    new_term_ios.c_cc14 = _orig_term_ios.c_cc14;
+    new_term_ios.c_cc15 = _orig_term_ios.c_cc15;
+    new_term_ios.c_cc16 = 0; // VMIN -- return each byte, or 0 for timeout
+    new_term_ios.c_cc17 = 1; // VTIME -- 100ms timeout (unit is 1/10s)
+    new_term_ios.c_cc18 = _orig_term_ios.c_cc18;
+    new_term_ios.c_cc19 = _orig_term_ios.c_cc19;
+    new_term_ios.c_ispeed = _orig_term_ios.c_ispeed;
+    new_term_ios.c_oflag = _orig_term_ios.c_ospeed;
     tcsetattr(
       _UnistdConstants.STDIN_FILENO,
       _TermiosConstants.TCSAFLUSH,
-      newTermIOSPointer,
+      new_term_ios_pointer,
     );
-    calloc.free(newTermIOSPointer);
+    calloc.free(new_term_ios_pointer);
   }
 
   @override
-  void disableRawMode() {
-    if (nullptr != origTermIOSPointer.cast()) {
+  void disable_raw_mode() {
+    if (nullptr != orig_term_ios_pointer.cast()) {
       tcsetattr(
         _UnistdConstants.STDIN_FILENO,
         _TermiosConstants.TCSAFLUSH,
-        origTermIOSPointer,
+        orig_term_ios_pointer,
       );
     }
   }
 
   @override
-  void clearScreen() => stdout.write(
-        '\x1b' + "[" + '2J' + '\x1b' + "[" + 'H',
-      );
+  void clear_screen() {
+    stdout.write(
+      '\x1b' + "[" + '2J' + '\x1b' + "[" + 'H',
+    );
+  }
 
   @override
-  void setCursorPosition(
+  void set_cursor_position(
     final int col,
     final int row,
-  ) =>
-      stdout.write(
-        '\x1b' + "[" + (row + 1).toString() + ";" + (col + 1).toString() + "H",
-      );
+  ) {
+    stdout.write(
+      '\x1b' + "[" + (row + 1).toString() + ";" + (col + 1).toString() + "H",
+    );
+  }
 }
 
 // struct winsize {
@@ -321,15 +357,20 @@ class _TermIOS extends Struct {
 }
 
 // int tcgetattr(int, struct termios *);
-typedef _TERMIOS_tcgetattrNative = Int32 Function(Int32 fildes, Pointer<_TermIOS> termios);
-typedef _TERMIOS_tcgetattrDart = int Function(int fildes, Pointer<_TermIOS> termios);
+typedef _TERMIOS_tcgetattrNative = Int32 Function(
+    Int32 fildes, Pointer<_TermIOS> termios);
+typedef _TERMIOS_tcgetattrDart = int Function(
+    int fildes, Pointer<_TermIOS> termios);
 
 // int tcsetattr(int, int, const struct termios *);
-typedef _TERMIOS_tcsetattrNative = Int32 Function(Int32 fildes, Int32 optional_actions, Pointer<_TermIOS> termios);
-typedef _TERMIOS_tcsetattrDart = int Function(int fildes, int optional_actions, Pointer<_TermIOS> termios);
+typedef _TERMIOS_tcsetattrNative = Int32 Function(
+    Int32 fildes, Int32 optional_actions, Pointer<_TermIOS> termios);
+typedef _TERMIOS_tcsetattrDart = int Function(
+    int fildes, int optional_actions, Pointer<_TermIOS> termios);
 
 abstract class _UnistdConstants {
   static const int STDIN_FILENO = 0;
   static const int STDOUT_FILENO = 1;
 // static const int STDERR_FILENO = 2;
 }
+// endregion

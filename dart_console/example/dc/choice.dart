@@ -3,7 +3,9 @@ import 'package:dart_console/dc/prompt.dart';
 
 // Select a multiple choice option.
 void main() {
-  final console = DCConsole(DCStdioConsoleAdapter());
+  final console = DCConsole(
+    raw_console: DCStdioConsoleAdapter(),
+  );
   final chooser = DCChooser<String>(
     console,
     ['A', 'B', 'C', 'D'],

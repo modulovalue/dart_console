@@ -10,15 +10,15 @@ class DCTimeDisplay {
   Timer? _updateTimer;
   final DCConsole console;
 
-  DCTimeDisplay(
-    final this.console,
-  );
+  DCTimeDisplay({
+    required final this.console,
+  });
 
   /// Starts the Timer
   void start([
     final int place = 1,
   ]) {
-    console.rawConsole.echoMode = false;
+    console.raw_console.echo_mode = false;
     _watch = Stopwatch();
     _updateTimer = Timer.periodic(
       const Duration(milliseconds: 10),
@@ -31,7 +31,7 @@ class DCTimeDisplay {
 
   /// Stops the Timer
   void stop() {
-    console.rawConsole.echoMode = true;
+    console.raw_console.echo_mode = true;
     if (_watch != null) {
       _watch!.stop();
     }
@@ -48,13 +48,13 @@ class DCTimeDisplay {
       if (_isStart) {
         final msg = '(${_watch!.elapsed.inSeconds}s)';
         _lastMsg = msg;
-        console.rawConsole.write(msg);
+        console.raw_console.write(msg);
         _isStart = false;
       } else {
-        console.moveCursorBack(_lastMsg.length);
+        console.move_cursor_back(_lastMsg.length);
         final msg = '(${(_watch!.elapsed.inMilliseconds / 1000).toStringAsFixed(place)}s)';
         _lastMsg = msg;
-        console.rawConsole.write(msg);
+        console.raw_console.write(msg);
       }
     }
   }

@@ -1,32 +1,32 @@
 import 'dart:io';
 
-import 'package:dart_console/console/impl/console.dart';
-import 'package:dart_console/console/interface/control_character.dart';
+import 'package:dart_console/console/impl.dart';
+import 'package:dart_console/console/interface.dart';
 import 'package:dart_console/terminal/terminal_lib_auto.dart';
 
 void main() {
-  console.writeLine('This sample demonstrates keyboard input. Press any key including control keys');
-  console.writeLine('such as arrow keys, page up/down, home, end etc. to see it echoed to the');
-  console.writeLine('screen. Press Ctrl+Q to end the sample.');
-  var key = console.readKey();
+  console.write_line('This sample demonstrates keyboard input. Press any key including control keys');
+  console.write_line('such as arrow keys, page up/down, home, end etc. to see it echoed to the');
+  console.write_line('screen. Press Ctrl+Q to end the sample.');
+  Key key = console.read_key();
   for (;;) {
     key.match(
       printable: print,
-      control: (key) {
-        if (key.controlChar == ControlCharacters.ctrlQ) {
-          console.clearScreen();
-          console.resetCursorPosition();
-          console.rawMode = false;
+      control: (final key) {
+        if (key.control_char == ControlCharacters.ctrlQ) {
+          console.clear_screen();
+          console.reset_cursor_position();
+          console.set_raw_mode(false);
           exit(0);
         } else {
           print(key);
         }
       },
     );
-    key = console.readKey();
+    key = console.read_key();
   }
 }
 
 final SneathConsoleImpl console = SneathConsoleImpl(
-  terminal: autoSneathTerminal(),
+  terminal: auto_sneath_terminal(),
 );

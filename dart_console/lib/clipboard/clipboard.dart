@@ -1,7 +1,7 @@
 abstract class SystemClipboard {
-  String getClipboardContent();
+  String get_clipboard_content();
 
-  void setClipboardContent(
+  void set_clipboard_content(
     final String content,
   );
 }

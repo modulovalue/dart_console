@@ -26,7 +26,7 @@ class DCShellPrompt {
       if (_stop) {
         _stop = false;
       } else {
-        DCPrompter(console, message).prompt().then(
+        DCPrompter(console: console, message: message,).prompt().then(
           (final it) {
             controller.add(it);
             Future<void>(doRead);
@@ -60,14 +60,14 @@ class DCChooser<T> {
 
   T chooseSync() {
     final buff = StringBuffer();
-    var i = -1;
+    int i = -1;
     for (final choice in choices) {
       i++;
       buff.writeln(formatter(choice, i + 1));
     }
     buff.write(message);
     for (;;) {
-      final input = DCPrompter(console, buff.toString()).promptSync();
+      final input = DCPrompter(console: console, message: buff.toString(),).prompt_sync();
       final result = _parseInteger(input ?? '');
       if (result == null && input != null) {
         final exists = choices
@@ -97,7 +97,7 @@ class DCChooser<T> {
 
   Future<dynamic> choose() {
     final buff = StringBuffer();
-    var i = -1;
+    int i = -1;
     for (final choice in choices) {
       i++;
       buff.writeln(formatter(choice, i + 1));
@@ -108,9 +108,9 @@ class DCChooser<T> {
     process = (final String input) {
       final result = _parseInteger(input);
       if (result == null) {
-        final exists = choices.map((it) => it.toString().trim().toLowerCase()).contains(input.trim().toLowerCase());
+        final exists = choices.map((final it) => it.toString().trim().toLowerCase()).contains(input.trim().toLowerCase());
         if (exists) {
-          final val = choices.firstWhere((it) {
+          final val = choices.firstWhere((final it) {
             return it.toString().trim().toLowerCase() == input.trim().toLowerCase();
           });
           completer.complete(val);
@@ -120,17 +120,23 @@ class DCChooser<T> {
       T choice;
       try {
         if (result == null) {
-          DCPrompter(console, buff.toString()).prompt().then(process);
+          DCPrompter(console: console, message: buff.toString(),).prompt().then(process);
         } else {
           choice = choices[result - 1];
           completer.complete(choice);
         }
         // ignore: avoid_catches_without_on_clauses
       } catch (e) {
-        DCPrompter(console, buff.toString()).prompt().then(process);
+        DCPrompter(
+          console: console,
+          message: buff.toString(),
+        ).prompt().then(process);
       }
     };
-    DCPrompter(console, buff.toString()).prompt().then(process);
+    DCPrompter(
+      console: console,
+      message: buff.toString(),
+    ).prompt().then(process);
     return completer.future;
   }
 }
@@ -140,9 +146,9 @@ class DCPrompter {
   final bool secret;
   final DCConsole console;
 
-  const DCPrompter(
-    final this.console,
-    final this.message, {
+  const DCPrompter({
+    required final this.console,
+    required final this.message,
     final this.secret = false,
   });
 
@@ -162,10 +168,10 @@ class DCPrompter {
   /// You can add more to the list of positive responses using the [positive] argument.
   ///
   /// The input will be changed to lowercase and then checked.
-  bool? askSync({
+  bool? ask_sync({
     final List<String> positive = const [],
   }) {
-    final answer = promptSync();
+    final answer = prompt_sync();
     if (answer == null) {
       // ignore: avoid_returning_null
       return null;
@@ -177,7 +183,7 @@ class DCPrompter {
   Future<bool> ask({
     final List<String> positive = const [],
   }) {
-    return prompt().then((answer) {
+    return prompt().then((final answer) {
       return DC_YES_RESPONSES.contains(answer.toLowerCase()) || positive.contains(message.toLowerCase());
     });
   }
@@ -193,17 +199,17 @@ class DCPrompter {
     'yerp',
   ];
 
-  String? promptSync({
+  String? prompt_sync({
     final bool Function(String response)? checker,
   }) {
     for (;;) {
-      console.rawConsole.write(message);
+      console.raw_console.write(message);
       if (secret) {
-        console.rawConsole.echoMode = false;
+        console.raw_console.echo_mode = false;
       }
-      final response = console.rawConsole.read();
+      final response = console.raw_console.read();
       if (secret) {
-        console.rawConsole.echoMode = true;
+        console.raw_console.echo_mode = true;
         print('');
       }
       if (checker != null && response != null) {
@@ -222,14 +228,14 @@ class DCPrompter {
     final completer = Completer<String>();
     late void Function() doAsk;
     doAsk = () {
-      console.rawConsole.write(message);
+      console.raw_console.write(message);
       Future(() {
         if (secret) {
-          console.rawConsole.echoMode = false;
+          console.raw_console.echo_mode = false;
         }
-        final response = console.rawConsole.read();
+        final response = console.raw_console.read();
         if (secret) {
-          console.rawConsole.echoMode = true;
+          console.raw_console.echo_mode = true;
         }
         if (checker != null && response != null && !checker(response)) {
           doAsk();
@@ -243,19 +249,20 @@ class DCPrompter {
   }
 }
 
-Future<String> readInput(
+Future<String> read_input(
   final DCConsole console,
   final String message, {
   final bool secret = false,
   final bool Function(String response)? checker,
-}) =>
-    DCPrompter(
-      console,
-      message,
-      secret: secret,
-    ).prompt(
-      checker: checker,
-    );
+}) {
+  return DCPrompter(
+    console: console,
+    message: message,
+    secret: secret,
+  ).prompt(
+    checker: checker,
+  );
+}
 
 int? _parseInteger(
   final String input,

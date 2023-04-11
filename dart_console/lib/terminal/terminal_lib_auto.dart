@@ -1,13 +1,13 @@
 import 'dart:io';
 
 import 'terminal_lib.dart';
-import 'terminal_lib_auto_unix.dart';
-import 'terminal_lib_auto_windows.dart';
+import 'terminal_lib_unix.dart';
+import 'terminal_lib_windows.dart';
 
-SneathTerminal autoSneathTerminal() {
+SneathTerminal auto_sneath_terminal() {
   if (Platform.isWindows) {
-    return autoWindowsSneathTerminal();
+    return auto_windows_sneath_terminal();
   } else {
-    return autoUnixSneathTerminal();
+    return auto_unix_sneath_terminal();
   }
 }

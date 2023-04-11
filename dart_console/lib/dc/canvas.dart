@@ -5,7 +5,7 @@ abstract class DCCanvas {
 
   int get height;
 
-  void setPixel(
+  void set_pixel(
     final int x,
     final int y,
     final DCPixelSpec spec,
@@ -14,10 +14,14 @@ abstract class DCCanvas {
 
 class DCConsoleCanvas extends DCCanvas {
   @override
-  int get width => console.columns;
+  int get width {
+    return console.columns;
+  }
 
   @override
-  int get height => console.rows;
+  int get height {
+    return console.rows;
+  }
 
   late List<List<DCPixelSpec>> pixels;
 
@@ -34,7 +38,7 @@ class DCConsoleCanvas extends DCCanvas {
   }
 
   @override
-  void setPixel(
+  void set_pixel(
     final int x,
     final int y,
     final DCPixelSpec spec,
@@ -43,15 +47,15 @@ class DCConsoleCanvas extends DCCanvas {
   }
 
   void flush() {
-    console.moveCursor(
+    console.move_cursor(
       column: 0,
       row: 0,
     );
-    for (var y = 0; y < height; y++) {
-      for (var x = 0; x < width; x++) {
+    for (int y = 0; y < height; y++) {
+      for (int x = 0; x < width; x++) {
         final pixel = pixels[x][y];
-        console.rawConsole.write('\x1b[48;5;${pixel.color}m ');
-        console.moveCursor(column: x, row: y);
+        console.raw_console.write('\x1b[48;5;${pixel.color}m ');
+        console.move_cursor(column: x, row: y);
       }
     }
   }

@@ -1,157 +1,6 @@
-class NamedAnsiColorBlackImpl implements AnsiBasicColor {
-  const NamedAnsiColorBlackImpl();
+// TODO needs major cleanup into interface + impl
 
-  @override
-  String get paletteNumberTribit => "0";
-
-  @override
-  String get name => "black";
-}
-
-class NamedAnsiColorRedImpl implements AnsiBasicColor {
-  const NamedAnsiColorRedImpl();
-
-  @override
-  String get paletteNumberTribit => "1";
-
-  @override
-  String get name => "red";
-}
-
-class NamedAnsiColorGreenImpl implements AnsiBasicColor {
-  const NamedAnsiColorGreenImpl();
-
-  @override
-  String get paletteNumberTribit => "2";
-
-  @override
-  String get name => "green";
-}
-
-class NamedAnsiColorYellowImpl implements AnsiBasicColor {
-  const NamedAnsiColorYellowImpl();
-
-  @override
-  String get paletteNumberTribit => "3";
-
-  @override
-  String get name => "yellow";
-}
-
-class NamedAnsiColorBlueImpl implements AnsiBasicColor {
-  const NamedAnsiColorBlueImpl();
-
-  @override
-  String get paletteNumberTribit => "4";
-
-  @override
-  String get name => "blue";
-}
-
-class NamedAnsiColorMagentaImpl implements AnsiBasicColor {
-  const NamedAnsiColorMagentaImpl();
-
-  @override
-  String get paletteNumberTribit => "5";
-
-  @override
-  String get name => "magenta";
-}
-
-class NamedAnsiColorCyanImpl implements AnsiBasicColor {
-  const NamedAnsiColorCyanImpl();
-
-  @override
-  String get paletteNumberTribit => "6";
-
-  @override
-  String get name => "cyan";
-}
-
-class NamedAnsiColorWhiteImpl implements AnsiBasicColor {
-  const NamedAnsiColorWhiteImpl();
-
-  @override
-  String get paletteNumberTribit => "7";
-
-  @override
-  String get name => "white";
-}
-
-abstract class AnsiBasicColor {
-  String get paletteNumberTribit;
-
-  String get name;
-}
-
-class DarkAnsiBackgroundColorAdapter implements AnsiBackgroundColor {
-  final AnsiBasicColor color;
-
-  const DarkAnsiBackgroundColorAdapter(
-    final this.color,
-  );
-
-  @override
-  String get backgroundColorCode => "4" + color.paletteNumberTribit;
-
-  @override
-  String get name => color.name;
-}
-
-class BrightAnsiBackgroundColorAdapter implements AnsiBackgroundColor {
-  final AnsiBasicColor color;
-
-  const BrightAnsiBackgroundColorAdapter(
-    final this.color,
-  );
-
-  @override
-  String get backgroundColorCode => "10" + color.paletteNumberTribit;
-
-  @override
-  String get name => "bright " + color.name;
-}
-
-abstract class AnsiBackgroundColor {
-  String get backgroundColorCode;
-
-  String get name;
-}
-
-class DarkAnsiForegroundColorAdapter implements AnsiForegroundColor {
-  final AnsiBasicColor color;
-
-  const DarkAnsiForegroundColorAdapter(
-    final this.color,
-  );
-
-  @override
-  String get foregroundColorCode => "3" + color.paletteNumberTribit;
-
-  @override
-  String get name => color.name;
-}
-
-class BrightAnsiForegroundColorAdapter implements AnsiForegroundColor {
-  final AnsiBasicColor color;
-
-  const BrightAnsiForegroundColorAdapter(
-    final this.color,
-  );
-
-  @override
-  String get foregroundColorCode => "9" + color.paletteNumberTribit;
-
-  @override
-  String get name => "bright " + color.name;
-}
-
-abstract class AnsiForegroundColor {
-  String get foregroundColorCode;
-
-  String get name;
-}
-
+// region public
 /// See https://jonasjacek.github.io/colors/
 abstract class AnsiExtendedColors {
   static const AnsiExtendedColorPaletteRawImpl Black = AnsiExtendedColorPaletteRawImpl(0, "Black");
@@ -204,7 +53,7 @@ abstract class AnsiExtendedColors {
   static const AnsiExtendedColorPaletteRawImpl SpringGreen2_2 = AnsiExtendedColorPaletteRawImpl(47, "SpringGreen2_2");
   static const AnsiExtendedColorPaletteRawImpl SpringGreen1 = AnsiExtendedColorPaletteRawImpl(48, "SpringGreen1");
   static const AnsiExtendedColorPaletteRawImpl MediumSpringGreen =
-      AnsiExtendedColorPaletteRawImpl(49, "MediumSpringGreen");
+  AnsiExtendedColorPaletteRawImpl(49, "MediumSpringGreen");
   static const AnsiExtendedColorPaletteRawImpl Cyan2 = AnsiExtendedColorPaletteRawImpl(50, "Cyan2");
   static const AnsiExtendedColorPaletteRawImpl Cyan1 = AnsiExtendedColorPaletteRawImpl(51, "Cyan1");
   static const AnsiExtendedColorPaletteRawImpl DarkRed = AnsiExtendedColorPaletteRawImpl(52, "DarkRed");
@@ -263,15 +112,15 @@ abstract class AnsiExtendedColors {
   static const AnsiExtendedColorPaletteRawImpl LightSlateBlue = AnsiExtendedColorPaletteRawImpl(105, "LightSlateBlue");
   static const AnsiExtendedColorPaletteRawImpl Yellow4_2 = AnsiExtendedColorPaletteRawImpl(106, "Yellow4_2");
   static const AnsiExtendedColorPaletteRawImpl DarkOliveGreen3 =
-      AnsiExtendedColorPaletteRawImpl(107, "DarkOliveGreen3");
+  AnsiExtendedColorPaletteRawImpl(107, "DarkOliveGreen3");
   static const AnsiExtendedColorPaletteRawImpl DarkSeaGreen = AnsiExtendedColorPaletteRawImpl(108, "DarkSeaGreen");
   static const AnsiExtendedColorPaletteRawImpl LightSkyBlue3 = AnsiExtendedColorPaletteRawImpl(109, "LightSkyBlue3");
   static const AnsiExtendedColorPaletteRawImpl LightSkyBlue3_2 =
-      AnsiExtendedColorPaletteRawImpl(110, "LightSkyBlue3_2");
+  AnsiExtendedColorPaletteRawImpl(110, "LightSkyBlue3_2");
   static const AnsiExtendedColorPaletteRawImpl SkyBlue2 = AnsiExtendedColorPaletteRawImpl(111, "SkyBlue2");
   static const AnsiExtendedColorPaletteRawImpl Chartreuse2_2 = AnsiExtendedColorPaletteRawImpl(112, "Chartreuse2_2");
   static const AnsiExtendedColorPaletteRawImpl DarkOliveGreen3_2 =
-      AnsiExtendedColorPaletteRawImpl(113, "DarkOliveGreen3_2");
+  AnsiExtendedColorPaletteRawImpl(113, "DarkOliveGreen3_2");
   static const AnsiExtendedColorPaletteRawImpl PaleGreen3_2 = AnsiExtendedColorPaletteRawImpl(114, "PaleGreen3_2");
   static const AnsiExtendedColorPaletteRawImpl DarkSeaGreen3 = AnsiExtendedColorPaletteRawImpl(115, "DarkSeaGreen3");
   static const AnsiExtendedColorPaletteRawImpl DarkSlateGray3 = AnsiExtendedColorPaletteRawImpl(116, "DarkSlateGray3");
@@ -285,7 +134,7 @@ abstract class AnsiExtendedColors {
   static const AnsiExtendedColorPaletteRawImpl Red3 = AnsiExtendedColorPaletteRawImpl(124, "Red3");
   static const AnsiExtendedColorPaletteRawImpl DeepPink4_3 = AnsiExtendedColorPaletteRawImpl(125, "DeepPink4_3");
   static const AnsiExtendedColorPaletteRawImpl MediumVioletRed =
-      AnsiExtendedColorPaletteRawImpl(126, "MediumVioletRed");
+  AnsiExtendedColorPaletteRawImpl(126, "MediumVioletRed");
   static const AnsiExtendedColorPaletteRawImpl Magenta3 = AnsiExtendedColorPaletteRawImpl(127, "Magenta3");
   static const AnsiExtendedColorPaletteRawImpl DarkViolet_2 = AnsiExtendedColorPaletteRawImpl(128, "DarkViolet_2");
   static const AnsiExtendedColorPaletteRawImpl Purple_3 = AnsiExtendedColorPaletteRawImpl(129, "Purple_3");
@@ -300,29 +149,29 @@ abstract class AnsiExtendedColors {
   static const AnsiExtendedColorPaletteRawImpl RosyBrown = AnsiExtendedColorPaletteRawImpl(138, "RosyBrown");
   static const AnsiExtendedColorPaletteRawImpl Grey63 = AnsiExtendedColorPaletteRawImpl(139, "Grey63");
   static const AnsiExtendedColorPaletteRawImpl MediumPurple2_2 =
-      AnsiExtendedColorPaletteRawImpl(140, "MediumPurple2_2");
+  AnsiExtendedColorPaletteRawImpl(140, "MediumPurple2_2");
   static const AnsiExtendedColorPaletteRawImpl MediumPurple1 = AnsiExtendedColorPaletteRawImpl(141, "MediumPurple1");
   static const AnsiExtendedColorPaletteRawImpl Gold3 = AnsiExtendedColorPaletteRawImpl(142, "Gold3");
   static const AnsiExtendedColorPaletteRawImpl DarkKhaki = AnsiExtendedColorPaletteRawImpl(143, "DarkKhaki");
   static const AnsiExtendedColorPaletteRawImpl NavajoWhite3 = AnsiExtendedColorPaletteRawImpl(144, "NavajoWhite3");
   static const AnsiExtendedColorPaletteRawImpl Grey69 = AnsiExtendedColorPaletteRawImpl(145, "Grey69");
   static const AnsiExtendedColorPaletteRawImpl LightSteelBlue3 =
-      AnsiExtendedColorPaletteRawImpl(146, "LightSteelBlue3");
+  AnsiExtendedColorPaletteRawImpl(146, "LightSteelBlue3");
   static const AnsiExtendedColorPaletteRawImpl LightSteelBlue = AnsiExtendedColorPaletteRawImpl(147, "LightSteelBlue");
   static const AnsiExtendedColorPaletteRawImpl Yellow3 = AnsiExtendedColorPaletteRawImpl(148, "Yellow3");
   static const AnsiExtendedColorPaletteRawImpl DarkOliveGreen3_3 =
-      AnsiExtendedColorPaletteRawImpl(149, "DarkOliveGreen3_3");
+  AnsiExtendedColorPaletteRawImpl(149, "DarkOliveGreen3_3");
   static const AnsiExtendedColorPaletteRawImpl DarkSeaGreen3_2 =
-      AnsiExtendedColorPaletteRawImpl(150, "DarkSeaGreen3_2");
+  AnsiExtendedColorPaletteRawImpl(150, "DarkSeaGreen3_2");
   static const AnsiExtendedColorPaletteRawImpl DarkSeaGreen2 = AnsiExtendedColorPaletteRawImpl(151, "DarkSeaGreen2");
   static const AnsiExtendedColorPaletteRawImpl LightCyan3 = AnsiExtendedColorPaletteRawImpl(152, "LightCyan3");
   static const AnsiExtendedColorPaletteRawImpl LightSkyBlue1 = AnsiExtendedColorPaletteRawImpl(153, "LightSkyBlue1");
   static const AnsiExtendedColorPaletteRawImpl GreenYellow = AnsiExtendedColorPaletteRawImpl(154, "GreenYellow");
   static const AnsiExtendedColorPaletteRawImpl DarkOliveGreen2 =
-      AnsiExtendedColorPaletteRawImpl(155, "DarkOliveGreen2");
+  AnsiExtendedColorPaletteRawImpl(155, "DarkOliveGreen2");
   static const AnsiExtendedColorPaletteRawImpl PaleGreen1_2 = AnsiExtendedColorPaletteRawImpl(156, "PaleGreen1_2");
   static const AnsiExtendedColorPaletteRawImpl DarkSeaGreen2_2 =
-      AnsiExtendedColorPaletteRawImpl(157, "DarkSeaGreen2_2");
+  AnsiExtendedColorPaletteRawImpl(157, "DarkSeaGreen2_2");
   static const AnsiExtendedColorPaletteRawImpl DarkSeaGreen1 = AnsiExtendedColorPaletteRawImpl(158, "DarkSeaGreen1");
   static const AnsiExtendedColorPaletteRawImpl PaleTurquoise1 = AnsiExtendedColorPaletteRawImpl(159, "PaleTurquoise1");
   static const AnsiExtendedColorPaletteRawImpl Red3_2 = AnsiExtendedColorPaletteRawImpl(160, "Red3_2");
@@ -345,7 +194,7 @@ abstract class AnsiExtendedColors {
   static const AnsiExtendedColorPaletteRawImpl Violet = AnsiExtendedColorPaletteRawImpl(177, "Violet");
   static const AnsiExtendedColorPaletteRawImpl Gold3_2 = AnsiExtendedColorPaletteRawImpl(178, "Gold3_2");
   static const AnsiExtendedColorPaletteRawImpl LightGoldenrod3 =
-      AnsiExtendedColorPaletteRawImpl(179, "LightGoldenrod3");
+  AnsiExtendedColorPaletteRawImpl(179, "LightGoldenrod3");
   static const AnsiExtendedColorPaletteRawImpl Tan = AnsiExtendedColorPaletteRawImpl(180, "Tan");
   static const AnsiExtendedColorPaletteRawImpl MistyRose3 = AnsiExtendedColorPaletteRawImpl(181, "MistyRose3");
   static const AnsiExtendedColorPaletteRawImpl Thistle3 = AnsiExtendedColorPaletteRawImpl(182, "Thistle3");
@@ -353,18 +202,18 @@ abstract class AnsiExtendedColors {
   static const AnsiExtendedColorPaletteRawImpl Yellow3_2 = AnsiExtendedColorPaletteRawImpl(184, "Yellow3_2");
   static const AnsiExtendedColorPaletteRawImpl Khaki3 = AnsiExtendedColorPaletteRawImpl(185, "Khaki3");
   static const AnsiExtendedColorPaletteRawImpl LightGoldenrod2 =
-      AnsiExtendedColorPaletteRawImpl(186, "LightGoldenrod2");
+  AnsiExtendedColorPaletteRawImpl(186, "LightGoldenrod2");
   static const AnsiExtendedColorPaletteRawImpl LightYellow3 = AnsiExtendedColorPaletteRawImpl(187, "LightYellow3");
   static const AnsiExtendedColorPaletteRawImpl Grey84 = AnsiExtendedColorPaletteRawImpl(188, "Grey84");
   static const AnsiExtendedColorPaletteRawImpl LightSteelBlue1 =
-      AnsiExtendedColorPaletteRawImpl(189, "LightSteelBlue1");
+  AnsiExtendedColorPaletteRawImpl(189, "LightSteelBlue1");
   static const AnsiExtendedColorPaletteRawImpl Yellow2 = AnsiExtendedColorPaletteRawImpl(190, "Yellow2");
   static const AnsiExtendedColorPaletteRawImpl DarkOliveGreen1 =
-      AnsiExtendedColorPaletteRawImpl(191, "DarkOliveGreen1");
+  AnsiExtendedColorPaletteRawImpl(191, "DarkOliveGreen1");
   static const AnsiExtendedColorPaletteRawImpl DarkOliveGreen1_2 =
-      AnsiExtendedColorPaletteRawImpl(192, "DarkOliveGreen1_2");
+  AnsiExtendedColorPaletteRawImpl(192, "DarkOliveGreen1_2");
   static const AnsiExtendedColorPaletteRawImpl DarkSeaGreen1_2 =
-      AnsiExtendedColorPaletteRawImpl(193, "DarkSeaGreen1_2");
+  AnsiExtendedColorPaletteRawImpl(193, "DarkSeaGreen1_2");
   static const AnsiExtendedColorPaletteRawImpl Honeydew2 = AnsiExtendedColorPaletteRawImpl(194, "Honeydew2");
   static const AnsiExtendedColorPaletteRawImpl LightCyan1 = AnsiExtendedColorPaletteRawImpl(195, "LightCyan1");
   static const AnsiExtendedColorPaletteRawImpl Red1 = AnsiExtendedColorPaletteRawImpl(196, "Red1");
@@ -379,7 +228,7 @@ abstract class AnsiExtendedColors {
   static const AnsiExtendedColorPaletteRawImpl HotPink = AnsiExtendedColorPaletteRawImpl(205, "HotPink");
   static const AnsiExtendedColorPaletteRawImpl HotPink_2 = AnsiExtendedColorPaletteRawImpl(206, "HotPink_2");
   static const AnsiExtendedColorPaletteRawImpl MediumOrchid1_2 =
-      AnsiExtendedColorPaletteRawImpl(207, "MediumOrchid1_2");
+  AnsiExtendedColorPaletteRawImpl(207, "MediumOrchid1_2");
   static const AnsiExtendedColorPaletteRawImpl DarkOrange = AnsiExtendedColorPaletteRawImpl(208, "DarkOrange");
   static const AnsiExtendedColorPaletteRawImpl Salmon1 = AnsiExtendedColorPaletteRawImpl(209, "Salmon1");
   static const AnsiExtendedColorPaletteRawImpl LightCoral = AnsiExtendedColorPaletteRawImpl(210, "LightCoral");
@@ -394,15 +243,15 @@ abstract class AnsiExtendedColors {
   static const AnsiExtendedColorPaletteRawImpl Plum1 = AnsiExtendedColorPaletteRawImpl(219, "Plum1");
   static const AnsiExtendedColorPaletteRawImpl Gold1 = AnsiExtendedColorPaletteRawImpl(220, "Gold1");
   static const AnsiExtendedColorPaletteRawImpl LightGoldenrod2_2 =
-      AnsiExtendedColorPaletteRawImpl(221, "LightGoldenrod2_2");
+  AnsiExtendedColorPaletteRawImpl(221, "LightGoldenrod2_2");
   static const AnsiExtendedColorPaletteRawImpl LightGoldenrod2_3 =
-      AnsiExtendedColorPaletteRawImpl(222, "LightGoldenrod2_3");
+  AnsiExtendedColorPaletteRawImpl(222, "LightGoldenrod2_3");
   static const AnsiExtendedColorPaletteRawImpl NavajoWhite1 = AnsiExtendedColorPaletteRawImpl(223, "NavajoWhite1");
   static const AnsiExtendedColorPaletteRawImpl MistyRose1 = AnsiExtendedColorPaletteRawImpl(224, "MistyRose1");
   static const AnsiExtendedColorPaletteRawImpl Thistle1 = AnsiExtendedColorPaletteRawImpl(225, "Thistle1");
   static const AnsiExtendedColorPaletteRawImpl Yellow1 = AnsiExtendedColorPaletteRawImpl(226, "Yellow1");
   static const AnsiExtendedColorPaletteRawImpl LightGoldenrod1 =
-      AnsiExtendedColorPaletteRawImpl(227, "LightGoldenrod1");
+  AnsiExtendedColorPaletteRawImpl(227, "LightGoldenrod1");
   static const AnsiExtendedColorPaletteRawImpl Khaki1 = AnsiExtendedColorPaletteRawImpl(228, "Khaki1");
   static const AnsiExtendedColorPaletteRawImpl Wheat1 = AnsiExtendedColorPaletteRawImpl(229, "Wheat1");
   static const AnsiExtendedColorPaletteRawImpl Cornsilk1 = AnsiExtendedColorPaletteRawImpl(230, "Cornsilk1");
@@ -433,6 +282,12 @@ abstract class AnsiExtendedColors {
   static const AnsiExtendedColorPaletteRawImpl Grey93 = AnsiExtendedColorPaletteRawImpl(255, "Grey93");
 }
 
+abstract class AnsiBasicColor {
+  String get palette_number_tribit;
+
+  String get name;
+}
+
 /// 0 - 7: standard colors (as in ESC [ 30–37 m).
 /// 8 - 15: high intensity colors (as in ESC [ 90–97 m).
 /// 16 - 231: 6 × 6 × 6 cube (216 colors): 16 + 36 × r + 6 × g + b (0 ≤ r, g, b ≤ 5).
@@ -441,78 +296,234 @@ abstract class AnsiExtendedColors {
 /// See: https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit
 /// See: https://commons.wikimedia.org/wiki/File:Xterm_256color_chart.svg
 abstract class AnsiExtendedColorPalette {
-  int get paletteNumberByte;
+  int get palette_number_byte;
 }
 
-class AnsiExtendedColorPaletteRawImpl implements AnsiExtendedColorPalette {
-  @override
-  final int paletteNumberByte;
-  final String name;
+abstract class AnsiBackgroundColor {
+  String get background_color_code;
 
-  const AnsiExtendedColorPaletteRawImpl(
-    final this.paletteNumberByte,
-    final this.name,
-  );
+  String get name;
 }
 
-String ansiSetTextStyles({
-  final bool bold = false,
-  final bool underscore = false,
-  final bool blink = false,
-  final bool inverted = false,
-}) =>
-    _ansiSelectGraphicsRendition(
-      CompositeGraphicsRenditionNode(
-        [
-          if (bold) const GraphicsRenditionNodeHighlightImpl(),
-          if (underscore) const GraphicsRenditionNodeUnderlineImpl(),
-          if (blink) const GraphicsRenditionNodeBlinkImpl(),
-          if (inverted) const GraphicsRenditionNodeInvertedImpl(),
-        ],
-      ),
-    );
+abstract class AnsiForegroundColor {
+  String get foreground_color_code;
 
-String ansiSetExtendedForegroundColor(
-  final AnsiExtendedColorPalette color,
-) =>
-    _ansiSelectGraphicsRendition(
-      GraphicsRenditionNodeExtendedTextColorImpl(color),
-    );
-
-String ansiSetExtendedBackgroundColor(
-  final AnsiExtendedColorPalette color,
-) =>
-    _ansiSelectGraphicsRendition(
-      GraphicsRenditionNodeExtendedBackgroundColorImpl(color),
-    );
-
-String ansiSetTextColor(
-  final AnsiForegroundColor color,
-) =>
-    _ansiSelectGraphicsRendition(
-      GraphicsRenditionNodeColorImpl(
-        color.foregroundColorCode,
-      ),
-    );
-
-String ansiSetBackgroundColor(
-  final AnsiBackgroundColor color,
-) =>
-    _ansiSelectGraphicsRendition(
-      GraphicsRenditionNodeColorImpl(
-        color.backgroundColorCode,
-      ),
-    );
-
-/// Set graphics rendition mode.
-String _ansiSelectGraphicsRendition(
-  final GraphicsRenditionNode nodes,
-) =>
-    controlSequenceIdentifier + nodes.commands.join(";") + "m";
+  String get name;
+}
 
 /// Base node for graphics rendition command nodes.
 abstract class GraphicsRenditionNode {
   Iterable<String> get commands;
+}
+// endregion
+
+// region internal
+class NamedAnsiColorBlackImpl implements AnsiBasicColor {
+  const NamedAnsiColorBlackImpl();
+
+  @override
+  String get palette_number_tribit => "0";
+
+  @override
+  String get name => "black";
+}
+
+class NamedAnsiColorRedImpl implements AnsiBasicColor {
+  const NamedAnsiColorRedImpl();
+
+  @override
+  String get palette_number_tribit => "1";
+
+  @override
+  String get name => "red";
+}
+
+class NamedAnsiColorGreenImpl implements AnsiBasicColor {
+  const NamedAnsiColorGreenImpl();
+
+  @override
+  String get palette_number_tribit => "2";
+
+  @override
+  String get name => "green";
+}
+
+class NamedAnsiColorYellowImpl implements AnsiBasicColor {
+  const NamedAnsiColorYellowImpl();
+
+  @override
+  String get palette_number_tribit => "3";
+
+  @override
+  String get name => "yellow";
+}
+
+class NamedAnsiColorBlueImpl implements AnsiBasicColor {
+  const NamedAnsiColorBlueImpl();
+
+  @override
+  String get palette_number_tribit => "4";
+
+  @override
+  String get name => "blue";
+}
+
+class NamedAnsiColorMagentaImpl implements AnsiBasicColor {
+  const NamedAnsiColorMagentaImpl();
+
+  @override
+  String get palette_number_tribit => "5";
+
+  @override
+  String get name => "magenta";
+}
+
+class NamedAnsiColorCyanImpl implements AnsiBasicColor {
+  const NamedAnsiColorCyanImpl();
+
+  @override
+  String get palette_number_tribit => "6";
+
+  @override
+  String get name => "cyan";
+}
+
+class NamedAnsiColorWhiteImpl implements AnsiBasicColor {
+  const NamedAnsiColorWhiteImpl();
+
+  @override
+  String get palette_number_tribit => "7";
+
+  @override
+  String get name => "white";
+}
+
+class DarkAnsiBackgroundColorAdapter implements AnsiBackgroundColor {
+  final AnsiBasicColor color;
+
+  const DarkAnsiBackgroundColorAdapter(
+    final this.color,
+  );
+
+  @override
+  String get background_color_code => "4" + color.palette_number_tribit;
+
+  @override
+  String get name => color.name;
+}
+
+class BrightAnsiBackgroundColorAdapter implements AnsiBackgroundColor {
+  final AnsiBasicColor color;
+
+  const BrightAnsiBackgroundColorAdapter(
+    final this.color,
+  );
+
+  @override
+  String get background_color_code => "10" + color.palette_number_tribit;
+
+  @override
+  String get name => "bright " + color.name;
+}
+
+class DarkAnsiForegroundColorAdapter implements AnsiForegroundColor {
+  final AnsiBasicColor color;
+
+  const DarkAnsiForegroundColorAdapter(
+    final this.color,
+  );
+
+  @override
+  String get foreground_color_code => "3" + color.palette_number_tribit;
+
+  @override
+  String get name => color.name;
+}
+
+class BrightAnsiForegroundColorAdapter implements AnsiForegroundColor {
+  final AnsiBasicColor color;
+
+  const BrightAnsiForegroundColorAdapter(
+    final this.color,
+  );
+
+  @override
+  String get foreground_color_code => "9" + color.palette_number_tribit;
+
+  @override
+  String get name => "bright " + color.name;
+}
+
+class AnsiExtendedColorPaletteRawImpl implements AnsiExtendedColorPalette {
+  @override
+  final int palette_number_byte;
+  final String name;
+
+  const AnsiExtendedColorPaletteRawImpl(
+    final this.palette_number_byte,
+    final this.name,
+  );
+}
+
+String ansi_set_text_styles({
+  final bool bold = false,
+  final bool underscore = false,
+  final bool blink = false,
+  final bool inverted = false,
+}) {
+  return _ansi_select_graphics_rendition(
+    CompositeGraphicsRenditionNode(
+      [
+        if (bold) const GraphicsRenditionNodeHighlightImpl(),
+        if (underscore) const GraphicsRenditionNodeUnderlineImpl(),
+        if (blink) const GraphicsRenditionNodeBlinkImpl(),
+        if (inverted) const GraphicsRenditionNodeInvertedImpl(),
+      ],
+    ),
+  );
+}
+
+String ansi_set_extended_foreground_color(
+  final AnsiExtendedColorPalette color,
+) {
+  return _ansi_select_graphics_rendition(
+    GraphicsRenditionNodeExtendedTextColorImpl(color),
+  );
+}
+
+String ansi_set_extended_background_color(
+  final AnsiExtendedColorPalette color,
+) {
+  return _ansi_select_graphics_rendition(
+    GraphicsRenditionNodeExtendedBackgroundColorImpl(color),
+  );
+}
+
+String ansi_set_text_color(
+  final AnsiForegroundColor color,
+) {
+  return _ansi_select_graphics_rendition(
+    GraphicsRenditionNodeColorImpl(
+      color.foreground_color_code,
+    ),
+  );
+}
+
+String ansi_set_background_color(
+  final AnsiBackgroundColor color,
+) {
+  return _ansi_select_graphics_rendition(
+    GraphicsRenditionNodeColorImpl(
+      color.background_color_code,
+    ),
+  );
+}
+
+/// Set graphics rendition mode.
+String _ansi_select_graphics_rendition(
+  final GraphicsRenditionNode nodes,
+) {
+  return control_sequence_identifier + nodes.commands.join(";") + "m";
 }
 
 /// Reset: turn off all attributes.
@@ -574,7 +585,9 @@ class GraphicsRenditionNodeTextColorImpl implements GraphicsRenditionNode {
   );
 
   @override
-  Iterable<String> get commands => ["3" + color.paletteNumberTribit.toString()];
+  Iterable<String> get commands {
+    return ["3" + color.palette_number_tribit];
+  }
 }
 
 /// Set text colour from the bright colour palette of 0–7.
@@ -587,7 +600,7 @@ class GraphicsRenditionNodeBrightTextColorImpl implements GraphicsRenditionNode 
 
   @override
   Iterable<String> get commands sync* {
-    yield "9" + color.paletteNumberTribit.toString();
+    yield "9" + color.palette_number_tribit;
   }
 }
 
@@ -601,7 +614,7 @@ class GraphicsRenditionNodeBackgroundColorImpl implements GraphicsRenditionNode 
 
   @override
   Iterable<String> get commands sync* {
-    yield "4" + color.paletteNumberTribit.toString();
+    yield "4" + color.palette_number_tribit;
   }
 }
 
@@ -615,7 +628,7 @@ class GraphicsRenditionNodeBrightBackgroundColorImpl implements GraphicsRenditio
 
   @override
   Iterable<String> get commands sync* {
-    yield "10" + color.paletteNumberTribit.toString();
+    yield "10" + color.palette_number_tribit;
   }
 }
 
@@ -649,7 +662,7 @@ class GraphicsRenditionNodeExtendedTextColorImpl implements GraphicsRenditionNod
   Iterable<String> get commands sync* {
     yield "38";
     yield "5";
-    yield color.paletteNumberByte.toString();
+    yield color.palette_number_byte.toString();
   }
 }
 
@@ -666,7 +679,7 @@ class GraphicsRenditionNodeExtendedBackgroundColorImpl implements GraphicsRendit
   Iterable<String> get commands sync* {
     yield "48";
     yield "5";
-    yield color.paletteNumberByte.toString();
+    yield color.palette_number_byte.toString();
   }
 }
 
@@ -730,4 +743,5 @@ class CompositeGraphicsRenditionNode implements GraphicsRenditionNode {
   }
 }
 
-const controlSequenceIdentifier = "\x1b[";
+const control_sequence_identifier = "\x1b[";
+// endregion

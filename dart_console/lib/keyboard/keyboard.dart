@@ -2,64 +2,81 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import '../ansi/ansi.dart';
+import '../ansi_writer/ansi_writer.dart';
 
-/// API for the keyboard.
+// region public
+_TerminalKeyboardImpl make_stdin_terminal_keyboard() {
+  return _TerminalKeyboardImpl(
+    byte_stream: _stdin,
+    move_cursor_back_by_one: () => stdout.write(
+      control_sequence_identifier + '1D',
+    ),
+  );
+}
+
+TerminalKeyboard make_terminal_keyboard({
+  required final Stream<List<int>> byte_stream,
+  required final void Function() move_cursor_back_by_one,
+}) {
+  return _TerminalKeyboardImpl(
+    byte_stream: byte_stream,
+    move_cursor_back_by_one: move_cursor_back_by_one,
+  );
+}
+
 abstract class TerminalKeyboard {
-  void handleKey(
+  void handle_key(
     final List<int>? bytes,
     final String? name,
   );
 
-  Stream<String> bindKey(
+  Stream<String> bind_key(
     final String code,
   );
 
-  Stream<String> bindKeys(
+  Stream<String> bind_keys(
     final List<String> codes,
   );
 
   void destroy();
+
+  void disable_echo();
 }
+// endregion
 
-final _stdin = stdin.asBroadcastStream();
+// region internal
+final Stream<List<int>> _stdin = stdin.asBroadcastStream();
 
-TerminalKeyboardImpl makeStdinTerminalKeyboard() => TerminalKeyboardImpl(
-      byteStream: _stdin,
-      moveCursorBackByOne: () => stdout.write(
-        controlSequenceIdentifier + '1D',
-      ),
-    );
-
-class TerminalKeyboardImpl implements TerminalKeyboard {
-  final Stream<List<int>> byteStream;
-  final void Function() moveCursorBackByOne;
+class _TerminalKeyboardImpl implements TerminalKeyboard {
+  final Stream<List<int>> byte_stream;
+  final void Function() move_cursor_back_by_one;
+  // TODO stream controller are suboptimal, we'd want synchronous events.
   final Map<String, StreamController<String>> _handlers = {};
   final List<StreamController<String>> bound = [];
 
   late final StreamSubscription<List<int>> _subscription;
 
   /// Display input that is not handled.
-  bool echoUnhandledKeys = true;
+  bool echo_unhandled_keys = true;
 
-  TerminalKeyboardImpl({
-    required final this.byteStream,
-    required final this.moveCursorBackByOne,
+  _TerminalKeyboardImpl({
+    required final this.byte_stream,
+    required final this.move_cursor_back_by_one,
   }) {
     stdin.echoMode = false;
     stdin.lineMode = false;
-    _subscription = byteStream.asBroadcastStream().listen(
+    _subscription = byte_stream.asBroadcastStream().listen(
       (final bytes) {
         final it = ascii.decode(bytes);
         final original = bytes;
-        var code = it.replaceAll("\x1b", '');
+        String code = it.replaceAll("\x1b", '');
         if (code.isNotEmpty) {
           code = code.substring(1);
         }
-        if (inputSequences[code] != null) {
-          return handleKey(original, inputSequences[code]);
+        if (_input_sequences[code] != null) {
+          return handle_key(original, _input_sequences[code]);
         } else {
-          return handleKey(original, it);
+          return handle_key(original, it);
         }
       },
     );
@@ -79,7 +96,7 @@ class TerminalKeyboardImpl implements TerminalKeyboard {
   }
 
   @override
-  void handleKey(
+  void handle_key(
     final List<int>? bytes,
     final String? name,
   ) {
@@ -87,11 +104,11 @@ class TerminalKeyboardImpl implements TerminalKeyboard {
       if (_handlers.containsKey(name)) {
         _handlers[name]!.add(name);
       } else {
-        if (echoUnhandledKeys) {
+        if (echo_unhandled_keys) {
           if (bytes != null) {
             if (bytes.length == 1 && bytes.single == 127) {
               if (Platform.isMacOS) {
-                moveCursorBackByOne();
+                move_cursor_back_by_one();
               } else {
                 stdout.write('\b \b');
                 return;
@@ -99,7 +116,7 @@ class TerminalKeyboardImpl implements TerminalKeyboard {
             }
             stdout.add(bytes);
             if (bytes.length == 1 && bytes.single == 127) {
-              moveCursorBackByOne();
+              move_cursor_back_by_one();
             }
           }
         }
@@ -108,7 +125,7 @@ class TerminalKeyboardImpl implements TerminalKeyboard {
   }
 
   @override
-  Stream<String> bindKey(
+  Stream<String> bind_key(
     final String code,
   ) {
     if (_handlers.containsKey(code)) {
@@ -119,21 +136,26 @@ class TerminalKeyboardImpl implements TerminalKeyboard {
   }
 
   @override
-  Stream<String> bindKeys(
+  Stream<String> bind_keys(
     final List<String> codes,
   ) {
     final controller = StreamController<String>.broadcast();
     bound.add(controller);
     for (final key in codes) {
-      bindKey(key).listen(controller.add);
+      bind_key(key).listen(controller.add);
     }
     return controller.stream;
+  }
+
+  @override
+  void disable_echo() {
+    echo_unhandled_keys = false;
   }
 }
 
 // TODO find an exhaustive reference.
 // TODO support all these input sequences.
-const inputSequences = {
+const _input_sequences = {
   'A': 'up',
   'B': 'down',
   'C': 'right',
@@ -568,3 +590,4 @@ const inputSequences = {
   'M': 'mouse',
   '0n': 'status ok'
 };
+// endregion

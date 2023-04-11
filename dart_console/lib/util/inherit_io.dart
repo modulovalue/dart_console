@@ -1,15 +1,23 @@
+// ignore_for_file: cancel_subscriptions
+
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-void inheritIO(
-  final Process process, {
+List<StreamSubscription<Object?>> inherit_io({
+  required final Process process,
   final String? prefix,
-  final bool lineBased = true,
+  final bool line_based = true,
 }) {
-  if (lineBased) {
-    final utf8Stdout = process.stdout.transform(utf8.decoder);
-    final stdoutLines = utf8Stdout.transform(const LineSplitter());
-    stdoutLines.listen(
+  if (line_based) {
+    final stdout_lines = process.stdout
+        .transform(
+          utf8.decoder,
+        )
+        .transform(
+          const LineSplitter(),
+        );
+    final sub_a = stdout_lines.listen(
       (final data) {
         if (prefix != null) {
           stdout.write(prefix);
@@ -17,9 +25,14 @@ void inheritIO(
         stdout.writeln(data);
       },
     );
-    final utf8stderr = process.stderr.transform(utf8.decoder);
-    final stderrLines = utf8stderr.transform(const LineSplitter());
-    stderrLines.listen(
+    final stderr_lines = process.stderr
+        .transform(
+          utf8.decoder,
+        )
+        .transform(
+          const LineSplitter(),
+        );
+    final sub_b = stderr_lines.listen(
       (final data) {
         if (prefix != null) {
           stderr.write(prefix);
@@ -27,12 +40,14 @@ void inheritIO(
         stderr.writeln(data);
       },
     );
+    return [sub_a, sub_b];
   } else {
-    process.stdout.listen(
-      (final data) => stdout.add(data),
+    final sub_a = process.stdout.listen(
+      stdout.add,
     );
-    process.stderr.listen(
-      (final data) => stderr.add(data),
+    final sub_b = process.stderr.listen(
+      stderr.add,
     );
+    return [sub_a, sub_b];
   }
 }

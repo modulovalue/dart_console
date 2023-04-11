@@ -1,62 +1,66 @@
 import 'dart:io';
 
-import '../ansi/ansi.dart';
+import '../ansi_writer/ansi_writer.dart';
 
 /// The root of the console API
 class DCConsole {
-  static bool _cursorCTRLC = false;
-  static bool _buffCTRLC = false;
-  final DCConsoleAdapter rawConsole;
+  static bool _cursor_ctrl_c = false;
+  static bool _buff_ctlr_c = false;
+  final DCConsoleAdapter raw_console;
 
-  const DCConsole(
-    final this.rawConsole,
-  );
+  const DCConsole({
+    required final this.raw_console,
+  });
 
-  static Stream<dynamic> get onResize => ProcessSignal.sigwinch.watch();
+  static Stream<dynamic> get on_resize => ProcessSignal.sigwinch.watch();
 
   /// Moves the Cursor Back the specified amount of [times].
-  void moveCursorBack([
+  void move_cursor_back([
     final int times = 1,
-  ]) =>
-      writeANSI(
-        '${times}D',
-      );
+  ]) {
+    write_ansi(
+      '${times}D',
+    );
+  }
 
   /// Erases the Display
-  void eraseDisplay([
+  void erase_display([
     final int type = 0,
-  ]) =>
-      writeANSI(
-        '${type}J',
-      );
+  ]) {
+    write_ansi(
+      '${type}J',
+    );
+  }
 
   /// Erases the Line
-  void eraseLine([
+  void erase_line([
     final int type = 0,
-  ]) =>
-      writeANSI(
-        '${type}K',
-      );
+  ]) {
+    write_ansi(
+      '${type}K',
+    );
+  }
 
   /// Moves the the column specified in [number].
-  void moveToColumn(
+  void move_to_column(
     final int number,
-  ) =>
-      writeANSI(
-        '${number}G',
-      );
+  ) {
+    write_ansi(
+      '${number}G',
+    );
+  }
 
   /// Overwrites the current line with [line].
-  void overwriteLine(
+  void overwrite_line(
     final String line,
   ) {
-    rawConsole.write('\r');
-    eraseLine(2);
-    rawConsole.write(line);
+    raw_console.write('\r');
+    erase_line(2);
+    raw_console.write(line);
   }
 
   /// Sets the Current Text Color.
-  void setTextColor(
+  void set_text_color(
     final int id, {
     final bool xterm = false,
     final bool bright = false,
@@ -80,41 +84,41 @@ class DCConsole {
     }
   }
 
-  void hideCursor() {
-    if (!_cursorCTRLC) {
+  void hide_cursor() {
+    if (!_cursor_ctrl_c) {
       ProcessSignal.sigint.watch().listen(
         (final signal) {
-          showCursor();
+          show_cursor();
           exit(0);
         },
       );
-      _cursorCTRLC = true;
+      _cursor_ctrl_c = true;
     }
-    writeANSI('?25l');
+    write_ansi('?25l');
   }
 
-  void showCursor() {
-    writeANSI('?25h');
+  void show_cursor() {
+    write_ansi('?25h');
   }
 
-  void altBuffer() {
-    if (!_buffCTRLC) {
+  void alt_buffer() {
+    if (!_buff_ctlr_c) {
       ProcessSignal.sigint.watch().listen(
         (final signal) {
-          normBuffer();
+          norm_buffer();
           exit(0);
         },
       );
-      _buffCTRLC = true;
+      _buff_ctlr_c = true;
     }
-    writeANSI('?47h');
+    write_ansi('?47h');
   }
 
-  void normBuffer() {
-    writeANSI('?47l');
+  void norm_buffer() {
+    write_ansi('?47l');
   }
 
-  void setBackgroundColor(
+  void set_background_color(
     final int id, {
     final bool xterm = false,
     final bool bright = false,
@@ -138,23 +142,23 @@ class DCConsole {
     }
   }
 
-  void centerCursor({
+  void center_cursor({
     final bool row = true,
   }) {
     if (row) {
       final column = (columns / 2).round();
       final row = (rows / 2).round();
-      moveCursor(row: row, column: column);
+      move_cursor(row: row, column: column);
     } else {
-      moveToColumn((columns / 2).round());
+      move_to_column((columns / 2).round());
     }
   }
 
-  void moveCursor({
+  void move_cursor({
     final int? row,
     final int? column,
   }) {
-    var out = '';
+    String out = '';
     if (row != null) {
       out += row.toString();
     }
@@ -162,52 +166,62 @@ class DCConsole {
     if (column != null) {
       out += column.toString();
     }
-    writeANSI('${out}H');
+    write_ansi('${out}H');
   }
 
-  void resetAll() => sgr(0);
+  void reset_all() {
+    sgr(0);
+  }
 
-  void resetBackgroundColor() => sgr(49);
+  void reset_background_color() {
+    sgr(49);
+  }
 
   void sgr(
     final int id, [
     final List<int>? params,
   ]) {
-    String stuff;
-    if (params != null) {
-      stuff = "$id;${params.join(";")}";
-    } else {
-      stuff = id.toString();
-    }
-    writeANSI('${stuff}m');
+    final stuff = () {
+      if (params != null) {
+        return "$id;${params.join(";")}";
+      } else {
+        return id.toString();
+      }
+    }();
+    write_ansi('${stuff}m');
   }
 
-  int get rows => rawConsole.rows;
+  int get rows {
+    return raw_console.rows;
+  }
 
-  int get columns => rawConsole.columns;
+  int get columns {
+    return raw_console.columns;
+  }
 
-  void writeANSI(
+  void write_ansi(
     final String after,
-  ) =>
-      rawConsole.write(controlSequenceIdentifier + after);
+  ) {
+    raw_console.write(control_sequence_identifier + after);
+  }
 
-  DCCursorPosition getCursorPosition() {
-    final lm = rawConsole.lineMode;
-    final em = rawConsole.echoMode;
-    rawConsole.lineMode = false;
-    rawConsole.echoMode = false;
-    writeANSI('6n');
+  DCCursorPosition get_cursor_position() {
+    final lm = raw_console.line_mode;
+    final em = raw_console.echo_mode;
+    raw_console.line_mode = false;
+    raw_console.echo_mode = false;
+    write_ansi('6n');
     final bytes = <int>[];
     for (;;) {
-      final byte = rawConsole.readByte();
+      final byte = raw_console.read_byte();
       bytes.add(byte);
       if (byte == 82) {
         break;
       }
     }
-    rawConsole.lineMode = lm;
-    rawConsole.echoMode = em;
-    var str = String.fromCharCodes(bytes);
+    raw_console.line_mode = lm;
+    raw_console.echo_mode = em;
+    String str = String.fromCharCodes(bytes);
     str = str.substring(
       str.lastIndexOf("[") + 1,
       str.length - 1,
@@ -254,7 +268,7 @@ class DCColor {
   }) {
     // TODO Whats the difference when it comes to xterm and the other case
     if (xterm) {
-      return '${controlSequenceIdentifier}${() {
+      return '${control_sequence_identifier}${() {
         if (background) {
           return 38;
         } else {
@@ -263,7 +277,7 @@ class DCColor {
       }()};5;${id}m';
     } else {
       if (bright) {
-        return '${controlSequenceIdentifier}1;${(() {
+        return '${control_sequence_identifier}1;${(() {
               if (background) {
                 return 40;
               } else {
@@ -271,7 +285,7 @@ class DCColor {
               }
             }()) + id}m';
       } else {
-        return '${controlSequenceIdentifier}0;${(() {
+        return '${control_sequence_identifier}0;${(() {
               if (background) {
                 return 40;
               } else {
@@ -298,13 +312,13 @@ abstract class DCConsoleAdapter {
 
   String? read();
 
-  int readByte();
+  int read_byte();
 
-  Stream<List<int>> byteStream();
+  Stream<List<int>> byte_stream();
 
-  abstract bool echoMode;
+  abstract bool echo_mode;
 
-  abstract bool lineMode;
+  abstract bool line_mode;
 }
 
 class DCStdioConsoleAdapter implements DCConsoleAdapter {
@@ -320,7 +334,7 @@ class DCStdioConsoleAdapter implements DCConsoleAdapter {
   String? read() => stdin.readLineSync();
 
   @override
-  Stream<List<int>> byteStream() => stdin;
+  Stream<List<int>> byte_stream() => stdin;
 
   @override
   void write(
@@ -335,23 +349,23 @@ class DCStdioConsoleAdapter implements DCConsoleAdapter {
       stdout.writeln(data);
 
   @override
-  set echoMode(
+  set echo_mode(
     final bool value,
   ) =>
       stdin.echoMode = value;
 
   @override
-  bool get echoMode => stdin.echoMode;
+  bool get echo_mode => stdin.echoMode;
 
   @override
-  set lineMode(
+  set line_mode(
     final bool value,
   ) =>
       stdin.lineMode = value;
 
   @override
-  bool get lineMode => stdin.lineMode;
+  bool get line_mode => stdin.lineMode;
 
   @override
-  int readByte() => stdin.readByteSync();
+  int read_byte() => stdin.readByteSync();
 }

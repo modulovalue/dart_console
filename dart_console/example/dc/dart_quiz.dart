@@ -3,8 +3,10 @@ import 'package:dart_console/dc/base.dart';
 import 'package:dart_console/dc/prompt.dart';
 
 void main() {
-  final console = DCConsole(DCStdioConsoleAdapter());
-  const dartPeople = [
+  final console = DCConsole(
+    raw_console: DCStdioConsoleAdapter(),
+  );
+  const dart_people = [
     'Dan Grove',
     'Michael Thomsen',
     'Leaf Petersen',
@@ -21,7 +23,7 @@ void main() {
     Question(
       'Who is a Product Manager for Dart at Google?',
       'Michael Thomsen',
-      choices: dartPeople,
+      choices: dart_people,
     ),
     Question(
       'What is the package manager for Dart called?',
@@ -58,8 +60,8 @@ void main() {
     ),
   ].forEach(
     (final q) {
-      questionCount++;
-      final correct = q.askQuestion(console);
+      question_count++;
+      final correct = q.ask_question(console);
       if (correct) {
         print('Correct');
         points++;
@@ -74,8 +76,8 @@ void main() {
 void results() {
   print('Quiz Results:');
   print('  Correct: $points');
-  print('  Incorrect: ${questionCount - points}');
-  print('  Score: ${((points / questionCount) * 100).toStringAsFixed(2)}%');
+  print('  Incorrect: ${question_count - points}');
+  print('  Score: ${((points / question_count) * 100).toStringAsFixed(2)}%');
 }
 
 List<String> scramble(
@@ -86,7 +88,7 @@ List<String> scramble(
   return out;
 }
 
-int questionCount = 0;
+int question_count = 0;
 int points = 0;
 
 class Question {
@@ -100,7 +102,7 @@ class Question {
     final this.choices,
   });
 
-  bool askQuestion(
+  bool ask_question(
     final DCConsole console,
   ) {
     if (choices != null) {
@@ -114,9 +116,17 @@ class Question {
     } else {
       final dynamic _answer = answer;
       if (_answer is String) {
-        return DCPrompter(console, '$message ').promptSync()?.toLowerCase().trim() == _answer.toLowerCase().trim();
+        return DCPrompter(
+              console: console,
+              message: '$message ',
+            ).prompt_sync()?.toLowerCase().trim() ==
+            _answer.toLowerCase().trim();
       } else if (_answer is bool) {
-        return DCPrompter(console, '$message ').askSync() == _answer;
+        return DCPrompter(
+              console: console,
+              message: '$message ',
+            ).ask_sync() ==
+            _answer;
       } else {
         throw Exception('');
       }

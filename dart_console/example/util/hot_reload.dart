@@ -2,38 +2,33 @@ import 'package:dart_console/util/call_periodically.dart';
 import 'package:hotreloader/hotreloader.dart';
 
 void runApp(
-  final void Function() updateWindow,
-) =>
-    callPeriodicallyWithHotReload(
-      routine: updateWindow,
-      wrapper: HotReload,
-    );
+  final void Function() update_window,
+) {
+  call_periodically_with_hot_reload(
+    routine: update_window,
+    wrapper: HotReload.simple,
+  );
+}
 
 const HotReloadFactoryImpl HotReload = HotReloadFactoryImpl();
 
 class HotReloadFactoryImpl {
   const HotReloadFactoryImpl();
 
-  void call(
-    final void Function() onChange,
-  ) =>
-      simple(
-        onChange,
-      );
-
   void simple(
-    final void Function() onChange,
-  ) =>
-      debounced(
-        Duration.zero,
-        onChange,
-      );
+    final void Function() on_change,
+  ) {
+    debounced(
+      Duration.zero,
+      on_change,
+    );
+  }
 
   void debounced(
     final Duration d,
-    final void Function() onChange,
+    final void Function() on_change,
   ) {
-    onChange();
+    on_change();
     HotReloader.create(
       debounceInterval: d,
       onBeforeReload: (final _) {
@@ -42,7 +37,7 @@ class HotReloadFactoryImpl {
       },
       onAfterReload: (final _) {
         print("Reloaded! " + DateTime.now().toString());
-        onChange();
+        on_change();
       },
     );
   }

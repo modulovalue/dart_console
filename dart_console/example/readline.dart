@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:dart_console/ansi/ansi.dart';
-import 'package:dart_console/console/impl/console.dart';
+import 'package:dart_console/ansi_writer/ansi_writer.dart';
+import 'package:dart_console/console/impl.dart';
 import 'package:dart_console/terminal/terminal_lib_auto.dart';
 
 // Inspired by
@@ -12,30 +12,30 @@ import 'package:dart_console/terminal/terminal_lib_auto.dart';
 // editing services from the shell.
 void main() {
   final console = SneathConsoleImpl(
-    terminal: autoSneathTerminal(),
+    terminal: auto_sneath_terminal(),
   );
   const prompt = '>>> ';
   console.write('The ');
-  console.setForegroundColor(const BrightAnsiForegroundColorAdapter(NamedAnsiColorYellowImpl()));
+  console.set_foreground_color(const BrightAnsiForegroundColorAdapter(NamedAnsiColorYellowImpl()));
   console.write('Console.readLine()');
-  console.resetColorAttributes();
-  console.writeLine(' method provides a basic readline implementation.');
+  console.reset_color_attributes();
+  console.write_line(' method provides a basic readline implementation.');
   console.write('Unlike the built-in ');
-  console.setForegroundColor(const BrightAnsiForegroundColorAdapter(NamedAnsiColorYellowImpl()));
+  console.set_foreground_color(const BrightAnsiForegroundColorAdapter(NamedAnsiColorYellowImpl()));
   console.write('stdin.readLineSync()');
-  console.resetColorAttributes();
-  console.writeLine(' method, you can use arrow keys as well as home/end.');
-  console.writeLine();
-  console.writeLine('As a demo, this command-line reader "shouts" all text back in upper case.');
-  console.writeLine('Enter a blank line or press Ctrl+C to exit.');
+  console.reset_color_attributes();
+  console.write_line(' method, you can use arrow keys as well as home/end.');
+  console.write_line();
+  console.write_line('As a demo, this command-line reader "shouts" all text back in upper case.');
+  console.write_line('Enter a blank line or press Ctrl+C to exit.');
   for (;;) {
     console.write(prompt);
-    final response = console.readLine(cancelOnBreak: true);
+    final response = console.read_line(cancel_on_break: true);
     if (response == null || response.isEmpty) {
       exit(0);
     } else {
-      console.writeLine('YOU SAID: ${response.toUpperCase()}');
-      console.writeLine();
+      console.write_line('YOU SAID: ${response.toUpperCase()}');
+      console.write_line();
     }
   }
 }

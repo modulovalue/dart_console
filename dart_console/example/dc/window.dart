@@ -5,20 +5,24 @@ import 'package:dart_console/dc/base.dart';
 import 'package:dart_console/dc/progress.dart';
 import 'package:dart_console/dc/window.dart';
 
-// Example of a full-screen window, as needed for a text editor.
+/// Example of a full-screen window, as needed for a text editor.
 void main() {
-  final console = DCConsole(DCStdioConsoleAdapter());
-  final window = DemoWindow(console);
+  final console = DCConsole(
+    raw_console: DCStdioConsoleAdapter(),
+  );
+  final window = DemoWindow(
+    console: console,
+  );
   window.display();
 }
 
 class DemoWindow extends DCWindow {
-  bool showWelcomeMessage = true;
-  Timer? loaderTimer;
+  bool show_welcome_message = true;
+  Timer? loader_timer;
 
-  DemoWindow(
-    final DCConsole console,
-  ) : super(
+  DemoWindow({
+    required final DCConsole console,
+  }) : super(
           console,
           'Hello',
         );
@@ -26,30 +30,32 @@ class DemoWindow extends DCWindow {
   @override
   void draw() {
     super.draw();
-    if (loaderTimer != null) {
-      loaderTimer!.cancel();
+    if (loader_timer != null) {
+      loader_timer!.cancel();
     }
-    if (showWelcomeMessage) {
-      writeCentered('Welcome!');
+    if (show_welcome_message) {
+      write_centered('Welcome!');
     } else {
-      console.centerCursor();
-      console.moveToColumn(1);
-      final loader = DCWideLoadingBar(console);
-      loaderTimer = loader.loop();
+      console.center_cursor();
+      console.move_to_column(1);
+      final loader = DCWideLoadingBar(
+        console: console,
+      );
+      loader_timer = loader.loop();
     }
   }
 
   @override
   void initialize() {
-    keyboard.bindKeys(['q', 'Q']).listen(
+    keyboard.bind_keys(['q', 'Q']).listen(
       (final _) {
         close();
-        console.resetAll();
-        console.eraseDisplay();
+        console.reset_all();
+        console.erase_display();
         exit(0);
       },
     );
-    keyboard.bindKey('x').listen(
+    keyboard.bind_key('x').listen(
       (final _) {
         if (title == 'Hello') {
           title = 'Goodbye';
@@ -59,17 +65,17 @@ class DemoWindow extends DCWindow {
         draw();
       },
     );
-    keyboard.bindKey(" ").listen(
+    keyboard.bind_key(" ").listen(
       (final _) {
-        showWelcomeMessage = false;
+        show_welcome_message = false;
         draw();
       },
     );
-    keyboard.bindKey('p').listen(
+    keyboard.bind_key('p').listen(
       (final _) {
-        if (loaderTimer != null) {
-          loaderTimer!.cancel();
-          loaderTimer = null;
+        if (loader_timer != null) {
+          loader_timer!.cancel();
+          loader_timer = null;
         }
       },
     );

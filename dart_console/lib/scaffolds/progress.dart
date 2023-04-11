@@ -1,61 +1,61 @@
-import '../ansi/ansi.dart';
-import '../console/alignment.dart';
-import '../console/interface/console.dart';
+import '../ansi_writer/ansi_writer.dart';
+import '../console/interface.dart';
 
-void runProgressScaffold({
+void run_progress_scaffold({
   required final ProgressScaffoldState state,
   required final SneathConsole console,
 }) {
-  console.hideCursor();
-  console.setBackgroundColor(
+  console.hide_cursor();
+  console.set_background_color(
     const DarkAnsiBackgroundColorAdapter(
       NamedAnsiColorBlueImpl(),
     ),
   );
-  console.setForegroundColor(
+  console.set_foreground_color(
     const BrightAnsiForegroundColorAdapter(
       NamedAnsiColorWhiteImpl(),
     ),
   );
-  console.clearScreen();
+  console.clear_screen();
   final title = state.title;
   if (title != null) {
-    console.writeLine(
+    console.write_line(
       title,
       ConsoleTextAlignments.center,
     );
   }
-  console.writeLine(
-    '=== ' + DateTime.now().difference(state.startedAt).toString().split(".").first + ' ===',
+  console.write_line(
+    '=== ' + DateTime.now().difference(state.started_at).toString().split(".").first + ' ===',
     ConsoleTextAlignments.center,
   );
   final subtitle = state.subtitle;
   if (subtitle != null) {
-    console.writeLine(
+    console.write_line(
       subtitle,
       ConsoleTextAlignments.center,
     );
   }
-  console.showCursor();
+  console.show_cursor();
 }
 
-ProgressScaffoldState progressScaffoldStateNow({
+ProgressScaffoldState progress_scaffold_state_now({
   final String? title,
   final String? subtitle,
-}) =>
-    ProgressScaffoldState(
-      title: title,
-      subtitle: subtitle,
-      startedAt: DateTime.now(),
-    );
+}) {
+  return ProgressScaffoldState(
+    title: title,
+    subtitle: subtitle,
+    started_at: DateTime.now(),
+  );
+}
 
 class ProgressScaffoldState {
-  final DateTime startedAt;
+  final DateTime started_at;
   final String? title;
   final String? subtitle;
 
   const ProgressScaffoldState({
-    required final this.startedAt,
+    required final this.started_at,
     final this.title,
     final this.subtitle,
   });

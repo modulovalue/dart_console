@@ -1,41 +1,41 @@
-import 'package:dart_console/ansi/ansi.dart';
-import 'package:dart_console/console/alignment.dart';
-import 'package:dart_console/console/impl/console.dart';
+import 'package:dart_console/ansi_writer/ansi_writer.dart';
+import 'package:dart_console/console/impl.dart';
+import 'package:dart_console/console/interface.dart';
 import 'package:dart_console/terminal/terminal_lib_auto.dart';
 
 void main() {
   final console = SneathConsoleImpl(
-    terminal: autoSneathTerminal(),
+    terminal: auto_sneath_terminal(),
   );
-  console.setBackgroundColor(
+  console.set_background_color(
     const DarkAnsiBackgroundColorAdapter(
       NamedAnsiColorBlueImpl(),
     ),
   );
-  console.setForegroundColor(
+  console.set_foreground_color(
     const DarkAnsiForegroundColorAdapter(
       NamedAnsiColorWhiteImpl(),
     ),
   );
-  console.writeLine(
+  console.write_line(
     'Simple Demo',
     ConsoleTextAlignments.center,
   );
-  console.resetColorAttributes();
-  console.writeLine();
-  console.writeLine(
+  console.reset_color_attributes();
+  console.write_line();
+  console.write_line(
     'This console window has ${console.dimensions.width} cols and ${console.dimensions.height} rows.',
   );
-  console.writeLine();
-  console.writeLine(
+  console.write_line();
+  console.write_line(
     'This text is left aligned.',
     ConsoleTextAlignments.left,
   );
-  console.writeLine(
+  console.write_line(
     'This text is center aligned.',
     ConsoleTextAlignments.center,
   );
-  console.writeLine(
+  console.write_line(
     'This text is right aligned.',
     ConsoleTextAlignments.right,
   );
@@ -57,8 +57,8 @@ void main() {
     BrightAnsiForegroundColorAdapter(NamedAnsiColorCyanImpl()),
     BrightAnsiForegroundColorAdapter(NamedAnsiColorWhiteImpl()),
   ]) {
-    console.setForegroundColor(color);
-    console.writeLine(color.name);
+    console.set_foreground_color(color);
+    console.write_line(color.name);
   }
-  console.resetColorAttributes();
+  console.reset_color_attributes();
 }

@@ -1,13 +1,13 @@
-import 'package:dart_console/console/impl/console.dart';
+import 'package:dart_console/console/impl.dart';
 import 'package:dart_console/terminal/terminal_lib_auto.dart';
 
 void main() {
-  final termlib = autoSneathTerminal();
+  final termlib = auto_sneath_terminal();
   print(
-    'Per TermLib, this console window has ${termlib.getWindowWidth()} cols and ${termlib.getWindowHeight()} rows.',
+    'Per TermLib, this console window has ${termlib.get_window_width()} cols and ${termlib.get_window_height()} rows.',
   );
   final console = SneathConsoleImpl(
-    terminal: autoSneathTerminal(),
+    terminal: auto_sneath_terminal(),
   );
   print(
     'Per dart_console, this console window has ${console.dimensions.width} cols and ${console.dimensions.height} rows.',

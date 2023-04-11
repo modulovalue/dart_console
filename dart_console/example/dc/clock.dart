@@ -3,57 +3,81 @@ import 'dart:math' as math;
 
 import 'package:dart_console/dc/base.dart';
 import 'package:dart_console/dc/drawing_canvas.dart';
-import 'package:dart_console/util/bresenham.dart';
 
 // Example of using DrawingCanvas to display a clock.
 void main() {
+  final canvas = DrawingCanvasImpl(
+    width: 180,
+    height: 80,
+  );
+  final console = DCConsole(
+    raw_console: DCStdioConsoleAdapter(),
+  );
   Timer.periodic(
-    const Duration(milliseconds: 1000 ~/ 24),
-    (final t) => draw(),
+    const Duration(
+      milliseconds: 1000 ~/ 24,
+    ),
+    (final t) => _draw(
+      canvas: canvas,
+      console: console,
+    ),
   );
 }
 
-final DrawingCanvasImpl canvas = DrawingCanvasImpl(160, 160);
+void _draw({
+  required final DrawingCanvasImpl canvas,
+  required final DCConsole console,
+}) {
+  num _sin({
+    required final num i,
+    required final num l,
+  }) {
+    return (math.sin(i * 2 * math.pi) * l + 80).floor();
+  }
 
-final DCConsole console = DCConsole(DCStdioConsoleAdapter());
+  num _cos({
+    required final num i,
+    required final num l,
+  }) {
+    return (math.cos(i * 2 * math.pi) * l + 80).floor();
+  }
 
-void draw() {
   canvas.clear();
+  // bresenham(
+  //   x0: 0,
+  //   y0: 0,
+  //   x1: canvas.width,
+  //   y1: canvas.height,
+  //   pass_point: canvas.set,
+  // );
   final time = DateTime.now();
-  bresenham(
-    80,
-    80,
-    sin(time.hour / 24, 30),
-    160 - cos(time.hour / 24, 30),
-    canvas.set,
+  const center_x = 40;
+  const center_y = 40;
+  const y = 160;
+  final hour = time.hour / 24;
+  final min = time.minute / 60;
+  final sec = time.second / 60;
+  final sec_increment = time.millisecondsSinceEpoch % 1000 / 60000;
+  final change = sec + sec_increment;
+  canvas.line(
+    x0: center_x,
+    y0: center_y,
+    x1: _sin(i: hour, l: 30),
+    y1: y - _cos(i: hour, l: 30),
   );
-  bresenham(
-    80,
-    80,
-    sin(time.minute / 60, 50),
-    160 - cos(time.minute / 60, 50),
-    canvas.set,
+  canvas.line(
+    x0: center_x,
+    y0: center_y,
+    x1: _sin(i: min, l: 50),
+    y1: y - _cos(i: min, l: 50),
   );
-  bresenham(
-    80,
-    80,
-    sin(time.second / 60 + (time.millisecondsSinceEpoch % 1000 / 60000), 75),
-    160 - cos(time.second / 60 + (time.millisecondsSinceEpoch % 1000) / 60000, 75),
-    canvas.set,
+  canvas.line(
+    x0: center_x,
+    y0: center_y,
+    x1: _sin(i: change, l: 75),
+    y1: y - _cos(i: change, l: 75),
   );
-  console.rawConsole.write(
+  console.raw_console.write(
     canvas.frame(),
   );
 }
-
-num sin(
-  final num i,
-  final num l,
-) =>
-    (math.sin(i * 2 * math.pi) * l + 80).floor();
-
-num cos(
-  final num i,
-  final num l,
-) =>
-    (math.cos(i * 2 * math.pi) * l + 80).floor();

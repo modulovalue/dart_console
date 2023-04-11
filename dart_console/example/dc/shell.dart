@@ -3,7 +3,9 @@ import 'package:dart_console/dc/prompt.dart';
 
 //  A simple REPL that echoes input text back to the console.
 void main() {
-  final console = DCConsole(DCStdioConsoleAdapter());
+  final console = DCConsole(
+    raw_console: DCStdioConsoleAdapter(),
+  );
   final shell = DCShellPrompt(console);
   shell.loop().listen(
     (final line) {

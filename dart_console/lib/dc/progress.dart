@@ -12,8 +12,8 @@ class DCProgressBar {
   /// Creates a Progress Bar.
   ///
   /// [complete] is the number that is considered 100%.
-  DCProgressBar(
-    final this.console, {
+  DCProgressBar({
+    required final this.console,
     final this.complete = 100,
   });
 
@@ -31,11 +31,11 @@ class DCProgressBar {
       final before = '$percent% [';
       const after = ']';
       final out = StringBuffer(before);
-      for (var x = 1; x < count; x++) {
+      for (int x = 1; x < count; x++) {
         out.write('=');
       }
       out.write('>');
-      for (var x = count; x < w; x++) {
+      for (int x = count; x < w; x++) {
         out.write(' ');
       }
       out.write(after);
@@ -44,7 +44,7 @@ class DCProgressBar {
         out.clear();
         out.write(it.substring(0, it.length - 2) + ']');
       }
-      console.overwriteLine(out.toString());
+      console.overwrite_line(out.toString());
     }
   }
 }
@@ -65,7 +65,7 @@ class DCLoadingBar {
 
   /// Starts the Loading Bar
   void start() {
-    console.hideCursor();
+    console.hide_cursor();
     _timer = Timer.periodic(
       const Duration(milliseconds: 75),
       (final timer) {
@@ -76,7 +76,9 @@ class DCLoadingBar {
   }
 
   /// Stops the Loading Bar with the specified (and optional) [message].
-  void stop([final String? message,]) {
+  void stop([
+    final String? message,
+  ]) {
     if (_timer != null) {
       _timer!.cancel();
     }
@@ -84,18 +86,18 @@ class DCLoadingBar {
       position = message;
       update();
     }
-    console.showCursor();
+    console.show_cursor();
     print('');
   }
 
   /// Updates the Loading Bar
   void update() {
     if (started) {
-      console.rawConsole.write(position);
+      console.raw_console.write(position);
       started = false;
     } else {
-      console.moveCursorBack(lastPosition.length);
-      console.rawConsole.write(position);
+      console.move_cursor_back(lastPosition.length);
+      console.raw_console.write(position);
     }
   }
 
@@ -128,29 +130,34 @@ class DCWideLoadingBar {
   final DCConsole console;
 
   /// Creates a wide loading bar.
-  DCWideLoadingBar(final this.console,);
+  DCWideLoadingBar({
+    required final this.console,
+  });
 
   /// Loops the loading bar.
   Timer loop() {
     final width = console.columns - 2;
-    var goForward = true;
-    var isDone = true;
-    return Timer.periodic(const Duration(milliseconds: 50), (final timer) async {
-      if (isDone) {
-        isDone = false;
-        for (var i = 1; i <= width; i++) {
-          position = i;
-          await Future<void>.delayed(const Duration(milliseconds: 5));
-          if (goForward) {
-            forward();
-          } else {
-            backward();
+    bool go_forward = true;
+    bool is_done = true;
+    return Timer.periodic(
+      const Duration(milliseconds: 50),
+      (final timer) async {
+        if (is_done) {
+          is_done = false;
+          for (int i = 1; i <= width; i++) {
+            position = i;
+            await Future<void>.delayed(const Duration(milliseconds: 5));
+            if (go_forward) {
+              forward();
+            } else {
+              backward();
+            }
           }
+          go_forward = !go_forward;
+          is_done = true;
         }
-        goForward = !goForward;
-        isDone = true;
-      }
-    },);
+      },
+    );
   }
 
   /// Moves the Bar Forward
@@ -159,15 +166,15 @@ class DCWideLoadingBar {
     final width = console.columns - 2;
     final after = width - position;
     final before = width - after - 1;
-    for (var i = 1; i <= before; i++) {
+    for (int i = 1; i <= before; i++) {
       out.write(' ');
     }
     out.write('=');
-    for (var i = 1; i <= after; i++) {
+    for (int i = 1; i <= after; i++) {
       out.write(' ');
     }
     out.write(']');
-    console.overwriteLine(out.toString());
+    console.overwrite_line(out.toString());
   }
 
   /// Moves the Bar Backward
@@ -176,14 +183,14 @@ class DCWideLoadingBar {
     final width = console.columns - 2;
     final before = width - position;
     final after = width - before - 1;
-    for (var i = 1; i <= before; i++) {
+    for (int i = 1; i <= before; i++) {
       out.write(' ');
     }
     out.write('=');
-    for (var i = 1; i <= after; i++) {
+    for (int i = 1; i <= after; i++) {
       out.write(' ');
     }
     out.write(']');
-    console.overwriteLine(out.toString());
+    console.overwrite_line(out.toString());
   }
 }

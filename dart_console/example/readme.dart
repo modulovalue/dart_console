@@ -1,16 +1,16 @@
-import 'package:dart_console/console/alignment.dart';
-import 'package:dart_console/console/impl/console.dart';
+import 'package:dart_console/console/impl.dart';
+import 'package:dart_console/console/interface.dart';
 import 'package:dart_console/terminal/terminal_lib_auto.dart';
 
 void main() {
   final console = SneathConsoleImpl(
-    terminal: autoSneathTerminal(),
+    terminal: auto_sneath_terminal(),
   );
-  console.clearScreen();
-  console.resetCursorPosition();
-  console.writeLine(
+  console.clear_screen();
+  console.reset_cursor_position();
+  console.write_line(
     'Console size is ${console.dimensions.width} cols and ${console.dimensions.height} rows.',
     ConsoleTextAlignments.center,
   );
-  console.writeLine();
+  console.write_line();
 }

@@ -2,16 +2,24 @@ import 'dart:io';
 
 import 'clipboard.dart';
 
-class SystemClipboardMacosPbpaste implements SystemClipboard {
-  static const String _pbpasteLocation = "/usr/bin/pbpaste";
+// region public
+SystemClipboard clipboard_macos_pbpaste() {
+  return const _SystemClipboardMacosPbpasteImpl();
+}
+// endregion
+
+// region internal
+class _SystemClipboardMacosPbpasteImpl implements SystemClipboard {
+  static const String _pbpaste_location = "/usr/bin/pbpaste";
+  // TODO should we use pbcopy? why? why not?
   // static const String _pbcopyLocation = "/usr/bin/pbcopy";
 
-  const SystemClipboardMacosPbpaste();
+  const _SystemClipboardMacosPbpasteImpl();
 
   @override
-  String getClipboardContent() {
+  String get_clipboard_content() {
     final result = Process.runSync(
-      _pbpasteLocation,
+      _pbpaste_location,
       [],
     );
     if (result.exitCode != 0) {
@@ -24,10 +32,10 @@ class SystemClipboardMacosPbpaste implements SystemClipboard {
   }
 
   @override
-  void setClipboardContent(
+  void set_clipboard_content(
     final String content,
   ) {
-    Process.start(_pbpasteLocation, []).then(
+    Process.start(_pbpaste_location, []).then(
       (final process) {
         process.stdin.write(content);
         process.stdin.close();
@@ -35,3 +43,4 @@ class SystemClipboardMacosPbpaste implements SystemClipboard {
     );
   }
 }
+// endregion

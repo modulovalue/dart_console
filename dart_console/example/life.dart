@@ -2,24 +2,24 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:dart_console/ansi/ansi.dart';
-import 'package:dart_console/console/impl/console.dart';
-import 'package:dart_console/console/interface/control_character.dart';
-import 'package:dart_console/console/interface/key.dart';
+import 'package:dart_console/ansi_writer/ansi_writer.dart';
+import 'package:dart_console/console/impl.dart';
+import 'package:dart_console/console/interface.dart';
 import 'package:dart_console/terminal/terminal_lib_auto.dart';
 
 void main(
   final List<String> arguments,
 ) {
   try {
-    console.rawMode = false;
-    console.hideCursor();
+    console.set_raw_mode(false);
+    console.hide_cursor();
     Timer.periodic(
       const Duration(milliseconds: 200),
       (final t) {
         draw();
         update();
-        //input(); // TODO: need async input
+        // TODO: need async input
+        // input();
         if (done) {
           quit();
         }
@@ -33,7 +33,7 @@ void main(
 }
 
 final SneathConsoleImpl console = SneathConsoleImpl(
-  terminal: autoSneathTerminal(),
+  terminal: auto_sneath_terminal(),
 );
 
 final Random random = Random();
@@ -71,16 +71,16 @@ final List<List<int>> neighbors = [
 ];
 
 void draw() {
-  console.setBackgroundColor(
+  console.set_background_color(
     const DarkAnsiBackgroundColorAdapter(NamedAnsiColorBlackImpl()),
   );
-  console.setForegroundColor(
+  console.set_foreground_color(
     const DarkAnsiForegroundColorAdapter(NamedAnsiColorBlueImpl()),
   );
-  console.clearScreen();
+  console.clear_screen();
   buffer.clear();
-  for (var row = 0; row < rows; row++) {
-    for (var col = 0; col < cols; col++) {
+  for (int row = 0; row < rows; row++) {
+    for (int col = 0; col < cols; col++) {
       final index = row * rows + col;
       buffer.write(() {
         if (data[index]) {
@@ -90,7 +90,7 @@ void draw() {
         }
       }());
     }
-    buffer.write(console.newLine);
+    buffer.write(console.new_line);
   }
   console.write(buffer.toString());
 }
@@ -99,8 +99,8 @@ int numLiveNeighbors(
   final int row,
   final int col,
 ) {
-  var sum = 0;
-  for (var i = 0; i < 8; i++) {
+  int sum = 0;
+  for (int i = 0; i < 8; i++) {
     final x = col + neighbors[i][0];
     if (x < 0 || x >= cols) {
       continue;
@@ -131,8 +131,8 @@ int numLiveNeighbors(
  *    if by reproduction.
  */
 void update() {
-  for (var row = 0; row < rows; row++) {
-    for (var col = 0; col < cols; col++) {
+  for (int row = 0; row < rows; row++) {
+    for (int col = 0; col < cols; col++) {
       final n = numLiveNeighbors(row, col);
       final index = row * rows + col;
       final v = data[index];
@@ -143,19 +143,19 @@ void update() {
 }
 
 void input() {
-  final key = console.readKey();
+  final key = console.read_key();
   if (key is KeyControl) {
-    if (key.controlChar == ControlCharacters.escape) {
+    if (key.control_char == ControlCharacters.escape) {
       done = true;
     }
   }
 }
 
 void resetConsole() {
-  console.clearScreen();
-  console.resetCursorPosition();
-  console.resetColorAttributes();
-  console.rawMode = false;
+  console.clear_screen();
+  console.reset_cursor_position();
+  console.reset_color_attributes();
+  console.set_raw_mode(false);
 }
 
 void crash(
