@@ -1,6 +1,6 @@
 // Multiple choice quiz demonstrating various console features.
-import 'package:dart_console/dc/base.dart';
-import 'package:dart_console/dc/prompt.dart';
+import 'package:dart_console3/dc/base.dart';
+import 'package:dart_console3/dc/prompt.dart';
 
 void main() {
   final console = DCConsole(
@@ -97,9 +97,9 @@ class Question {
   final List<String>? choices;
 
   Question(
-    final this.message,
-    final this.answer, {
-    final this.choices,
+    this.message,
+    this.answer, {
+    this.choices,
   });
 
   bool ask_question(

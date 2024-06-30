@@ -387,7 +387,7 @@ class _ByteReadExceptionTooSmallImpl implements ByteReadExceptionTooSmall {
   final int value;
 
   const _ByteReadExceptionTooSmallImpl({
-    required final this.value,
+    required this.value,
   });
 
   @override

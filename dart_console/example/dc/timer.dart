@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:dart_console/dc/base.dart';
-import 'package:dart_console/dc/timer.dart';
+import 'package:dart_console3/dc/base.dart';
+import 'package:dart_console3/dc/timer.dart';
 
 // Example of a timer.
 void main() {

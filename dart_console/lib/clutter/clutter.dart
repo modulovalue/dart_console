@@ -17,7 +17,7 @@ class Clutter {
   final List<Clidget> clidgets;
 
   const Clutter({
-    required final this.clidgets,
+    required this.clidgets,
   });
 }
 
@@ -44,7 +44,7 @@ class ClidgetText implements Clidget {
   final String text;
 
   const ClidgetText({
-    required final this.text,
+    required this.text,
   });
 
   @override

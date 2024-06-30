@@ -10,8 +10,8 @@ class DCShellPrompt {
   final DCConsole console;
 
   DCShellPrompt(
-    final this.console, {
-    final this.message = r'$ ',
+    this.console, {
+    this.message = r'$ ',
   });
 
   /// Stops a Loop
@@ -46,10 +46,10 @@ class DCChooser<T> {
   final DCConsole console;
 
   DCChooser(
-    final this.console,
-    final this.choices, {
-    final this.message = 'Choice: ',
-    final this.formatter = _defaultFormatter,
+    this.console,
+    this.choices, {
+    this.message = 'Choice: ',
+    this.formatter = _defaultFormatter,
   });
 
   static String _defaultFormatter(
@@ -147,9 +147,9 @@ class DCPrompter {
   final DCConsole console;
 
   const DCPrompter({
-    required final this.console,
-    required final this.message,
-    final this.secret = false,
+    required this.console,
+    required this.message,
+    this.secret = false,
   });
 
   /// Prompts a user for a yes or no answer.

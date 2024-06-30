@@ -13,8 +13,8 @@ class DCProgressBar {
   ///
   /// [complete] is the number that is considered 100%.
   DCProgressBar({
-    required final this.console,
-    final this.complete = 100,
+    required this.console,
+    this.complete = 100,
   });
 
   /// Updates the Progress Bar with a progress of [progress].
@@ -60,7 +60,7 @@ class DCLoadingBar {
 
   /// Creates a loading bar.
   DCLoadingBar(
-    final this.console,
+    this.console,
   );
 
   /// Starts the Loading Bar
@@ -131,7 +131,7 @@ class DCWideLoadingBar {
 
   /// Creates a wide loading bar.
   DCWideLoadingBar({
-    required final this.console,
+    required this.console,
   });
 
   /// Loops the loading bar.

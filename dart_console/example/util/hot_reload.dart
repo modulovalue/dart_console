@@ -1,4 +1,4 @@
-import 'package:dart_console/util/call_periodically.dart';
+import 'package:dart_console3/util/call_periodically.dart';
 import 'package:hotreloader/hotreloader.dart';
 
 void runApp(

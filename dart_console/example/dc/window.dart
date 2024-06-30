@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:dart_console/dc/base.dart';
-import 'package:dart_console/dc/progress.dart';
-import 'package:dart_console/dc/window.dart';
+import 'package:dart_console3/dc/base.dart';
+import 'package:dart_console3/dc/progress.dart';
+import 'package:dart_console3/dc/window.dart';
 
 /// Example of a full-screen window, as needed for a text editor.
 void main() {

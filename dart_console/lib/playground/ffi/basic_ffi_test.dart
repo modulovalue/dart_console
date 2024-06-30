@@ -1,5 +1,5 @@
-import 'package:dart_console/console/impl.dart';
-import 'package:dart_console/terminal/terminal_lib_auto.dart';
+import '../../console/impl.dart';
+import '../../terminal/terminal_lib_auto.dart';
 
 void main() {
   final termlib = auto_sneath_terminal();

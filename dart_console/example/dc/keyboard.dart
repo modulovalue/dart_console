@@ -1,4 +1,4 @@
-import 'package:dart_console/keyboard/keyboard.dart';
+import 'package:dart_console3/keyboard/keyboard.dart';
 
 // Traps up and down arrow and echos to console.
 void main() {

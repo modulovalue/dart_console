@@ -37,8 +37,8 @@ class DrawingCanvasImpl implements DrawingCanvas {
   late List<int> content;
 
   DrawingCanvasImpl({
-    required final this.width,
-    required final this.height,
+    required this.width,
+    required this.height,
   }) {
     if (width % 2 != 0) {
       throw Exception('Width must be a multiple of 2!');

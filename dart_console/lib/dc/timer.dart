@@ -11,7 +11,7 @@ class DCTimeDisplay {
   final DCConsole console;
 
   DCTimeDisplay({
-    required final this.console,
+    required this.console,
   });
 
   /// Starts the Timer

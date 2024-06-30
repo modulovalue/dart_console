@@ -1,5 +1,5 @@
-import 'package:dart_console/dc/base.dart';
-import 'package:dart_console/dc/prompt.dart';
+import 'package:dart_console3/dc/base.dart';
+import 'package:dart_console3/dc/prompt.dart';
 
 //  A simple REPL that echoes input text back to the console.
 void main() {

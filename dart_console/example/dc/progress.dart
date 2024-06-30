@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:dart_console/dc/base.dart';
-import 'package:dart_console/dc/progress.dart';
+import 'package:dart_console3/dc/base.dart';
+import 'package:dart_console3/dc/progress.dart';
 
 // Demonstrates a determinate progress bar (e.g. download)
 void main() {

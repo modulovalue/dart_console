@@ -28,7 +28,7 @@ class DCConsoleCanvas extends DCCanvas {
   final DCConsole console;
 
   DCConsoleCanvas(
-    final this.console, {
+    this.console, {
     final DCPixelSpec defaultSpec = DCPixelSpec.EMPTY,
   }) {
     pixels = List.generate(
@@ -67,6 +67,6 @@ class DCPixelSpec {
   final int color;
 
   const DCPixelSpec(
-    final this.color,
+    this.color,
   );
 }

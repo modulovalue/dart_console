@@ -60,8 +60,8 @@ class _TerminalKeyboardImpl implements TerminalKeyboard {
   bool echo_unhandled_keys = true;
 
   _TerminalKeyboardImpl({
-    required final this.byte_stream,
-    required final this.move_cursor_back_by_one,
+    required this.byte_stream,
+    required this.move_cursor_back_by_one,
   }) {
     stdin.echoMode = false;
     stdin.lineMode = false;

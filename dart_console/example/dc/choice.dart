@@ -1,5 +1,5 @@
-import 'package:dart_console/dc/base.dart';
-import 'package:dart_console/dc/prompt.dart';
+import 'package:dart_console3/dc/base.dart';
+import 'package:dart_console3/dc/prompt.dart';
 
 // Select a multiple choice option.
 void main() {

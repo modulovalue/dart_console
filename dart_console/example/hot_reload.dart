@@ -1,7 +1,7 @@
-import 'package:dart_console/console/impl.dart';
-import 'package:dart_console/console/interface.dart';
-import 'package:dart_console/scaffolds/progress.dart';
-import 'package:dart_console/terminal/terminal_lib_auto.dart';
+import 'package:dart_console3/console/impl.dart';
+import 'package:dart_console3/console/interface.dart';
+import 'package:dart_console3/scaffolds/progress.dart';
+import 'package:dart_console3/terminal/terminal_lib_auto.dart';
 
 import 'util/hot_reload.dart';
 

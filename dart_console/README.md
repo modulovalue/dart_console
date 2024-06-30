@@ -34,7 +34,7 @@ using Dart FFI for more complex examples.
 A simple example for the `dart_console` package:
 
 ```dart
-import 'package:dart_console/dart_console.dart';
+import 'package:dart_console3/dart_console.dart';
 
 main() {
   final console = Console();

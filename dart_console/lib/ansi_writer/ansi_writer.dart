@@ -402,7 +402,7 @@ class DarkAnsiBackgroundColorAdapter implements AnsiBackgroundColor {
   final AnsiBasicColor color;
 
   const DarkAnsiBackgroundColorAdapter(
-    final this.color,
+    this.color,
   );
 
   @override
@@ -416,7 +416,7 @@ class BrightAnsiBackgroundColorAdapter implements AnsiBackgroundColor {
   final AnsiBasicColor color;
 
   const BrightAnsiBackgroundColorAdapter(
-    final this.color,
+    this.color,
   );
 
   @override
@@ -430,7 +430,7 @@ class DarkAnsiForegroundColorAdapter implements AnsiForegroundColor {
   final AnsiBasicColor color;
 
   const DarkAnsiForegroundColorAdapter(
-    final this.color,
+    this.color,
   );
 
   @override
@@ -444,7 +444,7 @@ class BrightAnsiForegroundColorAdapter implements AnsiForegroundColor {
   final AnsiBasicColor color;
 
   const BrightAnsiForegroundColorAdapter(
-    final this.color,
+    this.color,
   );
 
   @override
@@ -460,8 +460,8 @@ class AnsiExtendedColorPaletteRawImpl implements AnsiExtendedColorPalette {
   final String name;
 
   const AnsiExtendedColorPaletteRawImpl(
-    final this.palette_number_byte,
-    final this.name,
+    this.palette_number_byte,
+    this.name,
   );
 }
 
@@ -581,7 +581,7 @@ class GraphicsRenditionNodeTextColorImpl implements GraphicsRenditionNode {
   final AnsiBasicColor color;
 
   const GraphicsRenditionNodeTextColorImpl(
-    final this.color,
+    this.color,
   );
 
   @override
@@ -595,7 +595,7 @@ class GraphicsRenditionNodeBrightTextColorImpl implements GraphicsRenditionNode 
   final AnsiBasicColor color;
 
   const GraphicsRenditionNodeBrightTextColorImpl(
-    final this.color,
+    this.color,
   );
 
   @override
@@ -609,7 +609,7 @@ class GraphicsRenditionNodeBackgroundColorImpl implements GraphicsRenditionNode 
   final AnsiBasicColor color;
 
   const GraphicsRenditionNodeBackgroundColorImpl(
-    final this.color,
+    this.color,
   );
 
   @override
@@ -623,7 +623,7 @@ class GraphicsRenditionNodeBrightBackgroundColorImpl implements GraphicsRenditio
   final AnsiBasicColor color;
 
   const GraphicsRenditionNodeBrightBackgroundColorImpl(
-    final this.color,
+    this.color,
   );
 
   @override
@@ -640,7 +640,7 @@ class GraphicsRenditionNodeColorImpl implements GraphicsRenditionNode {
   final String raw;
 
   const GraphicsRenditionNodeColorImpl(
-    final this.raw,
+    this.raw,
   );
 
   @override
@@ -655,7 +655,7 @@ class GraphicsRenditionNodeExtendedTextColorImpl implements GraphicsRenditionNod
   final AnsiExtendedColorPalette color;
 
   const GraphicsRenditionNodeExtendedTextColorImpl(
-    final this.color,
+    this.color,
   );
 
   @override
@@ -672,7 +672,7 @@ class GraphicsRenditionNodeExtendedBackgroundColorImpl implements GraphicsRendit
   final AnsiExtendedColorPalette color;
 
   const GraphicsRenditionNodeExtendedBackgroundColorImpl(
-    final this.color,
+    this.color,
   );
 
   @override
@@ -690,9 +690,9 @@ class GraphicsRenditionNodeRGBTextColorImpl implements GraphicsRenditionNode {
   final int b;
 
   const GraphicsRenditionNodeRGBTextColorImpl(
-    final this.r,
-    final this.g,
-    final this.b,
+    this.r,
+    this.g,
+    this.b,
   );
 
   @override
@@ -712,9 +712,9 @@ class GraphicsRenditionNodeRGBBackgroundColorImpl implements GraphicsRenditionNo
   final int b;
 
   const GraphicsRenditionNodeRGBBackgroundColorImpl(
-    final this.r,
-    final this.g,
-    final this.b,
+    this.r,
+    this.g,
+    this.b,
   );
 
   @override
@@ -732,7 +732,7 @@ class CompositeGraphicsRenditionNode implements GraphicsRenditionNode {
   final Iterable<GraphicsRenditionNode> nodes;
 
   const CompositeGraphicsRenditionNode(
-    final this.nodes,
+    this.nodes,
   );
 
   @override

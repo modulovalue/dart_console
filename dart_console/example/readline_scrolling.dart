@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:dart_console/ansi_writer/ansi_writer.dart';
-import 'package:dart_console/console/impl.dart';
-import 'package:dart_console/terminal/terminal_lib_auto.dart';
+import 'package:dart_console3/ansi_writer/ansi_writer.dart';
+import 'package:dart_console3/console/impl.dart';
+import 'package:dart_console3/terminal/terminal_lib_auto.dart';
 
 /// Inspired by
 /// http://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html#writing-a-command-line

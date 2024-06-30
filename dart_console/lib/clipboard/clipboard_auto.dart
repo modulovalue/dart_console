@@ -49,7 +49,7 @@ class _AutoClipboardDetectionResultSuccessImpl implements AutoClipboardDetection
   final SystemClipboard clipboard;
 
   const _AutoClipboardDetectionResultSuccessImpl({
-    required final this.clipboard,
+    required this.clipboard,
   });
 
   @override

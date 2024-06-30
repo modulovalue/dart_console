@@ -9,7 +9,7 @@ class DCConsole {
   final DCConsoleAdapter raw_console;
 
   const DCConsole({
-    required final this.raw_console,
+    required this.raw_console,
   });
 
   static Stream<dynamic> get on_resize => ProcessSignal.sigwinch.watch();
@@ -68,7 +68,7 @@ class DCConsole {
     if (xterm) {
       sgr(
         38,
-        [5, (id.clamp(0, 256))],
+        [5, id.clamp(0, 256)],
       );
     } else {
       if (bright) {
@@ -126,7 +126,7 @@ class DCConsole {
     if (xterm) {
       sgr(
         48,
-        [5, (id.clamp(0, 256))],
+        [5, id.clamp(0, 256)],
       );
     } else {
       if (bright) {
@@ -243,8 +243,8 @@ class DCCursorPosition {
   final int column;
 
   const DCCursorPosition(
-    final this.column,
-    final this.row,
+    this.column,
+    this.row,
   );
 
   @override
@@ -257,9 +257,9 @@ class DCColor {
   final bool bright;
 
   const DCColor(
-    final this.id, {
-    final this.xterm = false,
-    final this.bright = false,
+    this.id, {
+    this.xterm = false,
+    this.bright = false,
   });
 
   @override

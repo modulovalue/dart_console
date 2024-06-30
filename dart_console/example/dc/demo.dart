@@ -1,5 +1,5 @@
-import 'package:dart_console/dc/base.dart';
-import 'package:dart_console/dc/progress.dart';
+import 'package:dart_console3/dc/base.dart';
+import 'package:dart_console3/dc/progress.dart';
 
 // Shows basic console formatting options.
 void main() {

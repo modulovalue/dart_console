@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:dart_console/dc/base.dart';
-import 'package:dart_console/dc/drawing_canvas.dart';
+import 'package:dart_console3/dc/base.dart';
+import 'package:dart_console3/dc/drawing_canvas.dart';
 
 // Simple demonstration of DrawingCanvas for drawing a vertical bar.
 void main() {

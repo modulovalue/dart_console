@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:dart_console/console/impl.dart';
-import 'package:dart_console/terminal/terminal_lib_auto.dart';
+import '../console/impl.dart';
+import '../terminal/terminal_lib_auto.dart';
 
 // Diagnostic test for tracking down differences in raw key input from different
 // platforms.

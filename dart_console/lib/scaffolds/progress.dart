@@ -55,8 +55,8 @@ class ProgressScaffoldState {
   final String? subtitle;
 
   const ProgressScaffoldState({
-    required final this.started_at,
-    final this.title,
-    final this.subtitle,
+    required this.started_at,
+    this.title,
+    this.subtitle,
   });
 }

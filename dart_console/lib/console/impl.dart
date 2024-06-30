@@ -16,7 +16,7 @@ class SneathConsoleImpl implements SneathConsole {
   final _ScrollbackBuffer? _scrollback_buffer;
 
   SneathConsoleImpl({
-    required final this.terminal,
+    required this.terminal,
   }) : _scrollback_buffer = null;
 
   @override
@@ -37,7 +37,7 @@ class SneathConsoleImpl implements SneathConsole {
   /// Use `Console.scrolling(recordBlanks: false)` to omit blank lines
   /// from console history
   SneathConsoleImpl.scrolling({
-    required final this.terminal,
+    required this.terminal,
     final bool record_blanks = true,
   }) : _scrollback_buffer = _ScrollbackBufferImpl(
           record_blanks: record_blanks,
@@ -1050,8 +1050,8 @@ class SneathCoordinateImpl implements SneathCoordinate {
   final int col;
 
   const SneathCoordinateImpl({
-    required final this.row,
-    required final this.col,
+    required this.row,
+    required this.col,
   });
 }
 
@@ -1060,8 +1060,8 @@ class SneathCursorPositionDelegateImpl implements SneathCursorPositionDelegate {
   final void Function(bool) setRawModeDelegate;
 
   const SneathCursorPositionDelegateImpl(
-    final this.terminal,
-    final this.setRawModeDelegate,
+    this.terminal,
+    this.setRawModeDelegate,
   );
 
   @override
@@ -1130,8 +1130,8 @@ class SneathConsoleDimensionsCachedImpl implements SneathConsoleDimensions {
   int? _height;
 
   SneathConsoleDimensionsCachedImpl(
-    final this._terminal,
-    final this.cursorPosition,
+    this._terminal,
+    this.cursorPosition,
   );
 
   // TODO return either if ran out of options.
@@ -1204,7 +1204,7 @@ class KeyControlImpl with KeyControlMixin {
   final ControlCharacter control_char;
 
   const KeyControlImpl(
-    final this.control_char,
+    this.control_char,
   );
 }
 
@@ -1238,7 +1238,7 @@ class KeyPrintableImpl implements KeyPrintable {
   final String char;
 
   const KeyPrintableImpl(
-    final this.char,
+    this.char,
   ) : assert(
           char.length == 1,
           "The given character " +
@@ -1305,7 +1305,7 @@ class _ScrollbackBufferImpl implements _ScrollbackBuffer {
   String? current_line_buffer;
 
   _ScrollbackBufferImpl({
-    required final this.record_blanks,
+    required this.record_blanks,
   });
 
   @override

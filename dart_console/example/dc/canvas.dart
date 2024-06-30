@@ -1,5 +1,5 @@
-import 'package:dart_console/dc/base.dart';
-import 'package:dart_console/dc/canvas.dart';
+import 'package:dart_console3/dc/base.dart';
+import 'package:dart_console3/dc/canvas.dart';
 
 // Shows use of ConsoleCanvas for character-based positioning.
 void main() {

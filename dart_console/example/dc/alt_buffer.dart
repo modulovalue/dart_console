@@ -1,4 +1,4 @@
-import 'package:dart_console/dc/base.dart';
+import 'package:dart_console3/dc/base.dart';
 
 // Switches between normal and alternative screen buffer.
 void main() {

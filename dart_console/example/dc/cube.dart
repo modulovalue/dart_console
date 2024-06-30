@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:dart_console/dc/drawing_canvas.dart';
+import 'package:dart_console3/dc/drawing_canvas.dart';
 import 'package:vector_math/vector_math.dart';
 
 /// Draws a 3D cube with DrawingCanvas.

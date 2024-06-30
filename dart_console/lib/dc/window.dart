@@ -11,8 +11,8 @@ abstract class DCWindow {
   final TerminalKeyboard keyboard;
 
   DCWindow(
-    final this.console,
-    final this.title,
+    this.console,
+    this.title,
   ) : keyboard = make_terminal_keyboard(
           byte_stream: console.raw_console.byte_stream(),
           move_cursor_back_by_one: () => console.move_cursor_back(1),

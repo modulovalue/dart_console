@@ -78,12 +78,12 @@ class _SneathTerminalUnixImpl implements SneathTerminal {
   final int IOCTL_TIOCGWINSZ;
 
   const _SneathTerminalUnixImpl._({
-    required final this.stdlib,
-    required final this.orig_term_ios_pointer,
-    required final this.ioctl,
-    required final this.tcgetattr,
-    required final this.tcsetattr,
-    required final this.IOCTL_TIOCGWINSZ,
+    required this.stdlib,
+    required this.orig_term_ios_pointer,
+    required this.ioctl,
+    required this.tcgetattr,
+    required this.tcsetattr,
+    required this.IOCTL_TIOCGWINSZ,
   });
 
   @override
